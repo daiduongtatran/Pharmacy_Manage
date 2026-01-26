@@ -1,6 +1,6 @@
 ﻿namespace Pharmacy_Manage.DTO
 {
-    public class UserDTO
+    public class AccountDTO
     {
         public string Username { get; set; }
         public string Password { get; set; }

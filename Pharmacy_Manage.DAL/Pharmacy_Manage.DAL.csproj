@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Pharmacy_Manage.DTO\Pharmacy_Manage.DTO.csproj" />
+  </ItemGroup>
+
 </Project>

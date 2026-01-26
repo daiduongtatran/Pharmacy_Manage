@@ -8,4 +8,9 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Pharmacy_Manage.BUS\Pharmacy_Manage.BUS.csproj" />
+    <ProjectReference Include="..\Pharmacy_Manage.DTO\Pharmacy_Manage.DTO.csproj" />
+  </ItemGroup>
+
 </Project>
