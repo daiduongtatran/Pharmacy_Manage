@@ -9,6 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="6.1.4" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Pharmacy_Manage.BUS\Pharmacy_Manage.BUS.csproj" />
     <ProjectReference Include="..\Pharmacy_Manage.DTO\Pharmacy_Manage.DTO.csproj" />
   </ItemGroup>

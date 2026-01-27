@@ -1,10 +1,9 @@
 ﻿<Window x:Class="Pharmacy_Manage.GUI.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="MediTrack Pro Login" Height="600" Width="950"
+        Title="MediTrack Pro Login" Height="650" Width="1000"
         WindowStartupLocation="CenterScreen" WindowStyle="None" 
-        AllowsTransparency="True" Background="Transparent"
-        MouseDown="Window_MouseDown">
+        AllowsTransparency="True" Background="Transparent">
 
     <Window.Resources>
         <Style TargetType="Control">
@@ -15,9 +14,14 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="TextBox">
-                        <Border CornerRadius="5" BorderBrush="#E0E0E0" BorderThickness="1" Background="White" Padding="10,0">
+                        <Border x:Name="border" CornerRadius="5" BorderBrush="#E0E0E0" BorderThickness="1" Background="White" Padding="10,0">
                             <ScrollViewer x:Name="PART_ContentHost" VerticalAlignment="Center"/>
                         </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsFocused" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="#2C9BB3"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
@@ -27,27 +31,32 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="PasswordBox">
-                        <Border CornerRadius="5" BorderBrush="#E0E0E0" BorderThickness="1" Background="White" Padding="10,0">
+                        <Border x:Name="border" CornerRadius="5" BorderBrush="#E0E0E0" BorderThickness="1" Background="White" Padding="10,0">
                             <ScrollViewer x:Name="PART_ContentHost" VerticalAlignment="Center"/>
                         </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsFocused" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="#2C9BB3"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
         </Style>
     </Window.Resources>
 
-    <Border CornerRadius="20" Margin="20">
+    <Border CornerRadius="20" Margin="20" Background="White">
         <Border.Effect>
             <DropShadowEffect BlurRadius="30" Color="Black" Opacity="0.25" ShadowDepth="10"/>
         </Border.Effect>
 
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1.2*"/>
-                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1.1*"/>
+                <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <Border Grid.Column="0" CornerRadius="20,0,0,20">
+            <Border Grid.Column="0" CornerRadius="20,0,0,20" MouseDown="Window_MouseDown">
                 <Border.Background>
                     <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
                         <GradientStop Color="#3B68A8" Offset="0"/>
@@ -55,57 +64,56 @@
                     </LinearGradientBrush>
                 </Border.Background>
 
-                <Grid Margin="50">
-                    <StackPanel VerticalAlignment="Top" Margin="0,30,0,0">
+                <Grid Margin="40">
+                    <StackPanel VerticalAlignment="Top" Margin="0,20,0,0">
                         <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                            <TextBlock Text="MediTrack" Foreground="White" FontSize="26" FontWeight="Bold"/>
+                            <TextBlock Text="MediTrack" Foreground="White" FontSize="28" FontWeight="Bold"/>
                             <Border Background="#4596A6" CornerRadius="5" Margin="10,5,0,5" Padding="8,2">
                                 <TextBlock Text="Pro" Foreground="White" FontWeight="Bold" FontSize="12"/>
                             </Border>
                         </StackPanel>
-                        <TextBlock Text="Pharmacy Management Portal" Foreground="White" FontSize="20" Opacity="0.9" FontWeight="SemiBold"/>
+                        <TextBlock Text="Pharmacy Management Portal" Foreground="White" FontSize="18" Opacity="0.9" FontWeight="SemiBold" Margin="0,0,0,30"/>
+
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,30">
+                            <Button Content="ℹ Hướng dẫn" Width="110" Height="35" Background="#5D99C6" Foreground="White" BorderThickness="0" Margin="0,0,10,0" Cursor="Hand">
+                                <Button.Resources>
+                                    <Style TargetType="Border">
+                                        <Setter Property="CornerRadius" Value="15"/>
+                                    </Style>
+                                </Button.Resources>
+                            </Button>
+                            <Button Content="📞 Hỗ trợ" Width="100" Height="35" Background="Transparent" Foreground="White" BorderBrush="White" BorderThickness="1" Cursor="Hand">
+                                <Button.Resources>
+                                    <Style TargetType="Border">
+                                        <Setter Property="CornerRadius" Value="15"/>
+                                    </Style>
+                                </Button.Resources>
+                            </Button>
+                        </StackPanel>
                     </StackPanel>
 
-                    <Viewbox Height="200" VerticalAlignment="Center">
+                    <Viewbox Height="180" VerticalAlignment="Center" Margin="0,40,0,0">
                         <Canvas Width="300" Height="200">
                             <Path Data="M 50,50 L 110,50 L 110,100 Q 80,150 50,150 Q 20,150 20,100 L 20,50 Z" Stroke="White" StrokeThickness="2" Fill="Transparent"/>
                             <Path Data="M 65,80 L 65,120 M 45,100 L 85,100" Stroke="White" StrokeThickness="3"/>
                             <Rectangle Canvas.Left="130" Canvas.Top="70" Width="50" Height="70" RadiusX="5" RadiusY="5" Stroke="White" StrokeThickness="2"/>
                             <Rectangle Canvas.Left="135" Canvas.Top="60" Width="40" Height="10" Fill="White"/>
                             <Line X1="130" Y1="90" X2="180" Y2="90" Stroke="White" StrokeThickness="1"/>
-
                             <Path Data="M 210,60 Q 260,60 260,120 Q 260,160 220,160" Stroke="White" StrokeThickness="2" Fill="Transparent"/>
                             <Ellipse Canvas.Left="200" Canvas.Top="145" Width="25" Height="25" Stroke="White" StrokeThickness="2"/>
-                            <Ellipse Canvas.Left="205" Canvas.Top="50" Width="10" Height="10" Fill="White"/>
-
-                            <Path Data="M 10,160 L 40,130" Stroke="White" StrokeThickness="2"/>
-                            <Rectangle Canvas.Left="10" Canvas.Top="155" Width="10" Height="20" RenderTransformOrigin="0.5,0.5">
-                                <Rectangle.RenderTransform>
-                                    <RotateTransform Angle="-45"/>
-                                </Rectangle.RenderTransform>
-                                <Rectangle.Style>
-                                    <Style TargetType="Rectangle">
-                                        <Setter Property="Stroke" Value="White"/>
-                                        <Setter Property="StrokeThickness" Value="2"/>
-                                    </Style>
-                                </Rectangle.Style>
-                            </Rectangle>
-
                             <Path Data="M 250,150 A 10,10 0 1 1 270,170 L 280,180 A 10,10 0 1 1 260,200 Z" Stroke="White" StrokeThickness="2" Fill="Transparent"/>
-
                             <Ellipse Canvas.Left="20" Canvas.Top="100" Width="15" Height="15" Stroke="White" StrokeThickness="1"/>
-                            <Ellipse Canvas.Left="270" Canvas.Top="80" Width="20" Height="20" Stroke="White" StrokeThickness="1"/>
                         </Canvas>
                     </Viewbox>
 
-                    <TextBlock Text="Discover the power of personalized health insights and seamless tracking with MediTrack." 
+                    <TextBlock Text="Hệ thống quản lý dược phẩm thông minh, tối ưu hóa quy trình bán hàng." 
                                Foreground="White" FontSize="14" TextAlignment="Left" Opacity="0.8" 
-                               VerticalAlignment="Bottom" TextWrapping="Wrap" Margin="0,0,40,20"/>
+                               VerticalAlignment="Bottom" TextWrapping="Wrap" Margin="0,0,20,10"/>
                 </Grid>
             </Border>
 
             <Border Grid.Column="1" Background="White" CornerRadius="0,20,20,0">
-                <Grid>
+                <Grid x:Name="RightPanelContainer">
                     <Grid VerticalAlignment="Top" HorizontalAlignment="Left" Margin="40,-8,0,0">
                         <Border Background="#2C9BB3" CornerRadius="5" Padding="15,10,15,15" Height="60">
                             <Border.Effect>
@@ -119,73 +127,80 @@
                     <Button Content="✕" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="20" 
                             Background="Transparent" BorderThickness="0" Foreground="#AAAAAA" FontSize="18" Click="btnExit_Click" Cursor="Hand"/>
 
-                    <StackPanel VerticalAlignment="Center" Margin="60,40,60,40">
-                        <TextBlock Text="Log in" FontSize="32" FontWeight="Bold" Foreground="#333333" HorizontalAlignment="Center" Margin="0,0,0,30"/>
+                    <Grid Margin="50,60,50,40">
 
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,25">
-                            <RadioButton x:Name="rbAdmin" Content="Admin" IsChecked="True" GroupName="Role" FontSize="14" Foreground="#2C9BB3" Margin="0,0,30,0" FontWeight="Bold"/>
-                            <RadioButton x:Name="rbStaff" Content="Staff" GroupName="Role" FontSize="14" Foreground="Gray"/>
+                        <StackPanel x:Name="LoginPanel" Visibility="Visible" VerticalAlignment="Center" Background="Transparent">
+                            <TextBlock Text="Đăng Nhập" FontSize="32" FontWeight="Bold" Foreground="#333333" HorizontalAlignment="Center" Margin="0,0,0,30"/>
+
+                            <UniformGrid Columns="3" Margin="0,0,0,25">
+                                <RadioButton x:Name="rbAdmin" Content="Quản lý" IsChecked="True" GroupName="Role" 
+                                             FontSize="13" FontWeight="Bold" Foreground="#2C9BB3" Cursor="Hand"/>
+                                <RadioButton x:Name="rbStaff" Content="Nhân viên" GroupName="Role" 
+                                             FontSize="13" FontWeight="Bold" Foreground="Gray" Cursor="Hand"/>
+                                <RadioButton x:Name="rbCust" Content="Khách hàng" GroupName="Role" 
+                                             FontSize="13" FontWeight="Bold" Foreground="Gray" Cursor="Hand"/>
+                            </UniformGrid>
+
+                            <TextBlock Text="Tài khoản / Email" Foreground="#999999" FontSize="12" Margin="2,0,0,5"/>
+                            <TextBox x:Name="txtUser" Height="45" Margin="0,0,0,15" VerticalContentAlignment="Center"/>
+
+                            <TextBlock Text="Mật khẩu" Foreground="#999999" FontSize="12" Margin="2,0,0,5"/>
+                            <PasswordBox x:Name="txtPass" Height="45" Margin="0,0,0,25" VerticalContentAlignment="Center"/>
+
+                            <Button x:Name="btnLogin" Content="ĐĂNG NHẬP" Height="45" Foreground="White" FontWeight="Bold" 
+                                    FontSize="14" BorderThickness="0" Click="btnLogin_Click" Cursor="Hand">
+                                <Button.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                        <GradientStop Color="#4DB6AC" Offset="0"/>
+                                        <GradientStop Color="#2C9BB3" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Button.Background>
+                                <Button.Resources>
+                                    <Style TargetType="Border">
+                                        <Setter Property="CornerRadius" Value="5"/>
+                                    </Style>
+                                </Button.Resources>
+                            </Button>
+
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20">
+                                <TextBlock Text="Chưa có tài khoản? " Foreground="#AAAAAA" FontSize="12"/>
+                                <TextBlock Text="Đăng ký ngay" Foreground="#2C9BB3" FontWeight="Bold" FontSize="12" Cursor="Hand" MouseLeftButtonUp="SwitchToRegister"/>
+                            </StackPanel>
                         </StackPanel>
 
-                        <TextBlock Text="Email address" Foreground="#999999" FontSize="12" Margin="2,0,0,5"/>
-                        <TextBox x:Name="txtUser" Height="45" Margin="0,0,0,15" VerticalContentAlignment="Center"/>
+                        <StackPanel x:Name="RegisterPanel" Visibility="Collapsed" VerticalAlignment="Center" Background="Transparent">
+                            <TextBlock Text="Đăng Ký" FontSize="32" FontWeight="Bold" Foreground="#333333" HorizontalAlignment="Center" Margin="0,0,0,20"/>
 
-                        <TextBlock Text="Password" Foreground="#999999" FontSize="12" Margin="2,0,0,5"/>
-                        <PasswordBox x:Name="txtPass" Height="45" Margin="0,0,0,20" VerticalContentAlignment="Center"/>
+                            <TextBlock Text="Họ và tên" Foreground="#999999" FontSize="12" Margin="2,0,0,5"/>
+                            <TextBox x:Name="regName" Height="40" Margin="0,0,0,10" VerticalContentAlignment="Center"/>
 
-                        <Button x:Name="btnLogin" Content="LOGIN" Height="45" Foreground="White" FontWeight="Bold" 
-                                FontSize="14" BorderThickness="0" Click="btnLogin_Click" Cursor="Hand">
-                            <Button.Background>
-                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
-                                    <GradientStop Color="#4DB6AC" Offset="0"/>
-                                    <GradientStop Color="#2C9BB3" Offset="1"/>
-                                </LinearGradientBrush>
-                            </Button.Background>
-                            <Button.Resources>
-                                <Style TargetType="Border">
-                                    <Setter Property="CornerRadius" Value="5"/>
-                                </Style>
-                            </Button.Resources>
-                        </Button>
+                            <TextBlock Text="Email" Foreground="#999999" FontSize="12" Margin="2,0,0,5"/>
+                            <TextBox x:Name="regEmail" Height="40" Margin="0,0,0,10" VerticalContentAlignment="Center"/>
 
-                        <TextBlock Text="Forgotten password?" Foreground="Gray" FontSize="12" HorizontalAlignment="Center" Margin="0,15,0,25" Cursor="Hand"/>
+                            <TextBlock Text="Số điện thoại" Foreground="#999999" FontSize="12" Margin="2,0,0,5"/>
+                            <TextBox x:Name="regPhone" Height="40" Margin="0,0,0,10" VerticalContentAlignment="Center"/>
 
-                        <UniformGrid Columns="4" HorizontalAlignment="Center" Width="200" Margin="0,0,0,20">
-                            <Button Content="f" Width="40" Height="40" Background="White" Foreground="#888888" BorderBrush="#EEEEEE" BorderThickness="1" FontWeight="Bold" FontSize="16">
+                            <TextBlock Text="Mật khẩu" Foreground="#999999" FontSize="12" Margin="2,0,0,5"/>
+                            <PasswordBox x:Name="regPass" Height="40" Margin="0,0,0,20" VerticalContentAlignment="Center"/>
+
+                            <Button x:Name="btnDoRegister" Content="TẠO TÀI KHOẢN" Height="45" Foreground="White" FontWeight="Bold" 
+                                    FontSize="14" BorderThickness="0" Click="btnDoRegister_Click" Cursor="Hand">
+                                <Button.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                        <GradientStop Color="#4DB6AC" Offset="0"/>
+                                        <GradientStop Color="#2C9BB3" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Button.Background>
                                 <Button.Resources>
                                     <Style TargetType="Border">
-                                        <Setter Property="CornerRadius" Value="10"/>
+                                        <Setter Property="CornerRadius" Value="5"/>
                                     </Style>
                                 </Button.Resources>
                             </Button>
-                            <Button Content="G" Width="40" Height="40" Background="White" Foreground="#888888" BorderBrush="#EEEEEE" BorderThickness="1" FontWeight="Bold" FontSize="16">
-                                <Button.Resources>
-                                    <Style TargetType="Border">
-                                        <Setter Property="CornerRadius" Value="10"/>
-                                    </Style>
-                                </Button.Resources>
-                            </Button>
-                            <Button Content="𝕏" Width="40" Height="40" Background="White" Foreground="#888888" BorderBrush="#EEEEEE" BorderThickness="1" FontWeight="Bold" FontSize="16">
-                                <Button.Resources>
-                                    <Style TargetType="Border">
-                                        <Setter Property="CornerRadius" Value="10"/>
-                                    </Style>
-                                </Button.Resources>
-                            </Button>
-                            <Button Content="" Width="40" Height="40" Background="White" Foreground="#888888" BorderBrush="#EEEEEE" BorderThickness="1" FontWeight="Bold" FontSize="16">
-                                <Button.Resources>
-                                    <Style TargetType="Border">
-                                        <Setter Property="CornerRadius" Value="10"/>
-                                    </Style>
-                                </Button.Resources>
-                            </Button>
-                        </UniformGrid>
 
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                            <TextBlock Text="Need an account? " Foreground="#AAAAAA" FontSize="12"/>
-                            <TextBlock Text="Sign up" Foreground="#2C9BB3" FontWeight="Bold" FontSize="12" Cursor="Hand"/>
+                            <TextBlock Text="Quay lại Đăng nhập" Foreground="#AAAAAA" FontSize="12" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,20" Cursor="Hand" MouseLeftButtonUp="SwitchToLogin"/>
                         </StackPanel>
-                    </StackPanel>
+                    </Grid>
                 </Grid>
             </Border>
         </Grid>

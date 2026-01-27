@@ -1,22 +1,21 @@
-﻿using Pharmacy_Manage.DTO;
+﻿using Pharmacy_Manage.DAL;
+using Pharmacy_Manage.DTO;
 
 namespace Pharmacy_Manage.BUS
 {
     public class AccountBUS
     {
-        public AccountDTO CheckLogin(string user, string pass)
-        {
-            // Tạm thời giả lập dữ liệu thay vì gọi Database
-            if (user == "admin" && pass == "123")
-            {
-                return new AccountDTO { Username = "admin", FullName = "Chủ nhà thuốc", Role = "Admin" };
-            }
-            else if (user == "staff" && pass == "123")
-            {
-                return new AccountDTO { Username = "staff", FullName = "Dược sĩ A", Role = "Staff" };
-            }
+        // BUS gọi DAL chứ không tự viết SQL bên trong
+        private AccountDAL _accountDAL = new AccountDAL();
 
-            return null; // Trả về null nếu sai thông tin
+        public AccountDTO? CheckLogin(string user, string pass, string role)
+        {
+            return _accountDAL.Login(user, pass, role);
+        }
+
+        public bool RegisterAccount(string name, string email, string phone, string pass)
+        {
+            return _accountDAL.Register(name, email, phone, pass);
         }
     }
 }
