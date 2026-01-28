@@ -13,9 +13,10 @@ namespace Pharmacy_Manage.BUS
             return _accountDAL.Login(user, pass, role);
         }
 
-        public bool RegisterAccount(string name, string email, string phone, string pass)
+        public bool RegisterAccount(string name, string email, string phone, string pass, string role)
         {
-            return _accountDAL.Register(name, email, phone, pass);
+            // Có thể thêm logic kiểm tra email hợp lệ tại đây
+            return _accountDAL.Register(name, email, phone, pass, role);
         }
     }
 }

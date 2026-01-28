@@ -1,0 +1,10 @@
+﻿<Window x:Class="Pharmacy_Manage.GUI.HomeWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Hệ Thống Quản Lý Nhà Thuốc" Height="450" Width="800">
+    <Grid>
+        <TextBlock Text="CHÀO MỪNG BẠN ĐÃ ĐĂNG NHẬP THÀNH CÔNG!" 
+                   HorizontalAlignment="Center" VerticalAlignment="Center" 
+                   FontSize="24" FontWeight="Bold" Foreground="Green"/>
+    </Grid>
+</Window>

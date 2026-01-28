@@ -106,9 +106,7 @@
                         </Canvas>
                     </Viewbox>
 
-                    <TextBlock Text="Hệ thống quản lý dược phẩm thông minh, tối ưu hóa quy trình bán hàng." 
-                               Foreground="White" FontSize="14" TextAlignment="Left" Opacity="0.8" 
-                               VerticalAlignment="Bottom" TextWrapping="Wrap" Margin="0,0,20,10"/>
+                    <TextBlock Text="Hệ thống quản lý dược phẩm thông minh, tối ưu hóa quy trình bán hàng." Foreground="White" FontSize="14" TextAlignment="Left" Opacity="0.8" VerticalAlignment="Bottom" TextWrapping="Wrap" Margin="0,0,20,10"/>
                 </Grid>
             </Border>
 
@@ -124,8 +122,7 @@
                         <Path Data="M 0,0 L 10,0 L 10,10 Z" Fill="#1A5F6E" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="-10,0,0,0"/>
                     </Grid>
 
-                    <Button Content="✕" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="20" 
-                            Background="Transparent" BorderThickness="0" Foreground="#AAAAAA" FontSize="18" Click="btnExit_Click" Cursor="Hand"/>
+                    <Button Content="✕" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="20" Background="Transparent" BorderThickness="0" Foreground="#AAAAAA" FontSize="18" Click="btnExit_Click" Cursor="Hand"/>
 
                     <Grid Margin="50,60,50,40">
 
@@ -133,22 +130,26 @@
                             <TextBlock Text="Đăng Nhập" FontSize="32" FontWeight="Bold" Foreground="#333333" HorizontalAlignment="Center" Margin="0,0,0,30"/>
 
                             <UniformGrid Columns="3" Margin="0,0,0,25">
-                                <RadioButton x:Name="rbAdmin" Content="Quản lý" IsChecked="True" GroupName="Role" 
-                                             FontSize="13" FontWeight="Bold" Foreground="#2C9BB3" Cursor="Hand"/>
-                                <RadioButton x:Name="rbStaff" Content="Nhân viên" GroupName="Role" 
-                                             FontSize="13" FontWeight="Bold" Foreground="Gray" Cursor="Hand"/>
-                                <RadioButton x:Name="rbCust" Content="Khách hàng" GroupName="Role" 
-                                             FontSize="13" FontWeight="Bold" Foreground="Gray" Cursor="Hand"/>
+                                <RadioButton x:Name="rbAdmin" Content="Quản lý" GroupName="LoginRole" 
+                 FontSize="13" Foreground="Gray" Cursor="Hand"
+                 VerticalContentAlignment="Center" Checked="LoginRole_Checked"/>
+
+                                <RadioButton x:Name="rbStaff" Content="Nhân viên" GroupName="LoginRole" 
+                 FontSize="13" Foreground="Gray" Cursor="Hand"
+                 VerticalContentAlignment="Center" Checked="LoginRole_Checked"/>
+
+                                <RadioButton x:Name="rbCust" Content="Khách hàng" IsChecked="True" GroupName="LoginRole" 
+                 FontSize="13" FontWeight="Bold" Foreground="#2C9BB3" Cursor="Hand"
+                 VerticalContentAlignment="Center" Checked="LoginRole_Checked"/>
                             </UniformGrid>
 
                             <TextBlock Text="Tài khoản / Email" Foreground="#999999" FontSize="12" Margin="2,0,0,5"/>
-                            <TextBox x:Name="txtUser" Height="45" Margin="0,0,0,15" VerticalContentAlignment="Center"/>
+                            <TextBox x:Name="txtUsername" Height="45" Margin="0,0,0,15" VerticalContentAlignment="Center"/>
 
                             <TextBlock Text="Mật khẩu" Foreground="#999999" FontSize="12" Margin="2,0,0,5"/>
-                            <PasswordBox x:Name="txtPass" Height="45" Margin="0,0,0,25" VerticalContentAlignment="Center"/>
+                            <PasswordBox x:Name="txtPassword" Height="45" Margin="0,0,0,25" VerticalContentAlignment="Center"/>
 
-                            <Button x:Name="btnLogin" Content="ĐĂNG NHẬP" Height="45" Foreground="White" FontWeight="Bold" 
-                                    FontSize="14" BorderThickness="0" Click="btnLogin_Click" Cursor="Hand">
+                            <Button x:Name="btnLogin" Content="ĐĂNG NHẬP" Height="45" Foreground="White" FontWeight="Bold" FontSize="14" BorderThickness="0" Click="btnLogin_Click" Cursor="Hand">
                                 <Button.Background>
                                     <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
                                         <GradientStop Color="#4DB6AC" Offset="0"/>
@@ -169,7 +170,17 @@
                         </StackPanel>
 
                         <StackPanel x:Name="RegisterPanel" Visibility="Collapsed" VerticalAlignment="Center" Background="Transparent">
-                            <TextBlock Text="Đăng Ký" FontSize="32" FontWeight="Bold" Foreground="#333333" HorizontalAlignment="Center" Margin="0,0,0,20"/>
+                            <TextBlock Text="Đăng Ký" FontSize="32" FontWeight="Bold" Foreground="#333333" HorizontalAlignment="Center" Margin="0,0,0,15"/>
+
+                            <TextBlock Text="Bạn là ai?" Foreground="#999999" FontSize="12" Margin="2,0,0,5"/>
+                            <UniformGrid Columns="3" Margin="0,0,0,15">
+                                <RadioButton x:Name="rbRegAdmin" Content="Quản lý" GroupName="RegRole" 
+                                             FontSize="12" Foreground="Gray" VerticalContentAlignment="Center" Checked="RegRole_Checked"/>
+                                <RadioButton x:Name="rbRegStaff" Content="Nhân viên" GroupName="RegRole" 
+                                             FontSize="12" Foreground="Gray" VerticalContentAlignment="Center" Checked="RegRole_Checked"/>
+                                <RadioButton x:Name="rbRegCust" Content="Khách hàng" IsChecked="True" GroupName="RegRole" 
+                                             FontSize="12" FontWeight="Bold" Foreground="#2C9BB3" VerticalContentAlignment="Center" Checked="RegRole_Checked"/>
+                            </UniformGrid>
 
                             <TextBlock Text="Họ và tên" Foreground="#999999" FontSize="12" Margin="2,0,0,5"/>
                             <TextBox x:Name="regName" Height="40" Margin="0,0,0,10" VerticalContentAlignment="Center"/>
@@ -183,8 +194,7 @@
                             <TextBlock Text="Mật khẩu" Foreground="#999999" FontSize="12" Margin="2,0,0,5"/>
                             <PasswordBox x:Name="regPass" Height="40" Margin="0,0,0,20" VerticalContentAlignment="Center"/>
 
-                            <Button x:Name="btnDoRegister" Content="TẠO TÀI KHOẢN" Height="45" Foreground="White" FontWeight="Bold" 
-                                    FontSize="14" BorderThickness="0" Click="btnDoRegister_Click" Cursor="Hand">
+                            <Button x:Name="btnDoRegister" Content="TẠO TÀI KHOẢN" Height="45" Foreground="White" FontWeight="Bold" FontSize="14" BorderThickness="0" Click="btnDoRegister_Click" Cursor="Hand">
                                 <Button.Background>
                                     <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
                                         <GradientStop Color="#4DB6AC" Offset="0"/>
