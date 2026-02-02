@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input; // Thêm thư viện này để dùng MouseButtonEventArgs
 using LiveCharts;
 using LiveCharts.Wpf;
 
@@ -9,45 +10,52 @@ namespace Pharmacy_Manage.GUI
 {
     public partial class AdminWindow : Window
     {
-        // Khởi tạo mặc định để tránh lỗi CS8618 (Warning)
         public SeriesCollection RevenueSeries { get; set; } = new SeriesCollection();
         public string[] ChartLabels { get; set; } = Array.Empty<string>();
-        public Func<double, string> Formatter { get; set; } = x => x.ToString("N0") + " đ";
+        public Func<double, string> Formatter { get; set; } = value => value.ToString("N0");
 
         public AdminWindow()
         {
             InitializeComponent();
-            SetupChart();
-            LoadData();
+
+            // Khởi tạo dữ liệu
+            LoadChartData();
+            LoadAlertData();
+
+            // QUAN TRỌNG: Dòng này giúp Binding hoạt động
             this.DataContext = this;
         }
 
-        private void SetupChart()
+        private void LoadChartData()
         {
-            RevenueSeries = new SeriesCollection
+            RevenueSeries.Add(new LineSeries
             {
-                new LineSeries
-                {
-                    Title = "Doanh thu",
-                    Values = new ChartValues<double> { 8500000, 12450000, 9200000, 15000000, 11000000, 18200000, 14500000 },
-                    PointGeometrySize = 12,
-                    StrokeThickness = 4
-                }
-            };
-            ChartLabels = new[] { "24/01", "25/01", "26/01", "27/01", "28/01", "29/01", "30/01" };
+                Title = "Doanh thu",
+                Values = new ChartValues<double> { 8500000, 12000000, 9500000, 16000000, 11000000, 18500000, 14500000 },
+                PointGeometrySize = 10,
+                StrokeThickness = 3,
+                Stroke = (System.Windows.Media.Brush)new System.Windows.Media.BrushConverter().ConvertFrom("#2C9BB3"),
+                Fill = System.Windows.Media.Brushes.Transparent
+            });
+
+            ChartLabels = new[] { "T2", "T3", "T4", "T5", "T6", "T7", "CN" };
         }
 
-        private void LoadData()
+        private void LoadAlertData()
         {
-            // Kiểm tra dgInventory có tồn tại không trước khi gán
-            if (dgInventory != null)
+            // Dữ liệu mẫu (Khớp với Binding trong XAML: ProductName, StockQuantity, Status)
+            var alertList = new List<object>
             {
-                var list = new List<object>
-                {
-                    new { ID="MED01", Name="Panadol Extra", Category="Giảm đau", Stock=150, Price="1.500đ", Expiry="12/2026" },
-                    new { ID="MED02", Name="Augmentin 1g", Category="Kháng sinh", Stock=40, Price="15.000đ", Expiry="05/2026" }
-                };
-                dgInventory.ItemsSource = list;
+                new { ProductName = "Panadol Extra", StockQuantity = 5, Status = "SẮP HẾT" },
+                new { ProductName = "Augmentin 1g", StockQuantity = 40, Status = "HẾT HẠN" },
+                new { ProductName = "Berberin", StockQuantity = 0, Status = "HẾT HÀNG" },
+                new { ProductName = "Vitamin C", StockQuantity = 8, Status = "SẮP HẾT" }
+            };
+
+            // Đảm bảo tên biến dgAlert trùng với x:Name trong file XAML
+            if (dgAlert != null)
+            {
+                dgAlert.ItemsSource = alertList;
             }
         }
 
@@ -60,11 +68,19 @@ namespace Pharmacy_Manage.GUI
             }
         }
 
+        // Hàm xử lý kéo cửa sổ
+        private void Window_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left)
+                this.DragMove();
+        }
+
         private void Logout_Click(object sender, RoutedEventArgs e)
         {
-            if (MessageBox.Show("Bạn có muốn đăng xuất không?", "Xác nhận", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+            if (MessageBox.Show("Bạn có chắc chắn muốn đăng xuất?", "Xác nhận", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
-                new MainWindow().Show();
+                MainWindow loginWindow = new MainWindow();
+                loginWindow.Show();
                 this.Close();
             }
         }
