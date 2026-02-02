@@ -5,8 +5,72 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Pharmacy_Manage.GUI"
         mc:Ignorable="d"
-        Title="StaffWindow" Height="450" Width="800">
+        Title="Nhân viên " Height="750" Width="1250">
+    <Window.Resources>
+        <Style x:Key="MenuButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#BDC3C7"/>
+            <Setter Property="Height" Value="55"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="Padding" Value="30,0,0,0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" BorderThickness="0">
+                            <ContentPresenter HorizontalAlignment="Left" VerticalAlignment="Center" Margin="{TemplateBinding Padding}"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#34495E"/>
+                    <Setter Property="Foreground" Value="White"/>
+                </Trigger>
+                <Trigger Property="IsFocused" Value="True">
+                    <Setter Property="Background" Value="#2C9BB3"/>
+                    <Setter Property="Foreground" Value="White"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
     <Grid>
-        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="260"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Border Grid.Column="0" Background="#2C3E50">
+            <Grid>
+                <StackPanel Margin="0,30,0,0">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,40">
+                        <Border Width="45" Height="45" Background="#2C9BB3" CornerRadius="10">
+                            <TextBlock Text="P" Foreground="White" FontWeight="Bold" FontSize="24" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <TextBlock Text="STAFF PANEL" Foreground="White" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" Margin="12,0,0,0" RenderTransformOrigin="0.5,0.5"/>
+                    </StackPanel>
+
+                    <Button x:Name="BtnBanthuoc" Content="🛒  Bán thuốc" Style="{StaticResource MenuButtonStyle}" Click="Menu_Click" Tag="0"/>
+                    <Button x:Name="BtnQLthuoc" Content="💊  Quản lý thuốc" Style="{StaticResource MenuButtonStyle}" Click="Menu_Click" Tag="1"/>
+                    <Button x:Name="BtnQLkhachhang" Content="👤  Quản lý khách hàng" Style="{StaticResource MenuButtonStyle}" Click="Menu_Click" Tag="2"/>
+                    <Button x:Name="BtnBaocaothuchi" Content="📊  Báo cáo thu - chi" Style="{StaticResource MenuButtonStyle}" Click="Menu_Click" Tag="3"/>
+
+                </StackPanel>
+
+                <Button Content="🚪 Đăng xuất" VerticalAlignment="Bottom" Margin="25" Height="45" Background="#E74C3C" Foreground="White" BorderThickness="0" Click="Logout_Click" Cursor="Hand">
+                    <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="8"/>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+            </Grid>
+        </Border>
+        <Grid Grid.Column="1">
+            <ContentControl x:Name="MainContent"/>
+        </Grid>
+
+
     </Grid>
 </Window>
