@@ -1,28 +1,54 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
+using LiveCharts;
+using LiveCharts.Wpf;
 
 namespace Pharmacy_Manage.GUI
 {
     public partial class AdminWindow : Window
     {
+        // Khởi tạo mặc định để tránh lỗi CS8618 (Warning)
+        public SeriesCollection RevenueSeries { get; set; } = new SeriesCollection();
+        public string[] ChartLabels { get; set; } = Array.Empty<string>();
+        public Func<double, string> Formatter { get; set; } = x => x.ToString("N0") + " đ";
+
         public AdminWindow()
         {
             InitializeComponent();
+            SetupChart();
             LoadData();
+            this.DataContext = this;
+        }
+
+        private void SetupChart()
+        {
+            RevenueSeries = new SeriesCollection
+            {
+                new LineSeries
+                {
+                    Title = "Doanh thu",
+                    Values = new ChartValues<double> { 8500000, 12450000, 9200000, 15000000, 11000000, 18200000, 14500000 },
+                    PointGeometrySize = 12,
+                    StrokeThickness = 4
+                }
+            };
+            ChartLabels = new[] { "24/01", "25/01", "26/01", "27/01", "28/01", "29/01", "30/01" };
         }
 
         private void LoadData()
         {
-            // Tạo dữ liệu mẫu để bạn thấy bảng hiện lên đẹp
-            var list = new List<object>
+            // Kiểm tra dgInventory có tồn tại không trước khi gán
+            if (dgInventory != null)
             {
-                new { ID="MED01", Name="Panadol Extra", Category="Giảm đau", Stock=150, Price="1.500đ", Expiry="12/2026" },
-                new { ID="MED02", Name="Augmentin 1g", Category="Kháng sinh", Stock=40, Price="15.000đ", Expiry="05/2026" },
-                new { ID="MED03", Name="Berberin", Category="Tiêu hóa", Stock=12, Price="500đ", Expiry="02/2026" },
-                new { ID="MED04", Name="Vitamin C 500mg", Category="Bổ sung", Stock=200, Price="2.000đ", Expiry="10/2027" }
-            };
-            dgInventory.ItemsSource = list;
+                var list = new List<object>
+                {
+                    new { ID="MED01", Name="Panadol Extra", Category="Giảm đau", Stock=150, Price="1.500đ", Expiry="12/2026" },
+                    new { ID="MED02", Name="Augmentin 1g", Category="Kháng sinh", Stock=40, Price="15.000đ", Expiry="05/2026" }
+                };
+                dgInventory.ItemsSource = list;
+            }
         }
 
         private void Menu_Click(object sender, RoutedEventArgs e)
@@ -38,8 +64,7 @@ namespace Pharmacy_Manage.GUI
         {
             if (MessageBox.Show("Bạn có muốn đăng xuất không?", "Xác nhận", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
-                MainWindow login = new MainWindow();
-                login.Show();
+                new MainWindow().Show();
                 this.Close();
             }
         }

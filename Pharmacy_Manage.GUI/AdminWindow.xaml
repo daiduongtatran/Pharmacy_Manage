@@ -1,38 +1,11 @@
 ﻿<Window x:Class="Pharmacy_Manage.GUI.AdminWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
         Title="Quản Trị Nhà Thuốc" Height="750" Width="1250"
         WindowStartupLocation="CenterScreen" Background="#F4F7F6">
 
     <Window.Resources>
-        <Style x:Key="MenuButtonStyle" TargetType="Button">
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Foreground" Value="#BDC3C7"/>
-            <Setter Property="Height" Value="55"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="FontSize" Value="15"/>
-            <Setter Property="HorizontalContentAlignment" Value="Left"/>
-            <Setter Property="Padding" Value="30,0,0,0"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}" BorderThickness="0">
-                            <ContentPresenter HorizontalAlignment="Left" VerticalAlignment="Center" Margin="{TemplateBinding Padding}"/>
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#34495E"/>
-                    <Setter Property="Foreground" Value="White"/>
-                </Trigger>
-                <Trigger Property="IsFocused" Value="True">
-                    <Setter Property="Background" Value="#2C9BB3"/>
-                    <Setter Property="Foreground" Value="White"/>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
     </Window.Resources>
 
     <Grid>
@@ -42,29 +15,6 @@
         </Grid.ColumnDefinitions>
 
         <Border Grid.Column="0" Background="#2C3E50">
-            <Grid>
-                <StackPanel Margin="0,30,0,0">
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,40">
-                        <Border Width="45" Height="45" Background="#2C9BB3" CornerRadius="10">
-                            <TextBlock Text="P" Foreground="White" FontWeight="Bold" FontSize="24" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Border>
-                        <TextBlock Text="ADMIN PANEL" Foreground="White" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" Margin="12,0,0,0"/>
-                    </StackPanel>
-
-                    <Button Content="📊  Tổng quan" Style="{StaticResource MenuButtonStyle}" Click="Menu_Click" Tag="0"/>
-                    <Button Content="💊  Kho thuốc" Style="{StaticResource MenuButtonStyle}" Click="Menu_Click" Tag="1"/>
-                    <Button Content="👥  Nhân viên" Style="{StaticResource MenuButtonStyle}" Click="Menu_Click" Tag="2"/>
-                    <Button Content="📈  Báo cáo" Style="{StaticResource MenuButtonStyle}" Click="Menu_Click" Tag="3"/>
-                </StackPanel>
-
-                <Button Content="🚪 Đăng xuất" VerticalAlignment="Bottom" Margin="25" Height="45" Background="#E74C3C" Foreground="White" BorderThickness="0" Click="Logout_Click" Cursor="Hand">
-                    <Button.Resources>
-                        <Style TargetType="Border">
-                            <Setter Property="CornerRadius" Value="8"/>
-                        </Style>
-                    </Button.Resources>
-                </Button>
-            </Grid>
         </Border>
 
         <Grid Grid.Column="1" Margin="25">
@@ -76,64 +26,43 @@
                 </TabControl.ItemContainerStyle>
 
                 <TabItem>
-                    <StackPanel>
-                        <TextBlock Text="Thống kê nhanh" FontSize="26" FontWeight="Bold" Foreground="#333" Margin="0,0,0,25"/>
-                        <UniformGrid Columns="3">
-                            <Border Background="White" CornerRadius="12" Margin="10" Padding="25">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel>
+                            <TextBlock Text="Thống kê nhanh" FontSize="26" FontWeight="Bold" Foreground="#333" Margin="0,0,0,25"/>
+
+                            <UniformGrid Columns="3">
+                                <Border Background="White" CornerRadius="12" Margin="10" Padding="25">
+                                    <Border.Effect>
+                                        <DropShadowEffect BlurRadius="15" Opacity="0.1" ShadowDepth="2"/>
+                                    </Border.Effect>
+                                    <StackPanel>
+                                        <TextBlock Text="Doanh thu ngày" Foreground="#7F8C8D" FontSize="14"/>
+                                        <TextBlock Text="12.450.000 đ" FontSize="28" FontWeight="Bold" Foreground="#27AE60" Margin="0,10,0,0"/>
+                                    </StackPanel>
+                                </Border>
+                            </UniformGrid>
+
+                            <Border Background="White" CornerRadius="12" Margin="10,20,10,10" Padding="25">
                                 <Border.Effect>
                                     <DropShadowEffect BlurRadius="15" Opacity="0.1" ShadowDepth="2"/>
                                 </Border.Effect>
                                 <StackPanel>
-                                    <TextBlock Text="Doanh thu ngày" Foreground="#7F8C8D" FontSize="14"/>
-                                    <TextBlock Text="12.450.000 đ" FontSize="28" FontWeight="Bold" Foreground="#27AE60" Margin="0,10,0,0"/>
+                                    <TextBlock Text="Biểu đồ doanh thu 7 ngày gần nhất" FontSize="18" FontWeight="Bold" Margin="0,0,0,20" Foreground="#2C3E50"/>
+                                    <lvc:CartesianChart Height="320" Hoverable="True" Series="{Binding RevenueSeries}">
+                                        <lvc:CartesianChart.AxisX>
+                                            <lvc:Axis Title="Ngày" Labels="{Binding ChartLabels}"/>
+                                        </lvc:CartesianChart.AxisX>
+                                        <lvc:CartesianChart.AxisY>
+                                            <lvc:Axis Title="Doanh thu" LabelFormatter="{Binding Formatter}"/>
+                                        </lvc:CartesianChart.AxisY>
+                                    </lvc:CartesianChart>
                                 </StackPanel>
                             </Border>
-                            <Border Background="White" CornerRadius="12" Margin="10" Padding="25">
-                                <Border.Effect>
-                                    <DropShadowEffect BlurRadius="15" Opacity="0.1" ShadowDepth="2"/>
-                                </Border.Effect>
-                                <StackPanel>
-                                    <TextBlock Text="Sắp hết hạn" Foreground="#7F8C8D" FontSize="14"/>
-                                    <TextBlock Text="15 loại thuốc" FontSize="28" FontWeight="Bold" Foreground="#E67E22" Margin="0,10,0,0"/>
-                                </StackPanel>
-                            </Border>
-                            <Border Background="White" CornerRadius="12" Margin="10" Padding="25">
-                                <Border.Effect>
-                                    <DropShadowEffect BlurRadius="15" Opacity="0.1" ShadowDepth="2"/>
-                                </Border.Effect>
-                                <StackPanel>
-                                    <TextBlock Text="Nhân viên đang trực" Foreground="#7F8C8D" FontSize="14"/>
-                                    <TextBlock Text="04" FontSize="28" FontWeight="Bold" Foreground="#2980B9" Margin="0,10,0,0"/>
-                                </StackPanel>
-                            </Border>
-                        </UniformGrid>
-                    </StackPanel>
+                        </StackPanel>
+                    </ScrollViewer>
                 </TabItem>
 
                 <TabItem>
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="*"/>
-                        </Grid.RowDefinitions>
-                        <Grid Margin="0,0,0,20">
-                            <TextBlock Text="Danh sách kho thuốc" FontSize="26" FontWeight="Bold" Foreground="#333"/>
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                                <TextBox Width="250" Height="35" VerticalContentAlignment="Center" Margin="0,0,10,0" Tag="Tìm kiếm thuốc..."/>
-                                <Button Content="+ Nhập thuốc mới" Background="#2C9BB3" Foreground="White" Width="150" Height="35" BorderThickness="0" Cursor="Hand"/>
-                            </StackPanel>
-                        </Grid>
-                        <DataGrid Grid.Row="1" x:Name="dgInventory" AutoGenerateColumns="False" CanUserAddRows="False" Background="White" BorderThickness="0">
-                            <DataGrid.Columns>
-                                <DataGridTextColumn Header="Mã" Binding="{Binding ID}" Width="80"/>
-                                <DataGridTextColumn Header="Tên thuốc" Binding="{Binding Name}" Width="*"/>
-                                <DataGridTextColumn Header="Danh mục" Binding="{Binding Category}" Width="150"/>
-                                <DataGridTextColumn Header="Tồn kho" Binding="{Binding Stock}" Width="100"/>
-                                <DataGridTextColumn Header="Đơn giá" Binding="{Binding Price}" Width="120"/>
-                                <DataGridTextColumn Header="Hạn sử dụng" Binding="{Binding Expiry}" Width="150"/>
-                            </DataGrid.Columns>
-                        </DataGrid>
-                    </Grid>
                 </TabItem>
             </TabControl>
         </Grid>
