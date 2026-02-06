@@ -52,7 +52,6 @@ namespace Pharmacy_Manage.GUI
                 new { ProductName = "Vitamin C", StockQuantity = 8, Status = "SẮP HẾT" }
             };
 
-            // Đảm bảo tên biến dgAlert trùng với x:Name trong file XAML
             if (dgAlert != null)
             {
                 dgAlert.ItemsSource = alertList;
