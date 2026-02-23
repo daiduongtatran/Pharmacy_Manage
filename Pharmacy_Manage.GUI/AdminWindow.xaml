@@ -116,12 +116,16 @@
                                             <TextBlock Text="14.500.000 đ" FontSize="26" FontWeight="Bold" Foreground="#2D3748"/>
                                         </StackPanel>
                                     </Border>
-                                    <Border Background="White" CornerRadius="15" Margin="7.5,0,7.5,0" Height="120" Padding="20">
-                                        <StackPanel VerticalAlignment="Center">
-                                            <TextBlock Text="Cần xử lý gấp" Foreground="#A0AEC0"/>
-                                            <TextBlock Text="05 Thuốc" FontSize="26" FontWeight="Bold" Foreground="#E74C3C"/>
-                                        </StackPanel>
-                                    </Border>
+                                    <Border Background="White" CornerRadius="12" Margin="10,0,10,0" Height="120" Padding="20"
+        Cursor="Hand" MouseLeftButtonUp="CardUrgent_Click" ToolTip="Click để xem chi tiết bóc tách">
+    <Border.Effect>
+        <DropShadowEffect BlurRadius="15" Opacity="0.1" ShadowDepth="2"/>
+    </Border.Effect>
+    <StackPanel VerticalAlignment="Center">
+        <TextBlock Text="Cần xử lý gấp" Foreground="#A0AEC0" FontSize="14"/>
+        <TextBlock x:Name="txtUrgentTotal" Text="0 Thuốc" FontSize="26" FontWeight="Bold" Foreground="#E74C3C" Margin="0,5,0,0"/>
+    </StackPanel>
+</Border>
                                     <Border Background="White" CornerRadius="15" Margin="15,0,0,0" Height="120" Padding="20">
                                         <StackPanel VerticalAlignment="Center">
                                             <TextBlock Text="Đơn hàng mới" Foreground="#A0AEC0"/>
