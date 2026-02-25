@@ -23,12 +23,11 @@
                     <ControlTemplate TargetType="Button">
                         <Border x:Name="border" Background="{TemplateBinding Background}" 
                                 BorderThickness="4,0,0,0" BorderBrush="Transparent">
-                            <ContentPresenter VerticalAlignment="Center" Margin="{TemplateBinding Padding}"/>
+                            <ContentPresenter VerticalAlignment="Center"/>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="border" Property="Background" Value="#2D3748"/>
-                                <Setter TargetName="border" Property="BorderBrush" Value="#2C9BB3"/>
+                                <Setter Property="Background" Value="#2D3748"/>
                                 <Setter Property="Foreground" Value="White"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
@@ -36,150 +35,125 @@
                 </Setter.Value>
             </Setter>
         </Style>
-
-        <Style TargetType="DataGridColumnHeader">
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Foreground" Value="#718096"/>
-            <Setter Property="FontWeight" Value="Bold"/>
-            <Setter Property="Padding" Value="10,0"/>
-            <Setter Property="Height" Value="40"/>
-            <Setter Property="BorderThickness" Value="0,0,0,1"/>
-            <Setter Property="BorderBrush" Value="#E2E8F0"/>
-        </Style>
     </Window.Resources>
 
-    <Border Background="#F4F7F6" CornerRadius="20">
+    <Border Background="#F7FAFC" CornerRadius="20" BorderBrush="#E2E8F0" BorderThickness="1">
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="260"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <Border Grid.Column="0" Background="#1A2B3C" CornerRadius="20,0,0,20">
-                <Grid>
-                    <StackPanel Margin="0,30,0,0">
-                        <StackPanel Orientation="Horizontal" Margin="30,0,0,50">
-                            <TextBlock Text="Medi" Foreground="White" FontSize="24" FontWeight="Bold"/>
-                            <TextBlock Text="Track" Foreground="#2C9BB3" FontSize="24" FontWeight="Bold"/>
-                        </StackPanel>
+            <Border Grid.Column="0" Background="#1A202C" CornerRadius="20,0,0,20">
+                <StackPanel Margin="0,40,0,0">
+                    <TextBlock Text="PHARMACY PRO" Foreground="White" FontSize="22" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,50"/>
 
-                        <Button Content="📊  Tổng quan" Style="{StaticResource SidebarBtnStyle}" Tag="0" Click="Menu_Click"/>
-                        <Button Content="💊  Kho thuốc" Style="{StaticResource SidebarBtnStyle}" Tag="1" Click="Menu_Click"/>
-                        <Button Content="🧾  Hóa đơn" Style="{StaticResource SidebarBtnStyle}" Tag="2" Click="Menu_Click"/>
-                        <Button Content="👥  Nhân viên" Style="{StaticResource SidebarBtnStyle}" Tag="3" Click="Menu_Click"/>
-                    </StackPanel>
+                    <Button Style="{StaticResource SidebarBtnStyle}" Content="🏠  Trang chủ" Tag="0" Click="Menu_Click"/>
+                    <Button Style="{StaticResource SidebarBtnStyle}" Content="📦  Kho thuốc" Tag="1" Click="Menu_Click"/>
+                    <Button Style="{StaticResource SidebarBtnStyle}" Content="🧾  Hóa đơn" Tag="2" Click="Menu_Click"/>
+                    <Button Style="{StaticResource SidebarBtnStyle}" Content="👥  Nhân viên" Tag="3" Click="Menu_Click"/>
 
-                    <Button VerticalAlignment="Bottom" Margin="20" Background="Transparent" BorderThickness="0" Click="Logout_Click" Cursor="Hand">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="🚪" Foreground="#E74C3C" FontSize="18"/>
-                            <TextBlock Text="Đăng xuất" Foreground="#A0AEC0" Margin="15,0,0,0" VerticalAlignment="Center" FontWeight="SemiBold"/>
-                        </StackPanel>
-                    </Button>
-                </Grid>
+                    <Button Style="{StaticResource SidebarBtnStyle}" Content="🚪  Đăng xuất" Margin="0,300,0,0" Click="Logout_Click" Foreground="#F56565"/>
+                </StackPanel>
             </Border>
 
             <Grid Grid.Column="1">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="80"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-
-                <Grid Grid.Row="0" Margin="30,20,30,0">
-                    <TextBlock Text="Dashboard Quản Lý" VerticalAlignment="Center" FontSize="24" FontWeight="Bold" Foreground="#2D3748"/>
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                        <Border Background="White" CornerRadius="25" Height="50" Padding="5,0,15,0">
-                            <StackPanel Orientation="Horizontal">
-                                <Ellipse Width="40" Height="40" Margin="5,0,10,0" Fill="#2C9BB3"/>
-                                <StackPanel VerticalAlignment="Center">
-                                    <TextBlock Text="Admin" FontWeight="Bold" Foreground="#2D3748"/>
-                                    <TextBlock Text="Quản trị viên" FontSize="12" Foreground="#718096"/>
-                                </StackPanel>
-                            </StackPanel>
-                        </Border>
-                    </StackPanel>
-                </Grid>
-
-                <TabControl x:Name="MainTabControl" Grid.Row="1" Margin="30,20,30,30" Background="Transparent" BorderThickness="0">
-                    <TabControl.ItemContainerStyle>
-                        <Style TargetType="TabItem">
-                            <Setter Property="Visibility" Value="Collapsed"/>
-                        </Style>
-                    </TabControl.ItemContainerStyle>
+                <TabControl x:Name="MainTabControl" Background="Transparent" BorderThickness="0">
+                    <TabControl.Template>
+                        <ControlTemplate TargetType="TabControl">
+                            <ContentPresenter ContentSource="SelectedContent"/>
+                        </ControlTemplate>
+                    </TabControl.Template>
 
                     <TabItem>
-                        <ScrollViewer VerticalScrollBarVisibility="Hidden">
-                            <StackPanel>
-                                <UniformGrid Columns="3" Margin="0,0,0,25">
-                                    <Border Background="White" CornerRadius="15" Margin="0,0,15,0" Height="120" Padding="20">
-                                        <StackPanel VerticalAlignment="Center">
-                                            <TextBlock Text="Doanh thu ngày" Foreground="#A0AEC0"/>
-                                            <TextBlock Text="14.500.000 đ" FontSize="26" FontWeight="Bold" Foreground="#2D3748"/>
-                                        </StackPanel>
-                                    </Border>
-                                    <Border Background="White" CornerRadius="12" Margin="10,0,10,0" Height="120" Padding="20"
-        Cursor="Hand" MouseLeftButtonUp="CardUrgent_Click" ToolTip="Click để xem chi tiết bóc tách">
-    <Border.Effect>
-        <DropShadowEffect BlurRadius="15" Opacity="0.1" ShadowDepth="2"/>
-    </Border.Effect>
-    <StackPanel VerticalAlignment="Center">
-        <TextBlock Text="Cần xử lý gấp" Foreground="#A0AEC0" FontSize="14"/>
-        <TextBlock x:Name="txtUrgentTotal" Text="0 Thuốc" FontSize="26" FontWeight="Bold" Foreground="#E74C3C" Margin="0,5,0,0"/>
-    </StackPanel>
-</Border>
-                                    <Border Background="White" CornerRadius="15" Margin="15,0,0,0" Height="120" Padding="20">
-                                        <StackPanel VerticalAlignment="Center">
-                                            <TextBlock Text="Đơn hàng mới" Foreground="#A0AEC0"/>
-                                            <TextBlock Text="42 Đơn" FontSize="26" FontWeight="Bold" Foreground="#2C9BB3"/>
-                                        </StackPanel>
-                                    </Border>
-                                </UniformGrid>
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <StackPanel Margin="30">
+                                <TextBlock Text="Tổng quan hệ thống" FontSize="28" FontWeight="Bold" Foreground="#2D3748" Margin="0,0,0,25"/>
 
-                                <Grid Height="400">
+                                <Grid Margin="0,0,0,30">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="1.5*"/>
+                                        <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
 
-                                    <Border Grid.Column="0" Background="White" CornerRadius="15" Margin="0,0,15,0" Padding="25">
+                                    <Border Grid.Column="0" Background="#FFF5F5" CornerRadius="15" Padding="25" Margin="0,0,10,0" Cursor="Hand" MouseDown="CardUrgent_Click">
                                         <StackPanel>
-                                            <TextBlock Text="Biểu đồ doanh thu" FontSize="18" FontWeight="Bold" Foreground="#2D3748" Margin="0,0,0,20"/>
-                                            <lvc:CartesianChart Height="300" Series="{Binding RevenueSeries}" LegendLocation="None">
-                                                <lvc:CartesianChart.AxisX>
-                                                    <lvc:Axis Labels="{Binding ChartLabels}"/>
-                                                </lvc:CartesianChart.AxisX>
-                                                <lvc:CartesianChart.AxisY>
-                                                    <lvc:Axis LabelFormatter="{Binding Formatter}"/>
-                                                </lvc:CartesianChart.AxisY>
-                                            </lvc:CartesianChart>
+                                            <TextBlock Text="Cần xử lý gấp" Foreground="#C53030" FontSize="16" FontWeight="SemiBold"/>
+                                            <TextBlock x:Name="txtUrgentTotal" Text="0 Thuốc" FontSize="32" FontWeight="Bold" Foreground="#E53E3E" Margin="0,10"/>
+                                            <TextBlock Text="Bao gồm thuốc hết hạn &amp; tồn thấp" Foreground="#F56565"/>
                                         </StackPanel>
                                     </Border>
 
-                                    <Border Grid.Column="1" Background="White" CornerRadius="15" Margin="15,0,0,0" Padding="20">
-                                        <DockPanel>
-                                            <TextBlock DockPanel.Dock="Top" Text="Sản phẩm cần lưu ý" FontSize="18" FontWeight="Bold" Foreground="#2D3748" Margin="0,0,0,15"/>
-
-                                            <DataGrid x:Name="dgAlert" AutoGenerateColumns="False" CanUserAddRows="False" Background="White" BorderThickness="0" RowHeight="40" GridLinesVisibility="Horizontal">
-                                                <DataGrid.Columns>
-                                                    <DataGridTextColumn Header="Tên thuốc" Binding="{Binding ProductName}" Width="*"/>
-                                                    <DataGridTextColumn Header="Tồn" Binding="{Binding StockQuantity}" Width="50"/>
-                                                    <DataGridTemplateColumn Header="Trạng thái" Width="100">
-                                                        <DataGridTemplateColumn.CellTemplate>
-                                                            <DataTemplate>
-                                                                <TextBlock Text="{Binding Status}" Foreground="#E74C3C" FontWeight="Bold"/>
-                                                            </DataTemplate>
-                                                        </DataGridTemplateColumn.CellTemplate>
-                                                    </DataGridTemplateColumn>
-                                                </DataGrid.Columns>
-                                            </DataGrid>
-                                        </DockPanel>
+                                    <Border Grid.Column="1" Background="#E6FFFA" CornerRadius="15" Padding="25" Margin="10,0,0,0">
+                                        <StackPanel>
+                                            <TextBlock Text="Doanh thu hôm nay" Foreground="#2C7A7B" FontSize="16" FontWeight="SemiBold"/>
+                                            <TextBlock Text="12.500.000 đ" FontSize="32" FontWeight="Bold" Foreground="#319795" Margin="0,10"/>
+                                            <TextBlock Text="+15% so với hôm qua" Foreground="#38B2AC"/>
+                                        </StackPanel>
                                     </Border>
                                 </Grid>
+
+                                <Border Background="White" CornerRadius="15" Padding="20">
+                                    <StackPanel>
+                                        <TextBlock Text="Biểu đồ doanh thu tuần" FontSize="18" FontWeight="Bold" Margin="0,0,0,20"/>
+                                        <lvc:CartesianChart Height="300" Series="{Binding RevenueSeries}">
+                                            <lvc:CartesianChart.AxisX>
+                                                <lvc:Axis Title="Ngày" Labels="{Binding ChartLabels}"/>
+                                            </lvc:CartesianChart.AxisX>
+                                        </lvc:CartesianChart>
+                                    </StackPanel>
+                                </Border>
                             </StackPanel>
                         </ScrollViewer>
                     </TabItem>
 
-                    <TabItem Header="Kho thuốc">
-                        <TextBlock Text="Nội dung kho thuốc"/>
+                    <TabItem>
+                        <Grid Margin="30">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,20">
+                                <TextBlock Text="Quản lý kho thuốc" FontSize="28" FontWeight="Bold" Foreground="#2D3748" VerticalAlignment="Center"/>
+                                <Button Content="+ Thêm thuốc mới" Click="BtnAdd_Click" Background="#48BB78" Foreground="White" Padding="20,10" Margin="30,0,0,0" FontWeight="Bold" BorderThickness="0">
+                                    <Button.Resources>
+                                        <Style TargetType="Border">
+                                            <Setter Property="CornerRadius" Value="8"/>
+                                        </Style>
+                                    </Button.Resources>
+                                </Button>
+                                <Button Content="✏️ Sửa" Click="BtnUpdate_Click" Background="#4299E1" Foreground="White" Padding="20,10" Margin="10,0,0,0" BorderThickness="0">
+                                    <Button.Resources>
+                                        <Style TargetType="Border">
+                                            <Setter Property="CornerRadius" Value="8"/>
+                                        </Style>
+                                    </Button.Resources>
+                                </Button>
+                                <Button Content="🗑️ Xóa" Click="BtnDelete_Click" Background="#F56565" Foreground="White" Padding="20,10" Margin="10,0,0,0" BorderThickness="0">
+                                    <Button.Resources>
+                                        <Style TargetType="Border">
+                                            <Setter Property="CornerRadius" Value="8"/>
+                                        </Style>
+                                    </Button.Resources>
+                                </Button>
+                            </StackPanel>
+
+                            <Border Grid.Row="1" Background="White" CornerRadius="15" Padding="10">
+                                <DataGrid x:Name="dgSanPham" AutoGenerateColumns="False" CanUserAddRows="False" 
+                                          IsReadOnly="True" Background="White" BorderThickness="0" 
+                                          FontSize="14" RowHeight="45" GridLinesVisibility="Horizontal">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Mã" Binding="{Binding MaSP}" Width="60"/>
+                                        <DataGridTextColumn Header="Tên sản phẩm" Binding="{Binding TenSP}" Width="*"/>
+                                        <DataGridTextColumn Header="Tồn kho" Binding="{Binding TonKho}" Width="100"/>
+                                        <DataGridTextColumn Header="Hạn dùng" Binding="{Binding HanDung, StringFormat='dd/MM/yyyy'}" Width="150"/>
+                                        <DataGridTextColumn Header="Ngày nhập" Binding="{Binding NgayNhap, StringFormat='dd/MM/yyyy'}" Width="150"/>
+                                        <DataGridTextColumn Header="Đơn vị" Binding="{Binding DonVi}" Width="100"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </Border>
+                        </Grid>
                     </TabItem>
                 </TabControl>
             </Grid>

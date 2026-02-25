@@ -6,37 +6,35 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using LiveCharts;
 using LiveCharts.Wpf;
-using Pharmacy_Manage.BUS; // Nhớ check namespace này
+using Pharmacy_Manage.BUS;
 
 namespace Pharmacy_Manage.GUI
 {
     public partial class AdminWindow : Window
     {
-        // 1. Khai báo thuộc tính cho biểu đồ
         public SeriesCollection RevenueSeries { get; set; } = new SeriesCollection();
         public string[] ChartLabels { get; set; } = Array.Empty<string>();
-        public Func<double, string> Formatter { get; set; } = value => value.ToString("N0") + " đ";
 
-        // 2. Khai báo biến lưu trữ số liệu bóc tách
-        private int _countExpiring = 0; // Số thuốc sắp hết hạn
-        private int _countLowStock = 0; // Số thuốc tồn kho thấp
+        // Khai báo biến thống kê (Sửa lỗi CS0103)
+        private int _countExpiring = 0;
+        private int _countLowStock = 0;
 
-        // Khai báo lớp BUS
         SanPhamBUS spBUS = new SanPhamBUS();
 
         public AdminWindow()
         {
             InitializeComponent();
-
-            // Chạy các hàm khởi tạo
-            LoadChartData();
-            LoadAlertData();
-            LoadUrgentData(); // Lấy số liệu thật từ SQL
-
+            LoadDashboard();
+            LoadAllProducts();
             this.DataContext = this;
         }
 
-        // HÀM LẤY DỮ LIỆU ĐỘNG TỪ DATABASE
+        private void LoadAllProducts()
+        {
+            try { dgSanPham.ItemsSource = spBUS.GetAll().DefaultView; }
+            catch (Exception ex) { MessageBox.Show("Lỗi tải kho: " + ex.Message); }
+        }
+
         private void LoadUrgentData()
         {
             try
@@ -44,61 +42,75 @@ namespace Pharmacy_Manage.GUI
                 DataTable dt = spBUS.GetUrgentStats();
                 if (dt != null && dt.Rows.Count > 0)
                 {
-                    // 1. Dùng đúng tên cột "TongCanXuLy" từ SQL của bạn
                     txtUrgentTotal.Text = dt.Rows[0]["TongCanXuLy"].ToString() + " Thuốc";
-
-                    // 2. Dùng đúng tên cột "SoLuongSapHetHan" và "SoLuongTonThap"
                     _countExpiring = Convert.ToInt32(dt.Rows[0]["SoLuongSapHetHan"]);
                     _countLowStock = Convert.ToInt32(dt.Rows[0]["SoLuongTonThap"]);
                 }
             }
-            catch (Exception ex)
+            catch { }
+        }
+
+        #region CRUD QUA DIALOG
+        private void BtnAdd_Click(object sender, RoutedEventArgs e)
+        {
+            ProductDialog dialog = new ProductDialog();
+            dialog.Owner = this;
+            if (dialog.ShowDialog() == true)
             {
-                txtUrgentTotal.Text = "0 Thuốc";
-                // MessageBox.Show("Lỗi: " + ex.Message); // Mở dòng này nếu muốn xem lỗi chi tiết
+                RefreshSystem();
             }
         }
 
-        // SỰ KIỆN KHI CLICK VÀO CARD "CẦN XỬ LÝ GẤP"
-        private void CardUrgent_Click(object sender, MouseButtonEventArgs e)
+        private void BtnUpdate_Click(object sender, RoutedEventArgs e)
         {
-            string detail = "📊 CHI TIẾT CÁC MẶT HÀNG CẦN XỬ LÝ:\n\n" +
-                            $"• Thuốc sắp hết hạn (< 6 tháng): {_countExpiring} loại\n" +
-                            $"• Thuốc có tồn kho thấp (< 50): {_countLowStock} loại\n\n" +
-                            "Hệ thống khuyến nghị bạn nên nhập thêm hàng hoặc kiểm tra hạn dùng.";
-
-            MessageBox.Show(detail, "Thông tin kho hàng", MessageBoxButton.OK, MessageBoxImage.Warning);
-        }
-        // --- CÁC HÀM CŨ CỦA BẠN (GIỮ NGUYÊN) ---
-        private void LoadChartData()
-        {
-            RevenueSeries.Add(new LineSeries
+            if (dgSanPham.SelectedItem is DataRowView row)
             {
-                Title = "Doanh thu",
-                Values = new ChartValues<double> { 8500000, 12000000, 9500000, 16000000, 11000000, 18500000, 14500000 },
-                PointGeometrySize = 10,
-                StrokeThickness = 3,
-                Stroke = (System.Windows.Media.Brush)new System.Windows.Media.BrushConverter().ConvertFrom("#2C9BB3"),
-                Fill = System.Windows.Media.Brushes.Transparent
-            });
-            ChartLabels = new[] { "T2", "T3", "T4", "T5", "T6", "T7", "CN" };
+                ProductDialog dialog = new ProductDialog(row);
+                dialog.Owner = this;
+                if (dialog.ShowDialog() == true)
+                {
+                    RefreshSystem();
+                }
+            }
+            else { MessageBox.Show("Vui lòng chọn thuốc cần sửa!"); }
         }
 
-        private void LoadAlertData()
+        private void BtnDelete_Click(object sender, RoutedEventArgs e)
         {
-            var alertList = new List<object>
+            if (dgSanPham.SelectedItem is DataRowView row)
             {
-                new { ProductName = "Panadol Extra", StockQuantity = 5, Status = "SẮP HẾT" },
-                new { ProductName = "Augmentin 1g", StockQuantity = 40, Status = "HẾT HẠN" },
-                new { ProductName = "Berberin", StockQuantity = 0, Status = "HẾT HÀNG" }
-            };
-            if (dgAlert != null) dgAlert.ItemsSource = alertList;
+                if (MessageBox.Show("Xóa sản phẩm này?", "Xác nhận", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                {
+                    if (spBUS.Remove(Convert.ToInt32(row["MaSP"]))) RefreshSystem();
+                }
+            }
         }
 
+        private void RefreshSystem()
+        {
+            LoadAllProducts();
+            LoadUrgentData();
+        }
+        #endregion
+
+        #region UI LOGIC
         private void Menu_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button btn && btn.Tag != null)
                 MainTabControl.SelectedIndex = int.Parse(btn.Tag.ToString());
+        }
+
+        private void LoadDashboard()
+        {
+            LoadUrgentData();
+            RevenueSeries.Add(new LineSeries
+            {
+                Title = "Doanh thu",
+                Values = new ChartValues<double> { 850, 1200, 950, 1600, 1100, 1850, 1450 },
+                Stroke = System.Windows.Media.Brushes.Teal,
+                Fill = System.Windows.Media.Brushes.Transparent
+            });
+            ChartLabels = new[] { "T2", "T3", "T4", "T5", "T6", "T7", "CN" };
         }
 
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)
@@ -106,12 +118,12 @@ namespace Pharmacy_Manage.GUI
             if (e.ChangedButton == MouseButton.Left) this.DragMove();
         }
 
-        private void Logout_Click(object sender, RoutedEventArgs e)
-        {
-            if (MessageBox.Show("Xác nhận đăng xuất?", "Thông báo", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
-            {
-                this.Close(); // Hoặc mở lại màn hình Login
-            }
-        }
+        private void Logout_Click(object sender, RoutedEventArgs e) => this.Close();
+
+        private void CardUrgent_Click(object sender, MouseButtonEventArgs e) => MainTabControl.SelectedIndex = 1;
+
+        // Xóa nội dung hàm này vì không dùng TextBox ở màn hình chính nữa
+        private void dgSanPham_SelectionChanged(object sender, SelectionChangedEventArgs e) { }
+        #endregion
     }
 }
