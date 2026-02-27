@@ -1,16 +1,292 @@
 ﻿<UserControl x:Class="Pharmacy_Manage.GUI.Banthuocview"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:Pharmacy_Manage.GUI"
-             mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    <Grid Background="White">
-        <TextBlock Text="MÀN HÌNH BÁN THUỐC"
-                   FontSize="28"
-                   FontWeight="Bold"
-                   HorizontalAlignment="Center"
-                   VerticalAlignment="Center"/>
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             d:DesignHeight="700"
+             d:DesignWidth="1000">
+
+    <Grid Margin="15">
+
+        <!-- Chia 3 dòng -->
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- ================= TÌM KIẾM ================= -->
+        <Border Grid.Row="0"
+                Background="White"
+                CornerRadius="12"
+                Padding="20">
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel>
+                    <TextBlock FontWeight="Bold"
+                               Margin="0,0,0,5"
+                               FontStyle="Italic">
+                        Tìm kiếm thuốc (tên, mã thuốc)
+                    </TextBlock>
+
+                    <TextBox x:Name="txtSearch"
+                             Height="35"
+                             TextChanged="txtSearch_TextChanged"/>
+                </StackPanel>
+
+                <Button Content="🔍"
+                        Grid.Column="1"
+                        Width="110"
+                        Height="35"
+                        Margin="10,20,0,0"
+                        Click="BtnSearch_Click"
+                        Background="#2196F3"
+                        Foreground="White"
+                        FontWeight="Bold"
+                        BorderThickness="0"
+                        Cursor="Hand" FontSize="18"/>
+            </Grid>
+
+            <Border.Effect>
+                <DropShadowEffect Color="Black"
+                                  BlurRadius="15"
+                                  ShadowDepth="3"
+                                  Opacity="0.15"/>
+            </Border.Effect>
+        </Border>
+
+        <!-- ================= TAB CONTROL ================= -->
+        <Border Grid.Row="1"
+                Margin="0,15,0,0"
+                BorderThickness="1"
+                CornerRadius="10">
+
+            <TabControl SelectionChanged="TabControl_SelectionChanged" Background="{x:Null}" BorderBrush="{x:Null}">
+
+                <!-- ================= KHO THUỐC ================= -->
+                <TabItem Header="Kho thuốc bán">
+
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+
+                        <ItemsControl x:Name="icSanPham" BorderBrush="Gray" Background="White">
+
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+
+                                    <Border BorderBrush="#DDD"
+                                            BorderThickness="1"
+                                            CornerRadius="10"
+                                            Margin="10"
+                                            Padding="15"
+                                            Background="White">
+
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="3*"/>
+                                                <ColumnDefinition Width="2*"/>
+                                                <ColumnDefinition Width="1.5*"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <!-- THÔNG TIN -->
+                                            <StackPanel>
+                                                <TextBlock Text="{Binding TenSP}"
+                                                           FontSize="16"
+                                                           FontWeight="Bold"/>
+
+                                                <TextBlock Text="{Binding GiaBan, StringFormat=Giá: {0:N0} VNĐ}"/>
+
+                                                <TextBlock Text="{Binding TonKho, StringFormat=Tồn kho: {0}}"/>
+
+                                                <TextBlock>
+                                                    <TextBlock.Text>
+                                                        <MultiBinding StringFormat="Ghi chú: {0}">
+                                                            <Binding Path="GhiChu"
+                                                                     TargetNullValue="Không"/>
+                                                        </MultiBinding>
+                                                    </TextBlock.Text>
+                                                </TextBlock>
+                                            </StackPanel>
+
+                                            <!-- ====== SỐ LƯỢNG  ====== -->
+                                            <StackPanel Grid.Column="1"
+                                                Orientation="Horizontal"
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center">
+
+                                                <Button Content="−"
+                                                    Width="35"
+                                                    Height="35"
+                                                    FontSize="16"
+                                                    FontWeight="Bold"
+                                                    Background="#EEEEEE"
+                                                    BorderBrush="#CCCCCC"
+                                                    BorderThickness="1"
+                                                    Click="GiamSoLuong_Click"
+                                                    Tag="{Binding ElementName=txtSoLuong}"/>
+
+                                                <TextBox x:Name="txtSoLuong"
+                                                    Width="50"
+                                                    Height="35"
+                                                    Text="1"
+                                                    Margin="5,0"
+                                                    HorizontalContentAlignment="Center"
+                                                    VerticalContentAlignment="Center"
+                                                    PreviewTextInput="SoLuong_PreviewTextInput"
+                                                    LostFocus="SoLuong_LostFocus"
+                                                    BorderBrush="#CCCCCC"
+                                                    BorderThickness="1"/>
+
+                                                <!-- NÚT TĂNG -->
+                                                <Button Content="+"
+                                                    Width="35"
+                                                    Height="35"
+                                                    FontSize="16"
+                                                    FontWeight="Bold"
+                                                    Background="#EEEEEE"
+                                                    BorderBrush="#CCCCCC"
+                                                    BorderThickness="1"
+                                                    Click="TangSoLuong_Click"
+                                                    Tag="{Binding ElementName=txtSoLuong}"/>
+
+                                            </StackPanel>
+                                            <!-- ====== NÚT MUA ====== -->
+                                            <Button Grid.Column="2"
+                                                    Content="🛒 Mua"
+                                                    Width="110"
+                                                    Height="40"
+                                                    VerticalAlignment="Center"
+                                                    Click="Mua_Click"
+                                                    Tag="{Binding ElementName=txtSoLuong}"
+                                                    Background="#2E7D32"
+                                                    Foreground="White"
+                                                    FontWeight="Bold"
+                                                    BorderThickness="0"
+                                                    Cursor="Hand"/>
+                                            
+
+                                        </Grid>
+
+                                        <Border.Effect>
+                                            <DropShadowEffect BlurRadius="8"
+                                                              ShadowDepth="2"
+                                                              Opacity="0.1"/>
+                                        </Border.Effect>
+
+                                    </Border>
+
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+
+                        </ItemsControl>
+
+                    </ScrollViewer>
+
+                </TabItem>
+
+                <!-- ================= GIỎ HÀNG ================= -->
+                <TabItem Header="Giỏ hàng">
+
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+
+                        <ItemsControl x:Name="icGioHang" Background="White">
+
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+
+                                    <Border BorderBrush="#DDD"
+                                            BorderThickness="1"
+                                            CornerRadius="10"
+                                            Margin="10"
+                                            Padding="15">
+
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="3*"/>
+                                                <ColumnDefinition Width="1*"/>
+                                                <ColumnDefinition Width="2*"/>
+                                                <ColumnDefinition Width="2*"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <TextBlock Text="{Binding TenSP}"
+                                                       FontWeight="Bold"
+                                                       VerticalAlignment="Center"/>
+
+                                            <TextBlock Grid.Column="1"
+                                                       Text="{Binding SoLuong}"
+                                                       HorizontalAlignment="Center"
+                                                       VerticalAlignment="Center"/>
+
+                                            <TextBlock Grid.Column="2"
+                                                       Text="{Binding DonGia, StringFormat={}{0:N0} VNĐ}"
+                                                       HorizontalAlignment="Center"
+                                                       VerticalAlignment="Center"/>
+
+                                            <TextBlock Grid.Column="3"
+                                                       Text="{Binding ThanhTien, StringFormat={}{0:N0} VNĐ}"
+                                                       HorizontalAlignment="Center"
+                                                       VerticalAlignment="Center"
+                                                       FontWeight="Bold"/>
+                                        </Grid>
+
+                                    </Border>
+
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+
+                        </ItemsControl>
+
+                    </ScrollViewer>
+
+                </TabItem>
+
+            </TabControl>
+
+        </Border>
+
+        <!-- ================= TỔNG TIỀN ================= -->
+        <Border Grid.Row="2"
+                Padding="10"
+                Margin="0,15,0,0">
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock x:Name="txtTongTien"
+                           Text="Tổng tiền: 0 VNĐ"
+                           FontSize="16"
+                           FontWeight="Bold"
+                           VerticalAlignment="Center" Margin="631,0,0,0"/>
+
+                <Button x:Name="btnAction"
+                Content="Xóa giỏ 🗑"
+                Grid.Column="1"
+                Width="120"
+                Height="35"
+                Click="btnAction_Click"
+                Background="#FFF9BFBF"
+                Foreground="#E53935"
+                BorderBrush="#E53935"
+                BorderThickness="1.5"
+                FontWeight="Bold"
+                Cursor="Hand"/>
+            </Grid>
+
+        </Border>
+
     </Grid>
 </UserControl>
