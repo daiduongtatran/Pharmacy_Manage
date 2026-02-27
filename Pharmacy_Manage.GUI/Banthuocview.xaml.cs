@@ -255,7 +255,7 @@ namespace Pharmacy_Manage.GUI
         // ================= BUTTON ACTION =================
         private void btnAction_Click(object sender, RoutedEventArgs e)
         {
-            if (btnAction.Content.ToString() == "Xóa giỏ")
+            if (btnAction.Content.ToString() == "Xóa giỏ 🗑")
             {
                 gioHangTable.Clear();
                 CapNhatTongTien();
