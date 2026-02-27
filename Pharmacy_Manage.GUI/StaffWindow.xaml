@@ -5,72 +5,130 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Pharmacy_Manage.GUI"
         mc:Ignorable="d"
-        Title="Nhân viên " Height="750" Width="1250">
+        Title="Nhân Viên Bán Hàng - MediTrack" Height="768" Width="1366"
+        WindowStartupLocation="CenterScreen" WindowStyle="None" 
+        AllowsTransparency="True" Background="Transparent"
+        MouseDown="Window_MouseDown">
+
     <Window.Resources>
-        <Style x:Key="MenuButtonStyle" TargetType="Button">
+        <Style x:Key="SidebarBtnStyle" TargetType="Button">
             <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Foreground" Value="#BDC3C7"/>
+            <Setter Property="Foreground" Value="#A0AEC0"/>
             <Setter Property="Height" Value="55"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="FontSize" Value="15"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="HorizontalContentAlignment" Value="Left"/>
-            <Setter Property="Padding" Value="30,0,0,0"/>
+            <Setter Property="Padding" Value="25,0,0,0"/>
+            <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}" BorderThickness="0">
-                            <ContentPresenter HorizontalAlignment="Left" VerticalAlignment="Center" Margin="{TemplateBinding Padding}"/>
+                        <Border x:Name="border" Background="{TemplateBinding Background}" 
+                                BorderThickness="4,0,0,0" BorderBrush="Transparent">
+                            <ContentPresenter VerticalAlignment="Center" Margin="{TemplateBinding Padding}"/>
                         </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#2D3748"/>
+                                <Setter TargetName="border" Property="BorderBrush" Value="#2C9BB3"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#34495E"/>
-                    <Setter Property="Foreground" Value="White"/>
-                </Trigger>
-                <Trigger Property="IsFocused" Value="True">
-                    <Setter Property="Background" Value="#2C9BB3"/>
-                    <Setter Property="Foreground" Value="White"/>
-                </Trigger>
-            </Style.Triggers>
         </Style>
     </Window.Resources>
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="260"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
-        <Border Grid.Column="0" Background="#2C3E50">
-            <Grid>
-                <StackPanel Margin="0,30,0,0">
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,40">
-                        <Border Width="45" Height="45" Background="#2C9BB3" CornerRadius="10">
-                            <TextBlock Text="P" Foreground="White" FontWeight="Bold" FontSize="24" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Border>
-                        <TextBlock Text="STAFF PANEL" Foreground="White" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" Margin="12,0,0,0" RenderTransformOrigin="0.5,0.5"/>
+
+    <Border Background="#F4F7F6" CornerRadius="15">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="260"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0" Background="#1A2B3C" CornerRadius="15,0,0,15">
+                <Grid>
+                    <StackPanel Margin="0,30,0,0">
+                        <StackPanel Orientation="Horizontal" Margin="30,0,0,50">
+                            <TextBlock Text="Medi" Foreground="White" FontSize="26" FontWeight="Bold"/>
+                            <TextBlock Text="Track" Foreground="#2C9BB3" FontSize="26" FontWeight="Bold"/>
+                        </StackPanel>
+
+                        <Button x:Name="BtnBanthuoc" Content="🛒  Bán thuốc" Style="{StaticResource SidebarBtnStyle}" Click="Menu_Click" Tag="0"/>
+                        <Button x:Name="BtnQLthuoc" Content="💊  Tra cứu kho thuốc" Style="{StaticResource SidebarBtnStyle}" Click="Menu_Click" Tag="1"/>
+                        <Button x:Name="BtnQLkhachhang" Content="👥  Khách hàng" Style="{StaticResource SidebarBtnStyle}" Click="Menu_Click" Tag="2"/>
+                        <Button x:Name="BtnQLnhanvien" Content="👤 Thông tin cá nhân" Style="{StaticResource SidebarBtnStyle}" Click="Menu_Click" Tag="3"/>
                     </StackPanel>
 
-                    <Button x:Name="BtnBanthuoc" Content="🛒  Bán thuốc" Style="{StaticResource MenuButtonStyle}" Click="Menu_Click" Tag="0"/>
-                    <Button x:Name="BtnQLthuoc" Content="💊  Quản lý thuốc" Style="{StaticResource MenuButtonStyle}" Click="Menu_Click" Tag="1"/>
-                    <Button x:Name="BtnQLkhachhang" Content="👤  Quản lý khách hàng" Style="{StaticResource MenuButtonStyle}" Click="Menu_Click" Tag="2"/>
-                    <Button x:Name="BtnBaocaothuchi" Content="📊  Báo cáo thu - chi" Style="{StaticResource MenuButtonStyle}" Click="Menu_Click" Tag="3"/>
+                    <Button VerticalAlignment="Bottom" Margin="20" Background="Transparent" BorderThickness="0" Click="Logout_Click" Cursor="Hand">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="🚪" Foreground="#E74C3C" FontSize="18"/>
+                            <TextBlock Text="Đăng xuất" Foreground="#A0AEC0" Margin="15,0,0,0" VerticalAlignment="Center" FontWeight="SemiBold"/>
+                        </StackPanel>
+                    </Button>
+                </Grid>
+            </Border>
 
-                </StackPanel>
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="70"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
 
-                <Button Content="🚪 Đăng xuất" VerticalAlignment="Bottom" Margin="25" Height="45" Background="#E74C3C" Foreground="White" BorderThickness="0" Click="Logout_Click" Cursor="Hand">
-                    <Button.Resources>
-                        <Style TargetType="Border">
-                            <Setter Property="CornerRadius" Value="8"/>
+                <Grid Grid.Row="0" Margin="20,0,20,0">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock Text="🕒" FontSize="18" Foreground="#718096" Margin="0,0,10,0"/>
+                        <TextBlock x:Name="txtClock" Text="00:00 - DD/MM/YYYY" FontSize="15" FontWeight="SemiBold" Foreground="#4A5568"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                        <Border Background="White" CornerRadius="25" Height="45" Padding="5,0,15,0" Margin="0,0,20,0">
+                            <StackPanel Orientation="Horizontal">
+                                <Ellipse Width="35" Height="35" Margin="5,0,10,0" Fill="#2C9BB3"/>
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock x:Name="txtStaffName" Text="Tên Nhân Viên" FontWeight="Bold" Foreground="#2D3748"/>
+                                    <TextBlock x:Name="txtStaffRole" Text="Staff / Ca Sáng" FontSize="12" Foreground="#718096"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+
+                        <Button Content="_" Width="30" Height="30" Background="Transparent" BorderThickness="0" FontSize="16" FontWeight="Bold" Foreground="#718096" Cursor="Hand" Click="Minimize_Click"/>
+                        <Button Content="✕" Width="30" Height="30" Background="Transparent" BorderThickness="0" FontSize="14" FontWeight="Bold" Foreground="#E74C3C" Cursor="Hand" Click="Close_Click"/>
+                    </StackPanel>
+                </Grid>
+
+                <TabControl x:Name="MainTabControl" Grid.Row="1" Background="Transparent" BorderThickness="0" Margin="0,10,0,0">
+                    <TabControl.ItemContainerStyle>
+                        <Style TargetType="TabItem">
+                            <Setter Property="Visibility" Value="Collapsed"/>
                         </Style>
-                    </Button.Resources>
-                </Button>
+                    </TabControl.ItemContainerStyle>
+
+                    <TabItem>
+                        <local:Banthuocview/>
+                    </TabItem>
+
+                    <TabItem>
+                        <local:QLthuoc_view/>
+                    </TabItem>
+
+                    <TabItem>
+                        <local:QLkhachhang_view/>
+                    </TabItem>
+
+                    <TabItem>
+                        <Grid Background="White" Margin="20" >
+                            <Border CornerRadius="12" Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1">
+                                <TextBlock Text="MÀN HÌNH BÁO CÁO CA TRỰC ĐANG PHÁT TRIỂN" 
+                           FontSize="24" FontWeight="Bold" Foreground="#A0AEC0" 
+                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                        </Grid>
+                    </TabItem>
+                </TabControl>
             </Grid>
-        </Border>
-        <Grid Grid.Column="1">
-            <ContentControl x:Name="MainContent"/>
         </Grid>
-
-
-    </Grid>
+    </Border>
 </Window>

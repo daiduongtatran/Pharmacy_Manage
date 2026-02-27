@@ -111,9 +111,9 @@ namespace Pharmacy_Manage.GUI
                 {
                     new AdminWindow().Show();
                 }
-                else if (account.Role == "Staff")
+                if (account.Role == "Staff")
                 {
-                    new StaffWindow().Show();
+                    new StaffWindow(account).Show();
                 }
                 else
                 {
