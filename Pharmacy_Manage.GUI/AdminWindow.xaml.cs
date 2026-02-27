@@ -189,7 +189,23 @@ namespace Pharmacy_Manage.GUI
             if (e.ChangedButton == MouseButton.Left) this.DragMove();
         }
 
-        private void Logout_Click(object sender, RoutedEventArgs e) => this.Close();
+        private void Logout_Click(object sender, RoutedEventArgs e)
+{
+    // 1. Hiển thị hộp thoại xác nhận để tránh bấm nhầm
+    MessageBoxResult result = MessageBox.Show("Bạn có chắc chắn muốn đăng xuất không?", 
+        "Xác nhận", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+    if (result == MessageBoxResult.Yes)
+    {
+        MainWindow login = new MainWindow();
+        
+        // 3. Hiển thị màn hình đăng nhập lên
+        login.Show();
+
+        // 4. Đóng màn hình Admin hiện tại
+        this.Close();
+    }
+}
 
         private void CardUrgent_Click(object sender, MouseButtonEventArgs e) => MainTabControl.SelectedIndex = 1;
 
