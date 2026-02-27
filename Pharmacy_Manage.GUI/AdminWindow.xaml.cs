@@ -49,51 +49,122 @@ namespace Pharmacy_Manage.GUI
             }
             catch { }
         }
-
-        #region CRUD QUA DIALOG
+        // 1. XỬ LÝ HÀM THÊM (ADD)
         private void BtnAdd_Click(object sender, RoutedEventArgs e)
         {
             ProductDialog dialog = new ProductDialog();
             dialog.Owner = this;
+
             if (dialog.ShowDialog() == true)
             {
-                RefreshSystem();
+                try
+                {
+                    // --- BƯỚC 4: THAY ĐOẠN NÀY ---
+                    // Lấy text từ item đang được chọn trong ComboBox
+                    string selectedStatus = "Đang bán"; // Giá trị mặc định
+                    if (dialog.cbTrangThai.SelectedItem is ComboBoxItem item)
+                    {
+                        selectedStatus = item.Content.ToString();
+                    }
+
+                    bool result = spBUS.Add(
+                        dialog.txtTen.Text,
+                        dialog.txtLoai.Text,
+                        dialog.txtDonVi.Text,
+                        dialog.txtNSX.Text,
+                        dialog.dpHSD.SelectedDate.Value,
+                        dialog.dpNN.SelectedDate.Value,
+                        decimal.Parse(dialog.txtGiaNhap.Text),
+                        decimal.Parse(dialog.txtGiaBan.Text),
+                        dialog.txtHangXuat.Text,
+                        int.Parse(dialog.txtTon.Text),
+                        selectedStatus, // TRUYỀN BIẾN ĐÃ LẤY TỪ COMBOBOX VÀO ĐÂY
+                        dialog.txtGhiChu.Text
+                    );
+                    // -----------------------------
+
+                    if (result)
+                    {
+                        MessageBox.Show("Thêm thành công!");
+                        RefreshSystem();
+                    }
+                }
+                catch (Exception ex) { MessageBox.Show("Lỗi: " + ex.Message); }
             }
         }
 
+        // 2. XỬ LÝ HÀM SỬA (EDIT/UPDATE)
         private void BtnUpdate_Click(object sender, RoutedEventArgs e)
         {
             if (dgSanPham.SelectedItem is DataRowView row)
             {
                 ProductDialog dialog = new ProductDialog(row);
                 dialog.Owner = this;
+
                 if (dialog.ShowDialog() == true)
                 {
-                    RefreshSystem();
+                    try
+                    {
+                        // --- BƯỚC 4: THAY ĐOẠN NÀY ---
+                        string selectedStatus = "Đang bán";
+                        if (dialog.cbTrangThai.SelectedItem is ComboBoxItem item)
+                        {
+                            selectedStatus = item.Content.ToString();
+                        }
+
+                        bool result = spBUS.Edit(
+                            Convert.ToInt32(row["MaSP"]),
+                            dialog.txtTen.Text,
+                            dialog.txtLoai.Text,
+                            dialog.txtDonVi.Text,
+                            dialog.txtNSX.Text,
+                            dialog.dpHSD.SelectedDate.Value,
+                            dialog.dpNN.SelectedDate.Value,
+                            decimal.Parse(dialog.txtGiaNhap.Text),
+                            decimal.Parse(dialog.txtGiaBan.Text),
+                            dialog.txtHangXuat.Text,
+                            int.Parse(dialog.txtTon.Text),
+                            selectedStatus, // TRUYỀN BIẾN ĐÃ LẤY TỪ COMBOBOX VÀO ĐÂY
+                            dialog.txtGhiChu.Text
+                        );
+                        // -----------------------------
+
+                        if (result)
+                        {
+                            MessageBox.Show("Cập nhật thành công!");
+                            RefreshSystem();
+                        }
+                    }
+                    catch (Exception ex) { MessageBox.Show("Lỗi: " + ex.Message); }
                 }
             }
-            else { MessageBox.Show("Vui lòng chọn thuốc cần sửa!"); }
         }
-
         private void BtnDelete_Click(object sender, RoutedEventArgs e)
         {
             if (dgSanPham.SelectedItem is DataRowView row)
             {
-                if (MessageBox.Show("Xóa sản phẩm này?", "Xác nhận", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                if (MessageBox.Show("Bạn có chắc chắn muốn xóa thuốc này khỏi Database?", "Xác nhận", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
                 {
-                    if (spBUS.Remove(Convert.ToInt32(row["MaSP"]))) RefreshSystem();
+                    int ma = Convert.ToInt32(row["MaSP"]);
+                    if (spBUS.Remove(ma))
+                    {
+                        RefreshSystem();
+                        MessageBox.Show("Đã xóa dữ liệu thành công!");
+                    }
                 }
             }
+            else { MessageBox.Show("Hãy chọn một dòng để xóa!"); }
         }
-
-        private void RefreshSystem()
+        private void RefreshSystem() { LoadAllProducts(); LoadUrgentData(); }
+        // Hàm bổ trợ để làm mới dữ liệu sau khi Thêm/Sửa
+        private void RefreshData()
         {
-            LoadAllProducts();
-            LoadUrgentData();
+            LoadAllProducts(); // Load lại DataGrid
+            if (typeof(AdminWindow).GetMethod("LoadUrgentData") != null)
+            {
+                LoadUrgentData(); // Cập nhật lại các con số thống kê ở trang chủ
+            }
         }
-        #endregion
-
-        #region UI LOGIC
         private void Menu_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button btn && btn.Tag != null)
@@ -123,7 +194,6 @@ namespace Pharmacy_Manage.GUI
         private void CardUrgent_Click(object sender, MouseButtonEventArgs e) => MainTabControl.SelectedIndex = 1;
 
         // Xóa nội dung hàm này vì không dùng TextBox ở màn hình chính nữa
-        private void dgSanPham_SelectionChanged(object sender, SelectionChangedEventArgs e) { }
-        #endregion
+        private void dgSanPham_SelectionChanged(object sender, SelectionChangedEventArgs e) {}
     }
 }

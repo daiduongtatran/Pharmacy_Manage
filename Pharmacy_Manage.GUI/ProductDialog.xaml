@@ -1,93 +1,130 @@
 ﻿<Window x:Class="Pharmacy_Manage.GUI.ProductDialog"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Thông tin sản phẩm" Height="550" Width="450"
-        WindowStartupLocation="CenterOwner" 
-        WindowStyle="None" AllowsTransparency="True" Background="Transparent"
-        MouseDown="Window_MouseDown">
+        Title="Thông Tin Sản Phẩm" Height="720" Width="750" 
+        WindowStartupLocation="CenterOwner" WindowStyle="None" 
+        AllowsTransparency="True" Background="Transparent">
 
-    <Border Background="#FFFFFF" CornerRadius="15" BorderBrush="#E2E8F0" BorderThickness="1" Margin="10">
+    <Window.Resources>
+        <Style x:Key="LabelStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#4A5568"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Margin" Value="0,0,0,5"/>
+        </Style>
+
+        <Style TargetType="TextBox">
+            <Setter Property="Height" Value="38"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="10,0"/>
+            <Setter Property="BorderBrush" Value="#E2E8F0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border x:Name="border" CornerRadius="8" BorderBrush="{TemplateBinding BorderBrush}" 
+                                BorderThickness="1" Background="White">
+                            <ScrollViewer x:Name="PART_ContentHost"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsFocused" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="#3182CE"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Border CornerRadius="20" Background="White" Margin="15">
         <Border.Effect>
-            <DropShadowEffect BlurRadius="15" ShadowDepth="2" Opacity="0.1" Color="Black"/>
+            <DropShadowEffect BlurRadius="15" Direction="0" ShadowDepth="0" Opacity="0.2"/>
         </Border.Effect>
 
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="60"/>
+                <RowDefinition Height="65"/>
                 <RowDefinition Height="*"/>
-                <RowDefinition Height="80"/>
+                <RowDefinition Height="85"/>
             </Grid.RowDefinitions>
 
-            <Border Grid.Row="0" Background="#3182CE" CornerRadius="15,15,0,0">
-                <Grid>
-                    <TextBlock x:Name="txtTitle" Text="THÊM THUỐC MỚI" Foreground="White" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                    <Button Content="✕" Click="BtnCancel_Click" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,15,0" 
-                            Background="Transparent" Foreground="White" BorderThickness="0" FontSize="16" Cursor="Hand"/>
-                </Grid>
+            <Border Grid.Row="0" Background="#3182CE" CornerRadius="20,20,0,0">
+                <TextBlock x:Name="txtHeader" Text="THÔNG TIN SẢN PHẨM" 
+                           FontSize="18" FontWeight="Bold" Foreground="White" 
+                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Border>
 
-            <StackPanel Grid.Row="1" Margin="25,20,25,0">
-                <TextBlock Text="Tên thuốc (*)" FontWeight="SemiBold" Foreground="#4A5568" Margin="0,0,0,5"/>
-                <Border CornerRadius="8" BorderBrush="#CBD5E0" BorderThickness="1" Background="#F7FAFC" Margin="0,0,0,15">
-                    <TextBox x:Name="txtTenSP" Height="35" Background="Transparent" BorderThickness="0" VerticalContentAlignment="Center" Padding="10,0" FontSize="14"/>
-                </Border>
-
-                <Grid Margin="0,0,0,15">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="15"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-
-                    <StackPanel Grid.Column="0">
-                        <TextBlock Text="Số lượng tồn (*)" FontWeight="SemiBold" Foreground="#4A5568" Margin="0,0,0,5"/>
-                        <Border CornerRadius="8" BorderBrush="#CBD5E0" BorderThickness="1" Background="#F7FAFC">
-                            <TextBox x:Name="txtTonKho" Height="35" Background="Transparent" BorderThickness="0" VerticalContentAlignment="Center" Padding="10,0" FontSize="14"/>
-                        </Border>
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="20,10">
+                <UniformGrid Columns="2" Margin="5">
+                    <StackPanel Margin="10,8">
+                        <TextBlock Text="Tên sản phẩm (*)" Style="{StaticResource LabelStyle}"/>
+                        <TextBox x:Name="txtTen"/>
                     </StackPanel>
-
-                    <StackPanel Grid.Column="2">
-                        <TextBlock Text="Đơn vị tính" FontWeight="SemiBold" Foreground="#4A5568" Margin="0,0,0,5"/>
-                        <Border CornerRadius="8" BorderBrush="#CBD5E0" BorderThickness="1" Background="#F7FAFC">
-                            <TextBox x:Name="txtDonVi" Height="35" Background="Transparent" BorderThickness="0" VerticalContentAlignment="Center" Padding="10,0" FontSize="14"/>
-                        </Border>
+                    <StackPanel Margin="10,8">
+                        <TextBlock Text="Loại sản phẩm" Style="{StaticResource LabelStyle}"/>
+                        <TextBox x:Name="txtLoai"/>
                     </StackPanel>
-                </Grid>
-
-                <TextBlock Text="Giá bán (VNĐ)" FontWeight="SemiBold" Foreground="#4A5568" Margin="0,0,0,5"/>
-                <Border CornerRadius="8" BorderBrush="#CBD5E0" BorderThickness="1" Background="#F7FAFC" Margin="0,0,0,15">
-                    <TextBox x:Name="txtGiaBan" Height="35" Background="Transparent" BorderThickness="0" VerticalContentAlignment="Center" Padding="10,0" FontSize="14"/>
-                </Border>
-
-                <Grid Margin="0,0,0,15">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="15"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-
-                    <StackPanel Grid.Column="0">
-                        <TextBlock Text="Hạn sử dụng" FontWeight="SemiBold" Foreground="#4A5568" Margin="0,0,0,5"/>
-                        <DatePicker x:Name="dpHanDung" Height="35" FontSize="14"/>
+                    <StackPanel Margin="10,8">
+                        <TextBlock Text="Đơn vị" Style="{StaticResource LabelStyle}"/>
+                        <TextBox x:Name="txtDonVi"/>
                     </StackPanel>
-
-                    <StackPanel Grid.Column="2">
-                        <TextBlock Text="Ngày nhập" FontWeight="SemiBold" Foreground="#4A5568" Margin="0,0,0,5"/>
-                        <DatePicker x:Name="dpNgayNhap" Height="35" FontSize="14"/>
+                    <StackPanel Margin="10,8">
+                        <TextBlock Text="Nhà sản xuất" Style="{StaticResource LabelStyle}"/>
+                        <TextBox x:Name="txtNSX"/>
                     </StackPanel>
-                </Grid>
-            </StackPanel>
+                    <StackPanel Margin="10,8">
+                        <TextBlock Text="Hạn dùng" Style="{StaticResource LabelStyle}"/>
+                        <DatePicker x:Name="dpHSD" Height="38"/>
+                    </StackPanel>
+                    <StackPanel Margin="10,8">
+                        <TextBlock Text="Ngày nhập" Style="{StaticResource LabelStyle}"/>
+                        <DatePicker x:Name="dpNN" Height="38"/>
+                    </StackPanel>
+                    <StackPanel Margin="10,8">
+                        <TextBlock Text="Giá nhập" Style="{StaticResource LabelStyle}"/>
+                        <TextBox x:Name="txtGiaNhap"/>
+                    </StackPanel>
+                    <StackPanel Margin="10,8">
+                        <TextBlock Text="Giá bán" Style="{StaticResource LabelStyle}"/>
+                        <TextBox x:Name="txtGiaBan"/>
+                    </StackPanel>
+                    <StackPanel Margin="10,8">
+                        <TextBlock Text="Hãng xuất" Style="{StaticResource LabelStyle}"/>
+                        <TextBox x:Name="txtHangXuat"/>
+                    </StackPanel>
+                    <StackPanel Margin="10,8">
+                        <TextBlock Text="Tồn kho" Style="{StaticResource LabelStyle}"/>
+                        <TextBox x:Name="txtTon"/>
+                    </StackPanel>
+                    <StackPanel Margin="10,8">
+                        <TextBlock Text="Trạng thái" Style="{StaticResource LabelStyle}"/>
+                        <ComboBox x:Name="cbTrangThai" Height="38" VerticalContentAlignment="Center">
+                            <ComboBoxItem Content="Đang bán" IsSelected="True"/>
+                            <ComboBoxItem Content="Hết hàng"/>
+                            <ComboBoxItem Content="Ngừng bán"/>
+                        </ComboBox>
+                    </StackPanel>
+                    <StackPanel Margin="10,8">
+                        <TextBlock Text="Ghi chú" Style="{StaticResource LabelStyle}"/>
+                        <TextBox x:Name="txtGhiChu"/>
+                    </StackPanel>
+                </UniformGrid>
+            </ScrollViewer>
 
-            <Border Grid.Row="2" Background="#F7FAFC" CornerRadius="0,0,15,15" BorderBrush="#E2E8F0" BorderThickness="0,1,0,0">
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,20,0">
-                    <Button Content="Hủy bỏ" Click="BtnCancel_Click" Width="100" Height="40" Background="#A0AEC0" Foreground="White" BorderThickness="0" Margin="0,0,10,0" FontSize="14" FontWeight="Bold" Cursor="Hand">
+            <Border Grid.Row="2" Background="#F7FAFC" CornerRadius="0,0,20,20" BorderBrush="#EDF2F7" BorderThickness="0,1,0,0">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,30,0">
+                    <Button Content="Hủy bỏ" Click="BtnCancel_Click" 
+                            Width="110" Height="40" Margin="0,0,12,0"
+                            Background="#E2E8F0" Foreground="#4A5568" FontWeight="Bold" BorderThickness="0">
                         <Button.Resources>
                             <Style TargetType="Border">
                                 <Setter Property="CornerRadius" Value="8"/>
                             </Style>
                         </Button.Resources>
                     </Button>
-                    <Button Content="Lưu Dữ Liệu" Click="BtnSave_Click" Width="130" Height="40" Background="#48BB78" Foreground="White" BorderThickness="0" FontSize="14" FontWeight="Bold" Cursor="Hand">
+
+                    <Button Content="Lưu Dữ Liệu" Click="BtnSave_Click" 
+                            Width="130" Height="40"
+                            Background="#3182CE" Foreground="White" FontWeight="Bold" BorderThickness="0">
                         <Button.Resources>
                             <Style TargetType="Border">
                                 <Setter Property="CornerRadius" Value="8"/>

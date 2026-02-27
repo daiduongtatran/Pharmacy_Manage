@@ -44,9 +44,9 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <Border Grid.Column="0" Background="#1A202C" CornerRadius="20,0,0,20">
-                <StackPanel Margin="0,40,0,0">
-                    <TextBlock Text="PHARMACY PRO" Foreground="White" FontSize="22" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,50"/>
+            <Border Grid.Column="0" Background="#1C2E4A" CornerRadius="20,0,0,20">
+                <StackPanel Margin="25,40,0,0">
+                    <TextBlock Text="MEDITRACK PRO" Foreground="White" FontSize="22" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,50"/>
 
                     <Button Style="{StaticResource SidebarBtnStyle}" Content="🏠  Trang chủ" Tag="0" Click="Menu_Click"/>
                     <Button Style="{StaticResource SidebarBtnStyle}" Content="📦  Kho thuốc" Tag="1" Click="Menu_Click"/>
@@ -139,17 +139,57 @@
                                 </Button>
                             </StackPanel>
 
-                            <Border Grid.Row="1" Background="White" CornerRadius="15" Padding="10">
+                            <Border Grid.Row="1" Background="White" CornerRadius="20" Padding="15" BorderBrush="#E2E8F0" BorderThickness="1">
                                 <DataGrid x:Name="dgSanPham" AutoGenerateColumns="False" CanUserAddRows="False" 
-                                          IsReadOnly="True" Background="White" BorderThickness="0" 
-                                          FontSize="14" RowHeight="45" GridLinesVisibility="Horizontal">
+              IsReadOnly="True" Background="White" BorderThickness="0" 
+              FontSize="13" RowHeight="50" GridLinesVisibility="Horizontal"
+              HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+
+                                    <DataGrid.Resources>
+                                        <Style TargetType="DataGridColumnHeader">
+                                            <Setter Property="Background" Value="#F7FAFC"/>
+                                            <Setter Property="Foreground" Value="#4A5568"/>
+                                            <Setter Property="FontWeight" Value="Bold"/>
+                                            <Setter Property="Padding" Value="10,0"/>
+                                            <Setter Property="Height" Value="40"/>
+                                            <Setter Property="BorderThickness" Value="0,0,0,1"/>
+                                            <Setter Property="BorderBrush" Value="#E2E8F0"/>
+                                        </Style>
+                                    </DataGrid.Resources>
+
                                     <DataGrid.Columns>
                                         <DataGridTextColumn Header="Mã" Binding="{Binding MaSP}" Width="60"/>
-                                        <DataGridTextColumn Header="Tên sản phẩm" Binding="{Binding TenSP}" Width="*"/>
-                                        <DataGridTextColumn Header="Tồn kho" Binding="{Binding TonKho}" Width="100"/>
-                                        <DataGridTextColumn Header="Hạn dùng" Binding="{Binding HanDung, StringFormat='dd/MM/yyyy'}" Width="150"/>
-                                        <DataGridTextColumn Header="Ngày nhập" Binding="{Binding NgayNhap, StringFormat='dd/MM/yyyy'}" Width="150"/>
-                                        <DataGridTextColumn Header="Đơn vị" Binding="{Binding DonVi}" Width="100"/>
+
+                                        <DataGridTextColumn Header="Tên sản phẩm" Binding="{Binding TenSP}" Width="180"/>
+
+                                        <DataGridTextColumn Header="Loại" Binding="{Binding LoaiSP}" Width="100"/>
+
+                                        <DataGridTextColumn Header="Đơn vị" Binding="{Binding DonVi}" Width="80"/>
+
+                                        <DataGridTextColumn Header="Nhà SX" Binding="{Binding NhaSanXuat}" Width="120"/>
+
+                                        <DataGridTextColumn Header="Hạn dùng" Binding="{Binding HanDung, StringFormat='dd/MM/yyyy'}" Width="110"/>
+
+                                        <DataGridTextColumn Header="Ngày nhập" Binding="{Binding NgayNhap, StringFormat='dd/MM/yyyy'}" Width="110"/>
+
+                                        <DataGridTextColumn Header="Giá nhập" Binding="{Binding GiaNhap, StringFormat='#,##0 đ'}" Width="100"/>
+
+                                        <DataGridTextColumn Header="Giá bán" Binding="{Binding GiaBan, StringFormat='#,##0 đ'}" Width="100"/>
+
+                                        <DataGridTextColumn Header="Hãng xuất" Binding="{Binding HangXuat}" Width="100"/>
+
+                                        <DataGridTextColumn Header="Tồn" Binding="{Binding TonKho}" Width="70">
+                                            <DataGridTextColumn.ElementStyle>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="FontWeight" Value="Bold"/>
+                                                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                                                </Style>
+                                            </DataGridTextColumn.ElementStyle>
+                                        </DataGridTextColumn>
+
+                                        <DataGridTextColumn Header="Trạng thái" Binding="{Binding TrangThai}" Width="110"/>
+
+                                        <DataGridTextColumn Header="Ghi chú" Binding="{Binding GhiChu}" Width="150"/>
                                     </DataGrid.Columns>
                                 </DataGrid>
                             </Border>
