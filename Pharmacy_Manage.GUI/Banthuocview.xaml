@@ -163,7 +163,7 @@
                                             </StackPanel>
                                             <!-- ====== NÚT MUA ====== -->
                                             <Button Grid.Column="2"
-                                                    Content="🛒 Mua"
+                                                    Content="🛒 Thêm"
                                                     Width="110"
                                                     Height="40"
                                                     VerticalAlignment="Center"
