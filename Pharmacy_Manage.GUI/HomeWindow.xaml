@@ -1,10 +1,152 @@
 ﻿<Window x:Class="Pharmacy_Manage.GUI.HomeWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Hệ Thống Quản Lý Nhà Thuốc" Height="450" Width="800">
-    <Grid>
-        <TextBlock Text="CHÀO MỪNG BẠN ĐÃ ĐĂNG NHẬP THÀNH CÔNG!" 
-                   HorizontalAlignment="Center" VerticalAlignment="Center" 
-                   FontSize="24" FontWeight="Bold" Foreground="Green"/>
-    </Grid>
+        Title="MediTrack - Khách hàng" Height="750" Width="1200"
+        WindowStartupLocation="CenterScreen" WindowStyle="None" 
+        AllowsTransparency="True" Background="Transparent"
+        MouseDown="Window_MouseDown">
+
+    <Window.Resources>
+        <Style x:Key="SidebarBtnStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#CBD5E1"/>
+            <Setter Property="Height" Value="50"/>
+            <Setter Property="Margin" Value="10,5"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="Padding" Value="20,0,0,0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="8">
+                            <ContentPresenter VerticalAlignment="Center" Margin="{TemplateBinding Padding}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#334155"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Border Background="#F7FAFC" CornerRadius="25" BorderBrush="#E2E8F0" BorderThickness="1">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="260"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0" Background="#1E293B" CornerRadius="25,0,0,25">
+                <Grid>
+                    <StackPanel Margin="0,50,0,0">
+                        <TextBlock FontSize="28" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,50">
+                            <Run Text="Medi" Foreground="White" />
+                            <Run Text="Track" Foreground="#4FD1C5" /></TextBlock>
+
+                        <Button Style="{StaticResource SidebarBtnStyle}" Tag="0" Click="Menu_Click">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="🏠" FontSize="18" Margin="0,0,15,0"/>
+                                <TextBlock Text="Trang chủ"/>
+                            </StackPanel>
+                        </Button>
+
+                        <Button Style="{StaticResource SidebarBtnStyle}" Tag="1" Click="Menu_Click">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="📅" FontSize="18" Margin="0,0,15,0"/>
+                                <TextBlock Text="Đặt lịch khám"/>
+                            </StackPanel>
+                        </Button>
+
+                        <Button Style="{StaticResource SidebarBtnStyle}" Tag="2" Click="Menu_Click">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="🛒" FontSize="18" Margin="0,0,15,0"/>
+                                <TextBlock Text="Cửa hàng thuốc"/>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+
+                    <Button Style="{StaticResource SidebarBtnStyle}" VerticalAlignment="Bottom" Margin="10,0,10,40" Click="Logout_Click">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="🚪" FontSize="18" Margin="0,0,15,0"/>
+                            <TextBlock Text="Đăng xuất" Foreground="#F87171"/>
+                        </StackPanel>
+                    </Button>
+                </Grid>
+            </Border>
+
+            <Grid Grid.Column="1" Margin="45,40,45,40">
+                <StackPanel>
+                    <TextBlock Text="Dịch vụ dành cho bạn" FontSize="28" FontWeight="Bold" Foreground="#2D3748" Margin="0,0,0,35"/>
+
+                    <UniformGrid Columns="2">
+                        <Border Background="White" CornerRadius="20" Margin="10" Padding="30" BorderBrush="#E2E8F0" BorderThickness="1">
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="15" Opacity="0.1" ShadowDepth="0"/>
+                            </Border.Effect>
+                            <StackPanel>
+                                <Border Background="#EBF8FF" Width="50" Height="50" HorizontalAlignment="Left" CornerRadius="10" Margin="0,0,0,20">
+                                    <TextBlock Text="📅" FontSize="24" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <TextBlock Text="Đặt Lịch Khám Tư" FontSize="20" FontWeight="Bold" Foreground="#2B6CB0"/>
+                                <TextBlock Text="Đăng ký khám nhanh, không chờ đợi. Trạng thái của bạn sẽ được chuyển vào hàng đợi ngay lập tức." 
+                                           Margin="0,10,0,25" Foreground="#718096" TextWrapping="Wrap" LineHeight="20"/>
+
+                                <TextBlock Text="Tên khách hàng (*)" FontWeight="SemiBold" Margin="0,0,0,8" Foreground="#4A5568"/>
+                                <TextBox x:Name="txtCustomerName" Height="40" Margin="0,0,0,20" Padding="10,0" VerticalContentAlignment="Center">
+                                    <TextBox.Resources>
+                                        <Style TargetType="Border">
+                                            <Setter Property="CornerRadius" Value="8"/>
+                                        </Style>
+                                    </TextBox.Resources>
+                                </TextBox>
+
+                                <Button Content="XÁC NHẬN ĐẶT LỊCH" Click="BtnBooking_Click" Height="45" Background="#3182CE" Foreground="White" FontWeight="Bold">
+                                    <Button.Resources>
+                                        <Style TargetType="Border">
+                                            <Setter Property="CornerRadius" Value="10"/>
+                                        </Style>
+                                    </Button.Resources>
+                                </Button>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Background="White" CornerRadius="20" Margin="10" Padding="30" BorderBrush="#E2E8F0" BorderThickness="1">
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="15" Opacity="0.1" ShadowDepth="0"/>
+                            </Border.Effect>
+                            <StackPanel>
+                                <Border Background="#F0FFF4" Width="50" Height="50" HorizontalAlignment="Left" CornerRadius="10" Margin="0,0,0,20">
+                                    <TextBlock Text="🛒" FontSize="24" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <TextBlock Text="Mua Thuốc Online" FontSize="20" FontWeight="Bold" Foreground="#2F855A"/>
+                                <TextBlock Text="Lựa chọn các sản phẩm dược phẩm chất lượng từ kho hàng của MediTrack với giá niêm yết." 
+                                           Margin="0,10,0,25" Foreground="#718096" TextWrapping="Wrap" LineHeight="20"/>
+
+                                <TextBlock Text="Sản phẩm nổi bật hôm nay:" FontSize="13" FontStyle="Italic" Margin="0,0,0,10" Foreground="#A0AEC0"/>
+                                <StackPanel Margin="0,0,0,25">
+                                    <TextBlock Text="• Paracetamol 500mg - Có sẵn" Foreground="#48BB78" Margin="0,2"/>
+                                    <TextBlock Text="• Vitamin C 1000mg - Có sẵn" Foreground="#48BB78" Margin="0,2"/>
+                                </StackPanel>
+
+                                <Button Content="XEM CỬA HÀNG" Click="BtnGoToStore_Click" Height="45" Background="#38A169" Foreground="White" FontWeight="Bold">
+                                    <Button.Resources>
+                                        <Style TargetType="Border">
+                                            <Setter Property="CornerRadius" Value="10"/>
+                                        </Style>
+                                    </Button.Resources>
+                                </Button>
+                            </StackPanel>
+                        </Border>
+                    </UniformGrid>
+                </StackPanel>
+            </Grid>
+        </Grid>
+    </Border>
 </Window>
