@@ -88,7 +88,7 @@
                         <TextBox x:Name="txtGiaBan"/>
                     </StackPanel>
                     <StackPanel Margin="10,8">
-                        <TextBlock Text="Hãng xuất" Style="{StaticResource LabelStyle}"/>
+                        <TextBlock Text="Hàng xuất" Style="{StaticResource LabelStyle}"/>
                         <TextBox x:Name="txtHangXuat"/>
                     </StackPanel>
                     <StackPanel Margin="10,8">
