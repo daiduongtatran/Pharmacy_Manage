@@ -34,9 +34,9 @@ namespace Pharmacy_Manage.GUI
 
         private void SetupWindow()
         {
-            // Mở mặc định thẻ đầu tiên (Bán Thuốc)
+            // Mở mặc định thẻ đầu tiên
             MainTabControl.SelectedIndex = 0;
-            SetButtonActive(BtnBanthuoc);
+            SetButtonActive(BtnLetan);
 
             DispatcherTimer timer = new DispatcherTimer();
             timer.Interval = TimeSpan.FromSeconds(1);
@@ -67,6 +67,7 @@ namespace Pharmacy_Manage.GUI
         {
             Brush transparent = Brushes.Transparent;
             Brush grayText = (Brush)new BrushConverter().ConvertFrom("#A0AEC0");
+            
 
             BtnBanthuoc.Background = transparent;
             BtnBanthuoc.Foreground = grayText;
@@ -77,7 +78,17 @@ namespace Pharmacy_Manage.GUI
             BtnQLkhachhang.Background = transparent;
             BtnQLkhachhang.Foreground = grayText;
 
-          
+            BtnQLnhanvien.Background = transparent;
+            BtnQLnhanvien.Foreground = grayText;
+
+            BtnLetan.Background = transparent;
+            BtnLetan.Foreground = grayText;
+
+            BtnQLlichhen.Background = transparent;
+            BtnQLlichhen.Foreground = grayText;
+
+
+
         }
 
         private void SetButtonActive(Button btn)
