@@ -120,6 +120,10 @@
                     </TabItem>
 
                     <TabItem>
+                        <local:QLthuoc_view/>
+                    </TabItem>
+
+                    <TabItem>
                         <Grid Background="White" Margin="20" >
                             <Border CornerRadius="12" Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1">
                                 <TextBlock Text="MÀN HÌNH BÁO CÁO CA TRỰC ĐANG PHÁT TRIỂN" 
