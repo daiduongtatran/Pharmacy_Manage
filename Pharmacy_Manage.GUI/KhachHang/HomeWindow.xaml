@@ -48,7 +48,8 @@
                     <StackPanel Margin="0,50,0,0">
                         <TextBlock FontSize="28" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,50">
                             <Run Text="Medi" Foreground="White" />
-                            <Run Text="Track" Foreground="#4FD1C5" /></TextBlock>
+                            <Run Text="Track" Foreground="#4FD1C5" />
+                        </TextBlock>
 
                         <Button Style="{StaticResource SidebarBtnStyle}" Tag="0" Click="Menu_Click">
                             <StackPanel Orientation="Horizontal">
@@ -82,7 +83,8 @@
             </Border>
 
             <Grid Grid.Column="1" Margin="45,40,45,40">
-                <StackPanel>
+
+                <StackPanel x:Name="pnlHomeContent">
                     <TextBlock Text="Dịch vụ dành cho bạn" FontSize="28" FontWeight="Bold" Foreground="#2D3748" Margin="0,0,0,35"/>
 
                     <UniformGrid Columns="2">
@@ -146,6 +148,9 @@
                         </Border>
                     </UniformGrid>
                 </StackPanel>
+
+                <ContentControl x:Name="MainContent" Visibility="Collapsed"/>
+
             </Grid>
         </Grid>
     </Border>
