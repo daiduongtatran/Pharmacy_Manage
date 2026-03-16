@@ -1,147 +1,208 @@
-﻿<UserControl
+﻿<UserControl x:Class="Pharmacy_Manage.GUI.Letan_view"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:local="clr-namespace:Pharmacy_Manage.GUI" x:Class="Pharmacy_Manage.GUI.Letan_view"
-             mc:Ignorable="d"
-             MinHeight="400"
-             d:DesignHeight="700"
-             d:DesignWidth="1000">
-    <Grid>
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="700" d:DesignWidth="1000" Background="#F4F7F6">
+
+    <UserControl.Resources>
+        <Style TargetType="DataGridColumnHeader">
+            <Setter Property="Background" Value="#F8FAFC"/>
+            <Setter Property="Foreground" Value="#4A5568"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Padding" Value="10,0"/>
+            <Setter Property="Height" Value="45"/>
+            <Setter Property="BorderThickness" Value="0,0,0,1"/>
+            <Setter Property="BorderBrush" Value="#E2E8F0"/>
+        </Style>
+
+        <Style x:Key="StatusBadgeStyle" TargetType="Border">
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding TrangThai}" Value="Đang chờ">
+                    <Setter Property="Background" Value="#FEFCBF"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding TrangThai}" Value="Đang khám">
+                    <Setter Property="Background" Value="#BEE3F8"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding TrangThai}" Value="Chờ thanh toán">
+                    <Setter Property="Background" Value="#FED7D7"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding TrangThai}" Value="Hoàn thành">
+                    <Setter Property="Background" Value="#C6F6D5"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="StatusTextStyle" TargetType="TextBlock">
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding TrangThai}" Value="Đang chờ">
+                    <Setter Property="Foreground" Value="#D69E2E"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding TrangThai}" Value="Đang khám">
+                    <Setter Property="Foreground" Value="#3182CE"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding TrangThai}" Value="Chờ thanh toán">
+                    <Setter Property="Foreground" Value="#E53E3E"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding TrangThai}" Value="Hoàn thành">
+                    <Setter Property="Foreground" Value="#38A169"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Margin="20">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Top bar: three buttons (In số thứ tự, Khám bệnh đặt trước, Bệnh nhân tái khám) -->
-        <Border
-            Grid.Row="0"
-            BorderThickness="1"
-            Height="108"
-            HorizontalAlignment="Stretch"
-            VerticalAlignment="Top">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-
-                <Button
-                    Grid.Column="0"
-                    Margin="12"
-                    Height="64"
-                    VerticalAlignment="Center"
-                    HorizontalAlignment="Stretch"
-                    Content="In số thứ tự"/>
-
-                <Button
-                    Grid.Column="1"
-                    Margin="12"
-                    Height="64"
-                    VerticalAlignment="Center"
-                    HorizontalAlignment="Stretch"
-                    Content="Khám bệnh đặt trước"/>
-
-                <Button
-                    Grid.Column="2"
-                    Margin="12"
-                    Height="64"
-                    VerticalAlignment="Center"
-                    HorizontalAlignment="Stretch"
-                    Content="Bệnh nhân tái khám"/>
-            </Grid>
-        </Border>
-
-        <Border
-            Grid.Row="1"
-            BorderThickness="1"
-            Padding="8">
-            <Grid Margin="1,0,0,0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="157"/>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
-
-                <!-- Left: Queue box -->
-                <StackPanel Grid.Column="0" Margin="8,8,8,0" VerticalAlignment="Top" Height="110">
-                    <TextBlock Text="Hàng đợi"
-                               FontWeight="Bold"
-                               HorizontalAlignment="Center"
-                               Margin="0,4,0,8"/>
-                    <Border Background="#FFF5F5F5"
-                            BorderBrush="Gray"
-                            BorderThickness="1"
-                            CornerRadius="6"
-                            Height="82"
-                            HorizontalAlignment="Stretch" Width="116">
-                        <TextBlock x:Name="QueueNumberText"
-                                   Text="001"
-                                   FontSize="48"
-                                   FontWeight="Bold"
-                                   HorizontalAlignment="Center"
-                                   VerticalAlignment="Center"/>
-                    </Border>
+        <UniformGrid Grid.Row="0" Columns="4" Margin="0,0,0,20">
+            <Border Background="White" CornerRadius="12" Padding="20" Margin="0,0,10,0">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="10" Opacity="0.05" ShadowDepth="2"/>
+                </Border.Effect>
+                <StackPanel>
+                    <TextBlock Text="👥 Tổng bệnh nhân" Foreground="#718096" FontWeight="SemiBold" FontSize="14"/>
+                    <TextBlock x:Name="txtTongBN" Text="0" FontSize="32" FontWeight="Bold" Foreground="#2D3748" Margin="0,10,0,0"/>
                 </StackPanel>
+            </Border>
 
-                <Grid Grid.Column="1" Margin="12,0,0,0">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
+            <Border Background="White" CornerRadius="12" Padding="20" Margin="5,0,5,0">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="10" Opacity="0.05" ShadowDepth="2"/>
+                </Border.Effect>
+                <StackPanel>
+                    <TextBlock Text="⏳ Đang chờ khám" Foreground="#D69E2E" FontWeight="SemiBold" FontSize="14"/>
+                    <TextBlock x:Name="txtDangCho" Text="0" FontSize="32" FontWeight="Bold" Foreground="#2D3748" Margin="0,10,0,0"/>
+                </StackPanel>
+            </Border>
 
-                    <TextBlock Text="Thông tin bệnh nhân"
-                               FontSize="16"
-                               FontWeight="Bold"
-                               Margin="4"/>
+            <Border Background="White" CornerRadius="12" Padding="20" Margin="5,0,5,0">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="10" Opacity="0.05" ShadowDepth="2"/>
+                </Border.Effect>
+                <StackPanel>
+                    <TextBlock Text="💳 Chờ thanh toán" Foreground="#E53E3E" FontWeight="SemiBold" FontSize="14"/>
+                    <TextBlock x:Name="txtChoThanhToan" Text="0" FontSize="32" FontWeight="Bold" Foreground="#2D3748" Margin="0,10,0,0"/>
+                </StackPanel>
+            </Border>
 
-                    <!-- Form -->
-                    <Grid Grid.Row="1" Margin="8" >
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="140"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
+            <Border Background="White" CornerRadius="12" Padding="20" Margin="10,0,0,0">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="10" Opacity="0.05" ShadowDepth="2"/>
+                </Border.Effect>
+                <StackPanel>
+                    <TextBlock Text="✅ Hoàn thành" Foreground="#38A169" FontWeight="SemiBold" FontSize="14"/>
+                    <TextBlock x:Name="txtHoanThanh" Text="0" FontSize="32" FontWeight="Bold" Foreground="#2D3748" Margin="0,10,0,0"/>
+                </StackPanel>
+            </Border>
+        </UniformGrid>
 
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/> <!-- Mã bệnh nhân -->
-                            <RowDefinition Height="Auto"/> <!-- Tên -->
-                            <RowDefinition Height="Auto"/> <!-- Tuổi -->
-                            <RowDefinition Height="Auto"/> <!-- Giới tính -->
-                            <RowDefinition Height="Auto"/> <!-- Ngày sinh -->
-                            <RowDefinition Height="*"/>    <!-- Triệu chứng -->
-                        </Grid.RowDefinitions>
+        <Grid Grid.Row="1" Margin="0,0,0,20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
 
-                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Mã bệnh nhân:" VerticalAlignment="Center" Margin="4"/>
-                        <TextBox x:Name="txtPatientId" Grid.Row="0" Grid.Column="1" Margin="4" Height="28"/>
-
-                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Tên:" VerticalAlignment="Center" Margin="4"/>
-                        <TextBox x:Name="txtName" Grid.Row="1" Grid.Column="1" Margin="4" Height="28"/>
-
-                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Tuổi:" VerticalAlignment="Center" Margin="4"/>
-                        <TextBox x:Name="txtAge" Grid.Row="2" Grid.Column="1" Margin="4" Height="28"/>
-
-                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Giới tính:" VerticalAlignment="Center" Margin="4"/>
-                        <ComboBox x:Name="cbGender" Grid.Row="3" Grid.Column="1" Margin="4" Height="28">
-                            <ComboBoxItem Content="Nam"/>
-                            <ComboBoxItem Content="Nữ"/>
-                            <ComboBoxItem Content="Khác"/>
-                        </ComboBox>
-
-                        <TextBlock Grid.Row="4" Grid.Column="0" Text="Ngày sinh:" VerticalAlignment="Center" Margin="4"/>
-                        <DatePicker x:Name="dpDOB" Grid.Row="4" Grid.Column="1" Margin="4" Height="28"/>
-
-                        <TextBlock Grid.Row="5" Grid.Column="0" Text="Triệu chứng:" VerticalAlignment="Top" Margin="4"/>
-                        <TextBox x:Name="txtSymptoms" Grid.Row="5" Grid.Column="1" Margin="4" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" MinHeight="80"/>
-                    </Grid>
-
-                    <!-- Action buttons -->
-                    <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="4">
-                        <Button x:Name="btnSent_Inf" Content="Gửi thông tin" Width="90" Margin="4" Click="BtnSent_Inf_Click"/>
-                    </StackPanel>
+            <Border Grid.Column="0" Background="White" CornerRadius="8" BorderBrush="#E2E8F0" BorderThickness="1" Height="45" Margin="0,0,15,0">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="🔍" VerticalAlignment="Center" Margin="15,0,10,0" Foreground="#A0AEC0"/>
+                    <TextBox x:Name="txtTimKiem" Grid.Column="1" Background="Transparent" BorderThickness="0" VerticalContentAlignment="Center" FontSize="15" Margin="0,0,10,0" TextChanged="txtTimKiem_TextChanged"/>
                 </Grid>
-            </Grid>
+            </Border>
+
+            <Button Grid.Column="1" Content="➕ Tiếp nhận bệnh nhân" Height="45" Padding="20,0" Background="#2C9BB3" Foreground="White" FontWeight="Bold" FontSize="15" BorderThickness="0" Cursor="Hand" Click="BtnTiepDon_Click">
+                <Button.Resources>
+                    <Style TargetType="Border">
+                        <Setter Property="CornerRadius" Value="8"/>
+                    </Style>
+                </Button.Resources>
+            </Button>
+        </Grid>
+
+        <Border Grid.Row="2" Background="White" CornerRadius="15" Padding="20">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="10" Opacity="0.05" ShadowDepth="2"/>
+            </Border.Effect>
+            <DockPanel>
+                <TextBlock DockPanel.Dock="Top" Text="📋 Danh sách luồng bệnh nhân hôm nay" FontSize="18" FontWeight="Bold" Foreground="#2D3748" Margin="0,0,0,15"/>
+
+                <DataGrid x:Name="dgLeTan" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" Background="White" BorderThickness="0" RowHeight="55" GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="#EDF2F7">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="STT" Binding="{Binding STT}" Width="60">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="FontWeight" Value="Bold"/>
+                                    <Setter Property="FontSize" Value="16"/>
+                                    <Setter Property="Foreground" Value="#2C9BB3"/>
+                                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+
+                        <DataGridTextColumn Header="Họ và Tên" Binding="{Binding HoTen}" Width="200">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="FontWeight" Value="SemiBold"/>
+                                    <Setter Property="FontSize" Value="14"/>
+                                    <Setter Property="Foreground" Value="#2D3748"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+
+                        <DataGridTextColumn Header="SĐT" Binding="{Binding SDT}" Width="120"/>
+                        <DataGridTextColumn Header="Lý do khám" Binding="{Binding LyDoKham}" Width="*"/>
+                        <DataGridTextColumn Header="Phòng" Binding="{Binding PhongKham}" Width="150"/>
+
+                        <DataGridTemplateColumn Header="Trạng thái" Width="140">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Border Style="{StaticResource StatusBadgeStyle}">
+                                        <TextBlock Text="{Binding TrangThai}" Style="{StaticResource StatusTextStyle}"/>
+                                    </Border>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <DataGridTemplateColumn Header="Thao tác" Width="120">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button Content="Thu tiền" Background="#48BB78" Foreground="White" FontWeight="Bold" BorderThickness="0" Padding="15,8" Cursor="Hand" Click="BtnThuTien_Click">
+                                        <Button.Style>
+                                            <Style TargetType="Button">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding TrangThai}" Value="Chờ thanh toán">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
+                                        <Button.Resources>
+                                            <Style TargetType="Border">
+                                                <Setter Property="CornerRadius" Value="6"/>
+                                            </Style>
+                                        </Button.Resources>
+                                    </Button>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                    </DataGrid.Columns>
+                </DataGrid>
+            </DockPanel>
         </Border>
     </Grid>
 </UserControl>

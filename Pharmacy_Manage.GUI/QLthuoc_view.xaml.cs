@@ -4,19 +4,17 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using Microsoft.Data.SqlClient;
-using Pharmacy_Manage.DAL; // Khai báo thư viện DAL để dùng DbConnection
+using Pharmacy_Manage.DAL;
 
 namespace Pharmacy_Manage.GUI
 {
     public partial class QLthuoc_view : UserControl
     {
-        // Danh sách gốc chứa toàn bộ dữ liệu
         private ObservableCollection<ThuocViewModel> _danhSachGoc = new ObservableCollection<ThuocViewModel>();
-        // Danh sách hiển thị lên DataGrid (có thể bị lọc)
         private ObservableCollection<ThuocViewModel> _danhSachHienThi = new ObservableCollection<ThuocViewModel>();
 
-        // Khởi tạo đối tượng kết nối DB của bạn
         private DbConnection _db = new DbConnection();
+        private string _trangThaiLoc = "Tất cả"; // Biến lưu trạng thái của Filter Chips
 
         public QLthuoc_view()
         {
@@ -33,10 +31,8 @@ namespace Pharmacy_Manage.GUI
                 using (SqlConnection con = _db.GetConnection())
                 {
                     con.Open();
-
-                    // ⚠️ LƯU Ý: Bạn cần sửa tên bảng 'Thuoc' và tên các cột trong chuỗi query dưới đây
-                    // sao cho khớp chuẩn xác với thiết kế trong SQL Server của bạn.
-                    string query = "Select TenSP, LoaiSP, MaSP, DonVi, NhaSanXuat, HanDung, GiaBan, TonKho, TrangThai, GhiChu FROM SanPham";
+                    // Đã thêm MaSP vào truy vấn SQL
+                    string query = "SELECT MaSP, TenSP, LoaiSP, DonVi, NhaSanXuat, HanDung, GiaBan, TonKho, TrangThai, GhiChu FROM SanPham";
 
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
@@ -46,22 +42,20 @@ namespace Pharmacy_Manage.GUI
                             {
                                 _danhSachGoc.Add(new ThuocViewModel
                                 {
-                                    MaSP = reader["MaSP"] != DBNull.Value ? reader["MaSP"].ToString() : "",
+                                    MaSP = reader["MaSP"] != DBNull.Value ? Convert.ToInt32(reader["MaSP"]) : 0,
                                     TenSP = reader["TenSP"] != DBNull.Value ? reader["TenSP"].ToString() : "",
                                     LoaiSP = reader["LoaiSP"] != DBNull.Value ? reader["LoaiSP"].ToString() : "",
                                     DonVi = reader["DonVi"] != DBNull.Value ? reader["DonVi"].ToString() : "",
                                     NhaSanXuat = reader["NhaSanXuat"] != DBNull.Value ? reader["NhaSanXuat"].ToString() : "",
                                     TonKho = reader["TonKho"] != DBNull.Value ? Convert.ToInt32(reader["TonKho"]) : 0,
-                                   GiaBan = reader["GiaBan"] != DBNull.Value ? Convert.ToDecimal(reader["GiaBan"]) : 0,
+                                    GiaBan = reader["GiaBan"] != DBNull.Value ? Convert.ToDecimal(reader["GiaBan"]) : 0,
                                     HanDung = reader["HanDung"] != DBNull.Value ? Convert.ToDateTime(reader["HanDung"]) : DateTime.MinValue,
-                                    TrangThai = reader["TrangThai"] != DBNull.Value ? reader["TrangThai"].ToString() : "Bình thường"
+                                    TrangThai = reader["TrangThai"] != DBNull.Value ? reader["TrangThai"].ToString() : "Đang bán"
                                 });
                             }
                         }
                     }
                 }
-
-                // Gọi hàm lọc để đổ dữ liệu từ _danhSachGoc sang DataGrid
                 LocDuLieu();
             }
             catch (Exception ex)
@@ -70,38 +64,79 @@ namespace Pharmacy_Manage.GUI
             }
         }
 
-        // Xử lý sự kiện khi gõ vào ô tìm kiếm
-        private void txtTimKiem_TextChanged(object sender, TextChangedEventArgs e)
+        // Sự kiện khi gõ TextBox hoặc đổi ComboBox
+        // Sự kiện khi gõ TextBox hoặc đổi ComboBox
+        private void Filter_Changed(object sender, RoutedEventArgs e)
         {
             LocDuLieu();
         }
 
-        // Xử lý sự kiện khi chọn Combo box lọc trạng thái
-        private void cbBoLoc_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        // Sự kiện khi bấm vào Filter Chips (Radio Button)
+        private void Filter_Checked(object sender, RoutedEventArgs e)
         {
-            LocDuLieu();
+            if (sender is RadioButton rb && rb.Tag != null)
+            {
+                _trangThaiLoc = rb.Tag.ToString();
+                LocDuLieu();
+            }
         }
 
-        // Hàm gộp chung cả Tìm kiếm Text và Lọc ComboBox
         private void LocDuLieu()
         {
-            if (_danhSachGoc == null || dgKhoThuoc == null) return;
+            if (_danhSachGoc == null || dgKhoThuoc == null || cbLoaiSP == null || cbDVT == null || cbSapXep == null) return;
 
-            string tuKhoa = txtTimKiem?.Text.ToLower() ?? "";
-            string trangThaiLoc = "Tất cả";
+            // 1. Đọc dữ liệu từ Form Lọc
+            string tuKhoa = txtTimKiem.Text.Trim().ToLower();
+            string loaiSP = (cbLoaiSP.SelectedItem as ComboBoxItem)?.Content.ToString() ?? "Tất cả";
+            string dvt = (cbDVT.SelectedItem as ComboBoxItem)?.Content.ToString() ?? "Tất cả";
+            string sapXep = (cbSapXep.SelectedItem as ComboBoxItem)?.Content.ToString() ?? "Mặc định";
 
-            if (cbBoLoc?.SelectedItem is ComboBoxItem selectedItem)
-            {
-                trangThaiLoc = selectedItem.Content.ToString();
-            }
+            // Danh sách các loại sản phẩm mặc định trong ComboBox
+            string[] cacLoaiMacDinh = { "Giảm đau – hạ sốt", "Kháng sinh", "Tim mạch", "Thực phẩm chức năng" };
 
-            // Lọc dữ liệu qua LINQ
+            // 2. Lọc Từ khóa, Trạng thái, và ĐVT trước
             var ketQua = _danhSachGoc.Where(t =>
-                (string.IsNullOrEmpty(tuKhoa) || t.TenSP.ToLower().Contains(tuKhoa)) &&
-                (trangThaiLoc == "Tất cả" || t.TrangThai == trangThaiLoc)
+                (string.IsNullOrEmpty(tuKhoa) || t.TenSP.ToLower().Contains(tuKhoa) || t.MaSP.ToString().Contains(tuKhoa) || t.NhaSanXuat.ToLower().Contains(tuKhoa)) &&
+                (_trangThaiLoc == "Tất cả" || t.TrangThai == _trangThaiLoc) &&
+                (dvt == "Tất cả" || t.DonVi == dvt)
             ).ToList();
 
-            // Cập nhật lại giao diện
+            // 3. Xử lý bộ lọc Loại SP (Thêm logic cho nút "Khác")
+            if (loaiSP == "Khác")
+            {
+                // Nếu chọn "Khác": Lấy những thuốc mà Loại SP KHÔNG chứa bất kỳ từ khóa nào trong danh sách mặc định
+                ketQua = ketQua.Where(t => !cacLoaiMacDinh.Any(loai => t.LoaiSP.Contains(loai))).ToList();
+            }
+            else if (loaiSP != "Tất cả")
+            {
+                // Lọc bình thường cho các loại còn lại
+                ketQua = ketQua.Where(t => t.LoaiSP.Contains(loaiSP)).ToList();
+            }
+
+            // 4. Sắp xếp hiển thị
+            switch (sapXep)
+            {
+                case "Giá bán: Cao -> Thấp":
+                    ketQua = ketQua.OrderByDescending(t => t.GiaBan).ToList();
+                    break;
+                case "Giá bán: Thấp -> Cao":
+                    ketQua = ketQua.OrderBy(t => t.GiaBan).ToList();
+                    break;
+                case "Tồn kho: Nhiều -> Ít":
+                    ketQua = ketQua.OrderByDescending(t => t.TonKho).ToList();
+                    break;
+                case "Tồn kho: Ít -> Nhiều":
+                    ketQua = ketQua.OrderBy(t => t.TonKho).ToList();
+                    break;
+                case "Hạn dùng: Gần nhất":
+                    ketQua = ketQua.OrderBy(t => t.HanDung).ToList();
+                    break;
+                default:
+                    ketQua = ketQua.OrderBy(t => t.MaSP).ToList(); // Sắp xếp theo Mã SP mặc định
+                    break;
+            }
+
+            // 5. Cập nhật Bảng (DataGrid)
             _danhSachHienThi.Clear();
             foreach (var item in ketQua)
             {
@@ -111,18 +146,18 @@ namespace Pharmacy_Manage.GUI
             dgKhoThuoc.ItemsSource = _danhSachHienThi;
         }
 
-        // Nút báo cáo thiếu hàng
+
         private void btnBaoThieuHang_Click(object sender, RoutedEventArgs e)
         {
             MessageBox.Show("Đã gửi yêu cầu nhập thêm hàng đến Quản lý (Admin).", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
         }
     }
+}
 
-    // Lớp Model cho Thuốc (Đảm bảo Property khớp với Binding trong XAML)
-    // Lớp Model cho Thuốc (Phải khớp với cơ sở dữ liệu)
+    // Model Dữ Liệu (Đã thêm MaSP)
     public class ThuocViewModel
     {
-        public string MaSP { get; set; } = "";
+        public int MaSP { get; set; }
         public string TenSP { get; set; } = "";
         public string LoaiSP { get; set; } = "";
         public string DonVi { get; set; } = "";
@@ -133,4 +168,3 @@ namespace Pharmacy_Manage.GUI
         public string TrangThai { get; set; } = "";
         public string GhiChu { get; set; } = "";
     }
-}

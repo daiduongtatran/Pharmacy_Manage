@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Pharmacy_Manage.GUI"
         mc:Ignorable="d"
-        Title="Nhân Viên Bán Hàng - MediTrack" Height="768" Width="1366"
+        Title="Nhân Viên Bán Hàng - Clinic Track" Height="768" Width="1366"
         WindowStartupLocation="CenterScreen" WindowStyle="None" 
         AllowsTransparency="True" Background="Transparent"
         MouseDown="Window_MouseDown">
@@ -52,23 +52,21 @@
                 <Grid>
                     <StackPanel Margin="0,30,0,0">
                         <StackPanel Orientation="Horizontal" Margin="30,0,0,50">
-                            <TextBlock Text="clinic" Foreground="White" FontSize="26" FontWeight="Bold"/>
+                            <TextBlock Text="Clinic" Foreground="White" FontSize="26" FontWeight="Bold"/>
                             <TextBlock Text="Track" Foreground="#2C9BB3" FontSize="26" FontWeight="Bold"/>
                         </StackPanel>
 
-                        <Button x:Name="BtnLetan" Content="🛒  Lễ Tân" Style="{StaticResource SidebarBtnStyle}" Click="Menu_Click" Tag="0"/>
-                        <Button x:Name="BtnBanthoc" Content="🛒  tiếp nhận lịch hẹn" Style="{StaticResource SidebarBtnStyle}" Click="Menu_Click" Tag="1"/>
-                        <Button x:Name="BtnBanthuoc" Content="🛒  Bán thuốc" Style="{StaticResource SidebarBtnStyle}" Click="Menu_Click" Tag="2"/>
-                        <Button x:Name="BtnQLthuoc" Content="💊  Tra cứu kho thuốc" Style="{StaticResource SidebarBtnStyle}" Click="Menu_Click" Tag="3"/>
-                        <Button x:Name="BtnQLkhachhang" Content="👥  Khách hàng" Style="{StaticResource SidebarBtnStyle}" Click="Menu_Click" Tag="4"/>
-                        <Button x:Name="BtnQLnhanvien" Content="👤 Thông tin cá nhân" Style="{StaticResource SidebarBtnStyle}" Click="Menu_Click" Tag="5"/>
-                        <Button x:Name="BtnDatlich" Content="👤 Thông tin cá nhân" Style="{StaticResource SidebarBtnStyle}" Click="Menu_Click" Tag="6"/>
-
+                        <Button x:Name="BtnLetan" Content="🏥  Lễ Tân" Style="{StaticResource SidebarBtnStyle}" Click="Menu_Click" Tag="0"/>
+                        <Button x:Name="BtnBanthuoc" Content="🛒  Bán thuốc" Style="{StaticResource SidebarBtnStyle}" Click="Menu_Click" Tag="1"/>
+                        <Button x:Name="BtnQLthuoc" Content="💊  Tra cứu kho thuốc" Style="{StaticResource SidebarBtnStyle}" Click="Menu_Click" Tag="2"/>
+                        <Button x:Name="BtnQLkhachhang" Content="👥  Khách hàng" Style="{StaticResource SidebarBtnStyle}" Click="Menu_Click" Tag="3"/>
+                        <Button x:Name="BtnLichhen" Content="📅  Tiếp nhận lịch hẹn" Style="{StaticResource SidebarBtnStyle}" Click="Menu_Click" Tag="4"/>
+                       
                     </StackPanel>
 
                     <Button VerticalAlignment="Bottom" Margin="20" Background="Transparent" BorderThickness="0" Click="Logout_Click" Cursor="Hand">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="🚪" Foreground="#E74C3C" FontSize="18"/>
+                            <TextBlock Text="⏻" Foreground="#E74C3C" FontSize="18"/>
                             <TextBlock Text="Đăng xuất" Foreground="#A0AEC0" Margin="15,0,0,0" VerticalAlignment="Center" FontWeight="SemiBold"/>
                         </StackPanel>
                     </Button>
@@ -88,7 +86,9 @@
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                        <Border Background="White" CornerRadius="25" Height="45" Padding="5,0,15,0" Margin="0,0,20,0">
+
+                        <Border x:Name="ProfileBorder" Background="White" CornerRadius="25" Height="45" Padding="5,0,15,0" Margin="0,0,20,0" 
+                                Cursor="Hand" MouseLeftButtonDown="ProfileBorder_MouseLeftButtonDown">
                             <StackPanel Orientation="Horizontal">
                                 <Ellipse Width="35" Height="35" Margin="5,0,10,0" Fill="#2C9BB3"/>
                                 <StackPanel VerticalAlignment="Center">
@@ -97,6 +97,28 @@
                                 </StackPanel>
                             </StackPanel>
                         </Border>
+                        <Popup x:Name="ProfilePopup" PlacementTarget="{Binding ElementName=ProfileBorder}" Placement="Bottom" StaysOpen="True" AllowsTransparency="True" PopupAnimation="Fade" VerticalOffset="10">
+                            <Border Background="White" CornerRadius="12" Padding="20" Width="260" BorderBrush="#E2E8F0" BorderThickness="1">
+                                <Border.Effect>
+                                    <DropShadowEffect BlurRadius="15" Opacity="0.15" ShadowDepth="4"/>
+                                </Border.Effect>
+                                <StackPanel>
+                                    <Grid Margin="0,0,0,15">
+                                        <TextBlock Text="👤 Thông tin tài khoản" FontWeight="Bold" FontSize="16" Foreground="#2D3748" VerticalAlignment="Center"/>
+                                        <Button Content="✕" HorizontalAlignment="Right" VerticalAlignment="Center" Background="Transparent" BorderThickness="0" Foreground="#A0AEC0" FontSize="14" FontWeight="Bold" Cursor="Hand" Click="BtnClosePopup_Click" ToolTip="Đóng"/>
+                                    </Grid>
+
+                                    <TextBlock Text="Họ và tên:" Foreground="#718096" FontSize="12" Margin="0,0,0,3"/>
+                                    <TextBlock x:Name="popFullName" Text="Đang tải..." FontWeight="SemiBold" FontSize="14" Foreground="#2D3748" Margin="0,0,0,10"/>
+
+                                    <TextBlock Text="Tên đăng nhập (Email):" Foreground="#718096" FontSize="12" Margin="0,0,0,3"/>
+                                    <TextBlock x:Name="popUsername" Text="Đang tải..." FontWeight="SemiBold" FontSize="14" Foreground="#2D3748" Margin="0,0,0,10"/>
+
+                                    <TextBlock Text="Quyền hạn:" Foreground="#718096" FontSize="12" Margin="0,0,0,3"/>
+                                    <TextBlock x:Name="popRole" Text="Đang tải..." FontWeight="SemiBold" FontSize="14" Foreground="#2C9BB3" Margin="0,0,0,5"/>
+                                </StackPanel>
+                            </Border>
+                        </Popup>
 
                         <Button Content="_" Width="30" Height="30" Background="Transparent" BorderThickness="0" FontSize="16" FontWeight="Bold" Foreground="#718096" Cursor="Hand" Click="Minimize_Click"/>
                         <Button Content="✕" Width="30" Height="30" Background="Transparent" BorderThickness="0" FontSize="14" FontWeight="Bold" Foreground="#E74C3C" Cursor="Hand" Click="Close_Click"/>
@@ -109,12 +131,9 @@
                             <Setter Property="Visibility" Value="Collapsed"/>
                         </Style>
                     </TabControl.ItemContainerStyle>
-                    <TabItem>
-                        <local:Letan_view/>
-                    </TabItem>
 
                     <TabItem>
-                        <local:QLlichhen_view/>
+                        <local:Letan_view/>
                     </TabItem>
 
                     <TabItem>
@@ -122,13 +141,15 @@
                     </TabItem>
 
                     <TabItem>
-                        <Grid Background="White" Margin="20" >
-                            <Border CornerRadius="12" Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1">
-                                <TextBlock Text="MÀN HÌNH BÁO CÁO CA TRỰC ĐANG PHÁT TRIỂN" 
-                           FontSize="24" FontWeight="Bold" Foreground="#A0AEC0" 
-                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                            </Border>
-                        </Grid>
+                        <local:QLthuoc_view/>
+                    </TabItem>
+
+                    <TabItem>
+                        <local:QLkhachhang_view/>
+                    </TabItem>
+
+                    <TabItem>
+                        <local:DatLich_view/>
                     </TabItem>
                 </TabControl>
             </Grid>

@@ -18,20 +18,27 @@ namespace Pharmacy_Manage.GUI
             SetupWindow();
         }
 
+        // Hàm này sẽ tự động chạy và nhận AccountDTO khi bạn đăng nhập thành công từ MainWindow
         public StaffWindow(AccountDTO staff)
         {
             InitializeComponent();
             _currentStaff = staff;
 
+            // KIỂM TRA VÀ GÁN DỮ LIỆU TỪ _currentStaff VÀO GIAO DIỆN
             if (_currentStaff != null)
             {
+                // 1. Hiển thị ở góc trên cùng bên phải màn hình
                 txtStaffName.Text = string.IsNullOrEmpty(_currentStaff.FullName) ? _currentStaff.Username : _currentStaff.FullName;
-                txtStaffRole.Text = "Nhân viên bán hàng";
+                txtStaffRole.Text = "Nhân viên (Staff)";
+
+                // 2. Truyền dữ liệu vào các TextBlock bên trong Popup
+                popFullName.Text = string.IsNullOrEmpty(_currentStaff.FullName) ? "Chưa cập nhật" : _currentStaff.FullName;
+                popUsername.Text = _currentStaff.Username;
+                popRole.Text = _currentStaff.Role == "Staff" ? "Tiếp đón / Bán hàng" : _currentStaff.Role;
             }
 
             SetupWindow();
         }
-
         private void SetupWindow()
         {
             // Mở mặc định thẻ đầu tiên
@@ -94,6 +101,25 @@ namespace Pharmacy_Manage.GUI
                 MainWindow login = new MainWindow();
                 login.Show();
                 this.Close();
+            }
+        }
+        // ================= SỰ KIỆN LIÊN QUAN ĐẾN POPUP THÔNG TIN ================= //
+        private void ProfileBorder_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (ProfilePopup != null)
+            {
+                // Mở popup ra
+                ProfilePopup.IsOpen = true;
+            }
+            e.Handled = true;
+        }
+
+        private void BtnClosePopup_Click(object sender, RoutedEventArgs e)
+        {
+            if (ProfilePopup != null)
+            {
+                // Đóng popup lại
+                ProfilePopup.IsOpen = false;
             }
         }
 

@@ -62,8 +62,18 @@ namespace Pharmacy_Manage.DAL
         {
             using (SqlConnection conn = GetConnection())
             {
-                // Truy vấn kiểm tra khớp cả User, Pass và Role
-                string query = "SELECT Username, RoleName FROM Accounts WHERE Username=@user AND Password=@pass AND RoleName=@role";
+                string query = "";
+
+                // Nếu là Khách hàng thì lấy FullName từ bảng Customers, nếu là Admin/Staff thì lấy từ bảng Employees
+                if (role == "Customer")
+                {
+                    query = "SELECT a.Username, a.RoleName, c.FullName FROM Accounts a LEFT JOIN Customers c ON a.Username = c.Username WHERE a.Username=@user AND a.Password=@pass AND a.RoleName=@role";
+                }
+                else
+                {
+                    query = "SELECT a.Username, a.RoleName, e.FullName FROM Accounts a LEFT JOIN Employees e ON a.Username = e.Username WHERE a.Username=@user AND a.Password=@pass AND a.RoleName=@role";
+                }
+
                 SqlCommand cmd = new SqlCommand(query, conn);
                 cmd.Parameters.AddWithValue("@user", user);
                 cmd.Parameters.AddWithValue("@pass", pass);
@@ -77,7 +87,9 @@ namespace Pharmacy_Manage.DAL
                         return new AccountDTO
                         {
                             Username = dr["Username"].ToString(),
-                            Role = dr["RoleName"].ToString()
+                            Role = dr["RoleName"].ToString(),
+                            // Lấy thêm FullName truyền vào DTO
+                            FullName = dr["FullName"] != DBNull.Value ? dr["FullName"].ToString() : ""
                         };
                     }
                 }
