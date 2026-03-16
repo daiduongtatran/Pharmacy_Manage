@@ -97,6 +97,7 @@
 
                 <DataGrid x:Name="dgKhoThuoc" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" Background="White" BorderThickness="0" RowHeight="45" GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="#EDF2F7">
                     <DataGrid.Columns>
+                        <DataGridTextColumn Header="Mã Sản Phẩm" Binding="{Binding MaSP}" Width="100"/>
                         <DataGridTextColumn Header="Tên Sản Phẩm" Binding="{Binding TenSP}" Width="*"/>
                         <DataGridTextColumn Header="Loại SP" Binding="{Binding LoaiSP}" Width="100"/>
                         <DataGridTextColumn Header="ĐVT" Binding="{Binding DonVi}" Width="80"/>

@@ -48,19 +48,22 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <Border Grid.Column="0" Background="#1A2B3C" CornerRadius="15,0,0,15">
+            <Border Grid.Column="0" Background="#1c2e4a" CornerRadius="15,0,0,15">
                 <Grid>
                     <StackPanel Margin="0,30,0,0">
                         <StackPanel Orientation="Horizontal" Margin="30,0,0,50">
-                            <TextBlock Text="Medi" Foreground="White" FontSize="26" FontWeight="Bold"/>
+                            <TextBlock Text="clinic" Foreground="White" FontSize="26" FontWeight="Bold"/>
                             <TextBlock Text="Track" Foreground="#2C9BB3" FontSize="26" FontWeight="Bold"/>
                         </StackPanel>
-                        <Button x:Name="BtnLetan" Content="🛒  Lễ tân" Style="{StaticResource SidebarBtnStyle}" Click="Menu_Click" Tag="0"/>
-                        <Button x:Name="BtnQLlichhen" Content="🛒  Quản lý lịch hẹn" Style="{StaticResource SidebarBtnStyle}" Click="Menu_Click" Tag="1"/>
-                        <Button x:Name="BtnBanthuoc" Content="🛒  Tiếp nhận thanh toán" Style="{StaticResource SidebarBtnStyle}" Click="Menu_Click" Tag="2"/>
+
+                        <Button x:Name="BtnLetan" Content="🛒  Lễ Tân" Style="{StaticResource SidebarBtnStyle}" Click="Menu_Click" Tag="0"/>
+                        <Button x:Name="BtnBanthoc" Content="🛒  tiếp nhận lịch hẹn" Style="{StaticResource SidebarBtnStyle}" Click="Menu_Click" Tag="1"/>
+                        <Button x:Name="BtnBanthuoc" Content="🛒  Bán thuốc" Style="{StaticResource SidebarBtnStyle}" Click="Menu_Click" Tag="2"/>
                         <Button x:Name="BtnQLthuoc" Content="💊  Tra cứu kho thuốc" Style="{StaticResource SidebarBtnStyle}" Click="Menu_Click" Tag="3"/>
                         <Button x:Name="BtnQLkhachhang" Content="👥  Khách hàng" Style="{StaticResource SidebarBtnStyle}" Click="Menu_Click" Tag="4"/>
                         <Button x:Name="BtnQLnhanvien" Content="👤 Thông tin cá nhân" Style="{StaticResource SidebarBtnStyle}" Click="Menu_Click" Tag="5"/>
+                        <Button x:Name="BtnDatlich" Content="👤 Thông tin cá nhân" Style="{StaticResource SidebarBtnStyle}" Click="Menu_Click" Tag="6"/>
+
                     </StackPanel>
 
                     <Button VerticalAlignment="Bottom" Margin="20" Background="Transparent" BorderThickness="0" Click="Logout_Click" Cursor="Hand">
@@ -106,7 +109,6 @@
                             <Setter Property="Visibility" Value="Collapsed"/>
                         </Style>
                     </TabControl.ItemContainerStyle>
-
                     <TabItem>
                         <local:Letan_view/>
                     </TabItem>
@@ -117,10 +119,6 @@
 
                     <TabItem>
                         <local:Banthuocview/>
-                    </TabItem>
-
-                    <TabItem>
-                        <local:QLthuoc_view/>
                     </TabItem>
 
                     <TabItem>

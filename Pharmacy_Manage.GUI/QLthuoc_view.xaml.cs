@@ -36,7 +36,7 @@ namespace Pharmacy_Manage.GUI
 
                     // ⚠️ LƯU Ý: Bạn cần sửa tên bảng 'Thuoc' và tên các cột trong chuỗi query dưới đây
                     // sao cho khớp chuẩn xác với thiết kế trong SQL Server của bạn.
-                    string query = "Select TenSP, LoaiSP, DonVi, NhaSanXuat, HanDung, GiaBan, TonKho, TrangThai, GhiChu FROM SanPham";
+                    string query = "Select TenSP, LoaiSP, MaSP, DonVi, NhaSanXuat, HanDung, GiaBan, TonKho, TrangThai, GhiChu FROM SanPham";
 
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
@@ -46,6 +46,7 @@ namespace Pharmacy_Manage.GUI
                             {
                                 _danhSachGoc.Add(new ThuocViewModel
                                 {
+                                    MaSP = reader["MaSP"] != DBNull.Value ? reader["MaSP"].ToString() : "",
                                     TenSP = reader["TenSP"] != DBNull.Value ? reader["TenSP"].ToString() : "",
                                     LoaiSP = reader["LoaiSP"] != DBNull.Value ? reader["LoaiSP"].ToString() : "",
                                     DonVi = reader["DonVi"] != DBNull.Value ? reader["DonVi"].ToString() : "",
@@ -121,6 +122,7 @@ namespace Pharmacy_Manage.GUI
     // Lớp Model cho Thuốc (Phải khớp với cơ sở dữ liệu)
     public class ThuocViewModel
     {
+        public string MaSP { get; set; } = "";
         public string TenSP { get; set; } = "";
         public string LoaiSP { get; set; } = "";
         public string DonVi { get; set; } = "";

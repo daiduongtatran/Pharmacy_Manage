@@ -78,17 +78,7 @@ namespace Pharmacy_Manage.GUI
             BtnQLkhachhang.Background = transparent;
             BtnQLkhachhang.Foreground = grayText;
 
-            BtnQLnhanvien.Background = transparent;
-            BtnQLnhanvien.Foreground = grayText;
-
-            BtnLetan.Background = transparent;
-            BtnLetan.Foreground = grayText;
-
-            BtnQLlichhen.Background = transparent;
-            BtnQLlichhen.Foreground = grayText;
-
-
-
+          
         }
 
         private void SetButtonActive(Button btn)
