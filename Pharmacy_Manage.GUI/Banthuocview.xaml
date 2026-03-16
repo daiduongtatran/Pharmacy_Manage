@@ -70,7 +70,7 @@
             <TabControl SelectionChanged="TabControl_SelectionChanged" Background="{x:Null}" BorderBrush="{x:Null}">
 
                 <!-- ================= KHO THUỐC ================= -->
-                <TabItem Header="Kho thuốc bán">
+                <TabItem Header="Thuốc đang bán">
 
                     <ScrollViewer VerticalScrollBarVisibility="Auto">
 
@@ -195,8 +195,8 @@
 
                 </TabItem>
 
-                <!-- ================= GIỎ HÀNG ================= -->
-                <TabItem Header="Giỏ hàng">
+                <!-- ================= Hóa đơn ================= -->
+                <TabItem Header="Hóa đơn">
 
                     <ScrollViewer VerticalScrollBarVisibility="Auto">
 
