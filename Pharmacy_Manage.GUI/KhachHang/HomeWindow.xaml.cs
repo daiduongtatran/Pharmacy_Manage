@@ -28,6 +28,12 @@ namespace Pharmacy_Manage.GUI
                 
                 MainContent.Content = new BookingView(name);
             }
+            else if (index == 2) // THÊM INDEX NÀY CHO STOREVIEW
+            {
+                pnlHomeContent.Visibility = Visibility.Collapsed;
+                MainContent.Visibility = Visibility.Visible;
+                MainContent.Content = new StoreView(); // Gọi màn hình cửa hàng
+            }
         }
 
         
@@ -66,7 +72,7 @@ namespace Pharmacy_Manage.GUI
 
         private void BtnGoToStore_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Tính năng Cửa hàng thuốc đang phát triển.");
+            SwitchView(2);
         }
     }
 }

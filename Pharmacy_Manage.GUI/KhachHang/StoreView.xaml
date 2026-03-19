@@ -1,12 +1,181 @@
-﻿<Window x:Class="Pharmacy_Manage.GUI.KhachHang.StoreView"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Pharmacy_Manage.GUI.KhachHang"
-        mc:Ignorable="d"
-        Title="StoreView" Height="450" Width="800">
+﻿<UserControl x:Class="Pharmacy_Manage.GUI.KhachHang.StoreView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             Background="#F7FAFC" d:DesignHeight="800" d:DesignWidth="1000">
+
     <Grid>
-        
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="80"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Border Grid.Row="0" Background="White" BorderBrush="#E2E8F0" BorderThickness="0,0,0,1" Padding="20">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Border Grid.Column="0" Background="#EDF2F7" CornerRadius="8" Width="400" HorizontalAlignment="Left">
+                        <Grid>
+                            <TextBlock Text="🔍 Tìm kiếm thuốc..." Foreground="#A0AEC0" FontSize="15" 
+                                       Margin="15,0,0,0" VerticalAlignment="Center" IsHitTestVisible="False">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Visibility" Value="Hidden"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Text, ElementName=txtSearch}" Value="">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                            
+                            <TextBox x:Name="txtSearch" Height="40" Background="Transparent" BorderThickness="0" 
+                                     VerticalContentAlignment="Center" Padding="15,0" FontSize="15" 
+                                     TextChanged="TxtSearch_TextChanged" />
+                        </Grid>
+                    </Border>
+
+                    <Button Grid.Column="1" Click="BtnCart_Click" Background="#38A169" Foreground="White" Width="140" Height="45" Cursor="Hand">
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="10"/>
+                            </Style>
+                        </Button.Resources>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="🛒 Giỏ hàng" FontSize="16" FontWeight="Bold" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                            <Border Background="Red" CornerRadius="10" MinWidth="20" Padding="5,0">
+                                <TextBlock x:Name="txtCartCount" Text="0" Foreground="White" FontWeight="Bold" HorizontalAlignment="Center"/>
+                            </Border>
+                        </StackPanel>
+                    </Button>
+                </Grid>
+            </Border>
+
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="0,10,0,0">
+                <ItemsControl x:Name="icProducts" Margin="20">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel ItemWidth="220" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Background="White" CornerRadius="15" Margin="10" Padding="15" BorderBrush="#E2E8F0" BorderThickness="1">
+                                <StackPanel>
+                                    <Border Background="#EBF8FF" Height="120" CornerRadius="10" Margin="0,0,0,15">
+                                        <TextBlock Text="💊" FontSize="50" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    
+                                    <TextBlock Text="{Binding Name}" FontSize="16" FontWeight="Bold" Foreground="#2D3748" TextWrapping="Wrap" Height="45"/>
+                                    <TextBlock Text="{Binding Price, StringFormat='{}{0:N0} đ'}" FontSize="16" FontWeight="SemiBold" Foreground="#E53E3E" Margin="0,5,0,15"/>
+                                    
+                                    <Button Content="Thêm vào giỏ" Background="#E2E8F0" Foreground="#2D3748" FontWeight="Bold" Height="35" Cursor="Hand"
+                                            Click="BtnAddToCart_Click" DataContext="{Binding}">
+                                        <Button.Resources>
+                                            <Style TargetType="Border">
+                                                <Setter Property="CornerRadius" Value="8"/>
+                                            </Style>
+                                        </Button.Resources>
+                                    </Button>
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </Grid>
+
+        <Grid x:Name="CartOverlay" Visibility="Collapsed" Background="#66000000">
+            <Border Background="White" Width="850" Height="600" CornerRadius="20" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="60"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <Border Grid.Row="0" BorderBrush="#E2E8F0" BorderThickness="0,0,0,1" Padding="20,0">
+                        <Grid>
+                            <TextBlock Text="Giỏ Hàng Của Bạn" FontSize="22" FontWeight="Bold" Foreground="#2D3748" VerticalAlignment="Center"/>
+                            <Button Content="✕" Width="40" Height="40" Background="Transparent" BorderThickness="0" FontSize="20" Foreground="#A0AEC0" 
+                                    HorizontalAlignment="Right" Cursor="Hand" Click="BtnCloseCart_Click"/>
+                        </Grid>
+                    </Border>
+
+                    <Grid Grid.Row="1" Margin="20">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="6*"/>
+                            <ColumnDefinition Width="4*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Border Grid.Column="0" BorderBrush="#E2E8F0" BorderThickness="0,0,1,0" Padding="0,0,20,0">
+                            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                <ItemsControl x:Name="icCartItems">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="10" Padding="15" Margin="0,0,0,10" Background="White">
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="120"/>
+                                                        <ColumnDefinition Width="40"/>
+                                                    </Grid.ColumnDefinitions>
+
+                                                    <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                                        <TextBlock Text="{Binding Product.Name}" FontWeight="Bold" FontSize="15" Foreground="#2D3748" TextWrapping="Wrap"/>
+                                                        <TextBlock Text="{Binding Product.Price, StringFormat='{}{0:N0} đ'}" Foreground="#718096" Margin="0,5,0,0"/>
+                                                    </StackPanel>
+
+                                                    <Border Grid.Column="1" Background="#EDF2F7" CornerRadius="8" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                        <StackPanel Orientation="Horizontal" Height="30">
+                                                            <Button Content="-" Width="30" Background="Transparent" BorderThickness="0" Cursor="Hand" Click="BtnDecreaseQty_Click" DataContext="{Binding}"/>
+                                                            <TextBlock Text="{Binding Quantity}" Width="40" TextAlignment="Center" VerticalAlignment="Center" FontWeight="Bold"/>
+                                                            <Button Content="+" Width="30" Background="Transparent" BorderThickness="0" Cursor="Hand" Click="BtnIncreaseQty_Click" DataContext="{Binding}"/>
+                                                        </StackPanel>
+                                                    </Border>
+
+                                                    <Button Grid.Column="2" Content="🗑" Background="Transparent" BorderThickness="0" Foreground="#E53E3E" FontSize="20" 
+                                                            Cursor="Hand" Click="BtnRemoveItem_Click" DataContext="{Binding}"/>
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
+                        </Border>
+
+                        <StackPanel Grid.Column="1" Margin="20,0,0,0">
+    <TextBlock Text="Tóm tắt đơn hàng" FontSize="18" FontWeight="Bold" Foreground="#2D3748" Margin="0,0,0,20"/>
+    
+    <Grid Margin="0,0,0,15">
+        <TextBlock Text="Tổng sản phẩm:" Foreground="#718096"/>
+        <TextBlock x:Name="txtTotalItems" Text="0" HorizontalAlignment="Right" FontWeight="Bold"/>
     </Grid>
-</Window>
+    
+    <Border BorderBrush="#E2E8F0" BorderThickness="0,1,0,0" Margin="0,10,0,20" Padding="0,20,0,0">
+        <Grid>
+            <TextBlock Text="TỔNG TIỀN:" FontSize="16" FontWeight="Bold" Foreground="#2D3748"/>
+            <TextBlock x:Name="txtTotalPrice" Text="0 đ" FontSize="18" FontWeight="Bold" Foreground="#E53E3E" HorizontalAlignment="Right"/>
+        </Grid>
+    </Border>
+
+    <Button Content="THANH TOÁN" Background="#38A169" Foreground="White" FontSize="16" FontWeight="Bold" Height="50" Cursor="Hand" Click="BtnCheckout_Click">
+        <Button.Resources>
+            <Style TargetType="Border">
+                <Setter Property="CornerRadius" Value="10"/>
+            </Style>
+        </Button.Resources>
+    </Button>
+</StackPanel>
+                    </Grid>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>
