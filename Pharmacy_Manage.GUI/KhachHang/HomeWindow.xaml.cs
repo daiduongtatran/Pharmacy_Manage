@@ -13,7 +13,7 @@ namespace Pharmacy_Manage.GUI
             InitializeComponent();
         }
 
-        private void SwitchView(int index)
+        private void SwitchView(int index, string name = "")
         {
             if (index == 0)
             {
@@ -25,21 +25,30 @@ namespace Pharmacy_Manage.GUI
                 pnlHomeContent.Visibility = Visibility.Collapsed;
                 MainContent.Visibility = Visibility.Visible;
 
-                MainContent.Content = new BookingView();
+                
+                MainContent.Content = new BookingView(name);
             }
         }
+
+        
         private void Menu_Click(object sender, RoutedEventArgs e)
         {
             Button btn = sender as Button;
             if (btn != null && btn.Tag != null)
             {
                 int index = int.Parse(btn.Tag.ToString());
-                SwitchView(index);
+                SwitchView(index); 
             }
         }
+
+        
         private void BtnBooking_Click(object sender, RoutedEventArgs e)
         {
-            SwitchView(1); // Chuyển sang màn hình đặt lịch (index 1)
+           
+            string nameFromHome = txtCustomerName.Text;
+
+           
+            SwitchView(1, nameFromHome);
         }
 
         // Các hàm phụ trợ khác
