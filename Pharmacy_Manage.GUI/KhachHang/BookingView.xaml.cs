@@ -14,11 +14,18 @@ namespace Pharmacy_Manage.GUI.KhachHang
 
         private string connectionString = @"Data Source=localhost;Initial Catalog=PharmacyManage;Integrated Security=True;TrustServerCertificate=True";
 
-        public BookingView()
+        // Tìm đến hàm BookingView() và sửa lại như sau:
+        public BookingView(string customerName = "")
         {
             InitializeComponent();
             LoadCountries();
             LoadEthnicities();
+
+            // Nếu có tên truyền từ trang Home sang thì tự điền vào ô Họ tên
+            if (!string.IsNullOrWhiteSpace(customerName))
+            {
+                txtHoTen.Text = customerName;
+            }
         }
 
         private void LoadCountries()
