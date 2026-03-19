@@ -56,11 +56,11 @@
                             <TextBlock Text="Track" Foreground="#2C9BB3" FontSize="26" FontWeight="Bold"/>
                         </StackPanel>
 
-                        <Button x:Name="BtnLetan" Content="🏥  Lễ Tân" Style="{StaticResource SidebarBtnStyle}" Click="Menu_Click" Tag="0"/>
-                        <Button x:Name="BtnBanthuoc" Content="🛒  Bán thuốc" Style="{StaticResource SidebarBtnStyle}" Click="Menu_Click" Tag="1"/>
-                        <Button x:Name="BtnQLthuoc" Content="💊  Tra cứu kho thuốc" Style="{StaticResource SidebarBtnStyle}" Click="Menu_Click" Tag="2"/>
-                        <Button x:Name="BtnQLkhachhang" Content="👥  Khách hàng" Style="{StaticResource SidebarBtnStyle}" Click="Menu_Click" Tag="3"/>
-                        <Button x:Name="BtnLichhen" Content="📅  Tiếp nhận lịch hẹn" Style="{StaticResource SidebarBtnStyle}" Click="Menu_Click" Tag="4"/>
+                        
+                        <Button x:Name="BtnBanthuoc" Content="🛒  Bán thuốc" Style="{StaticResource SidebarBtnStyle}" Click="Menu_Click" Tag="0"/>
+                        <Button x:Name="BtnQLthuoc" Content="💊  Tra cứu kho thuốc" Style="{StaticResource SidebarBtnStyle}" Click="Menu_Click" Tag="1"/>
+                        <Button x:Name="BtnQLkhachhang" Content="👥  Khách hàng" Style="{StaticResource SidebarBtnStyle}" Click="Menu_Click" Tag="2"/>
+                        <Button x:Name="BtnLichhen" Content="📅  Tiếp nhận lịch hẹn" Style="{StaticResource SidebarBtnStyle}" Click="Menu_Click" Tag="3"/>
                        
                     </StackPanel>
 
@@ -131,10 +131,6 @@
                             <Setter Property="Visibility" Value="Collapsed"/>
                         </Style>
                     </TabControl.ItemContainerStyle>
-
-                    <TabItem>
-                        <local:Letan_view/>
-                    </TabItem>
 
                     <TabItem>
                         <local:Banthuocview/>

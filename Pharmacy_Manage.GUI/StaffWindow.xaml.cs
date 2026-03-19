@@ -43,7 +43,7 @@ namespace Pharmacy_Manage.GUI
         {
             // Mở mặc định thẻ đầu tiên
             MainTabControl.SelectedIndex = 0;
-            SetButtonActive(BtnLetan);
+            SetButtonActive(BtnBanthuoc);
 
             DispatcherTimer timer = new DispatcherTimer();
             timer.Interval = TimeSpan.FromSeconds(1);
