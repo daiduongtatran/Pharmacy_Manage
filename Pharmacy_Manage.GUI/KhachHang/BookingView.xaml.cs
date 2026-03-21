@@ -96,7 +96,7 @@ namespace Pharmacy_Manage.GUI.KhachHang
             }
             else
             {
-                MessageBox.Show("Giờ khám không hợp lệ (VD: 08:30)", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Giờ khám không hợp lệ", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
