@@ -43,7 +43,7 @@ namespace Pharmacy_Manage.GUI
         {
             // Mở mặc định thẻ đầu tiên
             MainTabControl.SelectedIndex = 0;
-            SetButtonActive(BtnBanthuoc);
+            SetButtonActive(BtnLichhen);
 
             DispatcherTimer timer = new DispatcherTimer();
             timer.Interval = TimeSpan.FromSeconds(1);
@@ -85,7 +85,10 @@ namespace Pharmacy_Manage.GUI
             BtnQLkhachhang.Background = transparent;
             BtnQLkhachhang.Foreground = grayText;
 
-          
+            BtnLichhen.Background = transparent;
+            BtnLichhen.Foreground = grayText;
+
+
         }
 
         private void SetButtonActive(Button btn)
