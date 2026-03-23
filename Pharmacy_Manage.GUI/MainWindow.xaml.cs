@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using Microsoft.Data.SqlClient; // Mới thêm để truy vấn lấy Mã KH
 using Pharmacy_Manage.BUS;
 using Pharmacy_Manage.DTO;
 
@@ -45,7 +46,6 @@ namespace Pharmacy_Manage.GUI
         // === XỬ LÝ HIỆU ỨNG MÀU KHI CHỌN ROLE (ĐĂNG KÝ) ===
         private void RegRole_Checked(object sender, RoutedEventArgs e)
         {
-            // Reset tất cả về màu xám
             if (rbRegAdmin == null || rbRegStaff == null || rbRegCust == null) return;
 
             rbRegAdmin.Foreground = Brushes.Gray;
@@ -57,7 +57,6 @@ namespace Pharmacy_Manage.GUI
             rbRegCust.Foreground = Brushes.Gray;
             rbRegCust.FontWeight = FontWeights.Normal;
 
-            // Tô màu xanh cho cái đang chọn
             RadioButton selected = sender as RadioButton;
             if (selected != null)
             {
@@ -65,10 +64,10 @@ namespace Pharmacy_Manage.GUI
                 selected.FontWeight = FontWeights.Bold;
             }
         }
+
         // === XỬ LÝ HIỆU ỨNG MÀU KHI CHỌN ROLE (ĐĂNG NHẬP) ===
         private void LoginRole_Checked(object sender, RoutedEventArgs e)
         {
-            // 1. Reset tất cả về màu xám nhạt
             if (rbAdmin == null || rbStaff == null || rbCust == null) return;
 
             rbAdmin.Foreground = Brushes.Gray;
@@ -80,7 +79,6 @@ namespace Pharmacy_Manage.GUI
             rbCust.Foreground = Brushes.Gray;
             rbCust.FontWeight = FontWeights.Normal;
 
-            // 2. Tô màu xanh nổi bật cho cái đang được chọn
             RadioButton selected = sender as RadioButton;
             if (selected != null)
             {
@@ -88,25 +86,54 @@ namespace Pharmacy_Manage.GUI
                 selected.FontWeight = FontWeights.Bold;
             }
         }
+
         // === XỬ LÝ ĐĂNG NHẬP ===
         private void btnLogin_Click(object sender, RoutedEventArgs e)
         {
             string user = txtUsername.Text;
             string pass = txtPassword.Password;
 
-            // Lấy role từ RadioButton ở màn hình Đăng nhập
             string role = "Customer";
             if (rbAdmin.IsChecked == true) role = "Admin";
             if (rbStaff.IsChecked == true) role = "Staff";
 
-            AccountDTO? account = _accountBUS.CheckLogin(user, pass, role);
+            AccountDTO account = _accountBUS.CheckLogin(user, pass, role);
 
             if (account != null)
             {
-                MessageBox.Show($"Xin chào {account.Username}!", "Đăng nhập thành công");
-                this.Hide(); // Ẩn màn hình Login đi
+                // =================================================================
+                // NẾU LÀ KHÁCH HÀNG: LẤY CUSTOMER ID TỪ DATABASE VÀ LƯU VÀO SESSION
+                // =================================================================
+                if (role == "Customer")
+                {
+                    try
+                    {
+                        string connString = @"Data Source=localhost;Initial Catalog=PharmacyManage;Integrated Security=True;TrustServerCertificate=True";
+                        using (SqlConnection conn = new SqlConnection(connString))
+                        {
+                            conn.Open();
+                            string query = "SELECT CustomerID FROM Customers WHERE Username = @Username";
+                            using (SqlCommand cmd = new SqlCommand(query, conn))
+                            {
+                                cmd.Parameters.AddWithValue("@Username", account.Username);
+                                object result = cmd.ExecuteScalar();
+                                if (result != null)
+                                {
+                                    // Lưu ID vào biến toàn cục để trang Cửa hàng dùng
+                                    AppSession.CurrentCustomerID = Convert.ToInt32(result);
+                                }
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Lỗi lấy thông tin Khách hàng: " + ex.Message);
+                    }
+                }
 
-                // Phân luồng mở giao diện tương ứng
+                MessageBox.Show($"Xin chào {account.Username}!", "Đăng nhập thành công");
+                this.Hide(); 
+
                 if (account.Role == "Admin")
                 {
                     new AdminWindow().Show();
@@ -120,7 +147,7 @@ namespace Pharmacy_Manage.GUI
                     new HomeWindow().Show();
                 }
 
-                this.Close(); // Đóng hẳn form login
+                this.Close(); 
             }
             else
             {
@@ -136,7 +163,6 @@ namespace Pharmacy_Manage.GUI
             string phone = regPhone.Text;
             string pass = regPass.Password;
 
-            // Lấy role từ RadioButton ở màn hình Đăng ký
             string role = "Customer";
             if (rbRegAdmin.IsChecked == true) role = "Admin";
             if (rbRegStaff.IsChecked == true) role = "Staff";
@@ -165,7 +191,14 @@ namespace Pharmacy_Manage.GUI
 
         private void rbAdmin_Checked(object sender, RoutedEventArgs e)
         {
-
         }
+    }
+
+    // =================================================================
+    // LỚP LƯU TRỮ PHIÊN ĐĂNG NHẬP (Bất kỳ file nào cũng có thể gọi được)
+    // =================================================================
+    public static class AppSession
+    {
+        public static int CurrentCustomerID { get; set; } = 0;
     }
 }

@@ -4,18 +4,14 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using Microsoft.Data.SqlClient;
-using Pharmacy_Manage.DAL; // Để gọi DbConnection
+using Pharmacy_Manage.DAL; 
 
 namespace Pharmacy_Manage.GUI
 {
     public partial class QLkhachhang_view : UserControl
     {
-        // Danh sách gốc chứa dữ liệu từ SQL
         private ObservableCollection<KhachHangViewModel> _danhSachGoc = new ObservableCollection<KhachHangViewModel>();
-        // Danh sách hiển thị trên DataGrid (thay đổi khi tìm kiếm)
         private ObservableCollection<KhachHangViewModel> _danhSachHienThi = new ObservableCollection<KhachHangViewModel>();
-
-        // Khởi tạo đối tượng kết nối Database từ DAL
         private DbConnection _db = new DbConnection();
 
         public QLkhachhang_view()
@@ -27,15 +23,11 @@ namespace Pharmacy_Manage.GUI
         private void LoadDuLieuTuDatabase()
         {
             _danhSachGoc.Clear();
-
             try
             {
                 using (SqlConnection con = _db.GetConnection())
                 {
                     con.Open();
-
-                    // Câu lệnh SQL truy vấn trực tiếp bảng Khách hàng
-                    // ⚠️ Đảm bảo tên bảng 'Customers' là tên đúng trong SQL của bạn
                     string query = "SELECT customerID, FullName, Email, Phone, Points, UserName FROM Customers";
 
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -54,23 +46,20 @@ namespace Pharmacy_Manage.GUI
                                     Phone = reader["Phone"]?.ToString() ?? "",
                                     Point = diem,
                                     UserName = reader["UserName"]?.ToString() ?? "",
-                                    HangThanhVien = TinhHangThanhVien(diem) // Tính hạng thành viên tự động
+                                    HangThanhVien = TinhHangThanhVien(diem) 
                                 });
                             }
                         }
                     }
                 }
-
-                // Cập nhật lên màn hình
                 LocDuLieu();
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Lỗi khi tải dữ liệu Khách hàng từ Database:\n" + ex.Message, "Lỗi SQL", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Lỗi khi tải dữ liệu Khách hàng:\n" + ex.Message, "Lỗi SQL", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
-        // Logic chia hạng thành viên dựa trên điểm
         private string TinhHangThanhVien(int point)
         {
             if (point >= 1000) return "Kim Cương";
@@ -79,7 +68,6 @@ namespace Pharmacy_Manage.GUI
             return "Đồng";
         }
 
-        // Sự kiện khi gõ chữ vào ô tìm kiếm (Tìm realtime)
         private void txtTimKiem_TextChanged(object sender, TextChangedEventArgs e)
         {
             LocDuLieu();
@@ -88,10 +76,8 @@ namespace Pharmacy_Manage.GUI
         private void LocDuLieu()
         {
             if (_danhSachGoc == null || dgKhachHang == null) return;
-
             string tuKhoa = txtTimKiem.Text.Trim().ToLower();
 
-            // Lọc danh sách (Tìm theo Tên hoặc SĐT)
             var ketQua = _danhSachGoc.Where(kh =>
                 string.IsNullOrEmpty(tuKhoa) ||
                 kh.FullName.ToLower().Contains(tuKhoa) ||
@@ -103,11 +89,9 @@ namespace Pharmacy_Manage.GUI
             {
                 _danhSachHienThi.Add(item);
             }
-
             dgKhachHang.ItemsSource = _danhSachHienThi;
         }
 
-        // Xử lý nút Thêm Khách Hàng (Tạm thời hiển thị lên màn hình, bạn có thể gọi câu lệnh INSERT SQL tại đây)
         private void btnThemKhach_Click(object sender, RoutedEventArgs e)
         {
             string tenKH = txtTenKH.Text.Trim();
@@ -125,9 +109,6 @@ namespace Pharmacy_Manage.GUI
                 return;
             }
 
-            // TODO: Viết câu lệnh INSERT INTO Customers(...) VALUES(...) vào CSDL ở đây
-
-            // Thêm giả lập vào giao diện (Cho đến khi bạn viết lệnh INSERT)
             string maKHMoi = "CUS" + (_danhSachGoc.Count + 1).ToString("D3");
             _danhSachGoc.Add(new KhachHangViewModel
             {
@@ -140,23 +121,83 @@ namespace Pharmacy_Manage.GUI
             });
 
             MessageBox.Show("Thêm khách hàng thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
-
             txtTenKH.Clear();
             txtSDT.Clear();
             LocDuLieu();
         }
 
-        // Nút Xem lịch sử mua hàng
+        // ==================== XỬ LÝ NÚT XEM LỊCH SỬ ====================
         private void btnXemLichSu_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button btn && btn.DataContext is KhachHangViewModel kh)
             {
-                MessageBox.Show($"Lịch sử mua hàng của khách hàng: {kh.FullName} ({kh.Phone})\n\nTính năng tra cứu hóa đơn cũ đang được bảo trì.", "Lịch sử mua hàng", MessageBoxButton.OK, MessageBoxImage.Information);
+                // Gắn tên khách hàng lên tiêu đề bảng
+                txtTenKhachHangLichSu.Text = $"Lịch sử mua hàng: {kh.FullName} ({kh.Phone})";
+                
+                // Load dữ liệu hóa đơn của khách này
+                LoadLichSuHoaDon(kh.CustomerID);
+                
+                // Hiện bảng Overlay lên
+                LichSuOverlay.Visibility = Visibility.Visible;
+            }
+        }
+
+        private void btnCloseLichSu_Click(object sender, RoutedEventArgs e)
+        {
+            LichSuOverlay.Visibility = Visibility.Collapsed;
+        }
+
+        private void LoadLichSuHoaDon(string customerIdStr)
+        {
+            var lichSuList = new ObservableCollection<HoaDonViewModel>();
+            try
+            {
+                using (SqlConnection con = _db.GetConnection())
+                {
+                    con.Open();
+                    // Lấy các hóa đơn thuộc về MaKH tương ứng. Sắp xếp hóa đơn mới nhất lên đầu.
+                    string query = "SELECT MaHD, NgayLap, TongTienSanPham, TrangThai FROM HoaDon WHERE MaKH = @MaKH ORDER BY NgayLap DESC";
+                    
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        // Kiểm tra parse ID an toàn (Nếu là ID giả lập như "CUS001" thì sẽ lọc = -1 không ra kết quả lỗi)
+                        int maKhach;
+                        if (int.TryParse(customerIdStr, out maKhach))
+                        {
+                            cmd.Parameters.AddWithValue("@MaKH", maKhach);
+                        }
+                        else
+                        {
+                            cmd.Parameters.AddWithValue("@MaKH", -1); 
+                        }
+
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                lichSuList.Add(new HoaDonViewModel
+                                {
+                                    MaHD = reader.GetInt32(0),
+                                    NgayLap = reader.IsDBNull(1) ? DateTime.Now : reader.GetDateTime(1),
+                                    TongTienSanPham = reader.IsDBNull(2) ? 0 : reader.GetDecimal(2),
+                                    TrangThai = reader.IsDBNull(3) ? "" : reader.GetString(3)
+                                });
+                            }
+                        }
+                    }
+                }
+                
+                // Đổ dữ liệu vào bảng lịch sử
+                dgLichSuHoaDon.ItemsSource = lichSuList;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi tải lịch sử hóa đơn: " + ex.Message, "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }
 
-    // Lớp Model Khách Hàng (Khớp 100% với tên cột bạn yêu cầu)
+    // ==================== CÁC LỚP MODEL ====================
     public class KhachHangViewModel
     {
         public string CustomerID { get; set; } = "";
@@ -165,8 +206,15 @@ namespace Pharmacy_Manage.GUI
         public string Phone { get; set; } = "";
         public int Point { get; set; }
         public string UserName { get; set; } = "";
-
-        // Cột phụ tự tính không lưu trong DB
         public string HangThanhVien { get; set; } = "";
+    }
+
+    // Lớp Model mới chứa dữ liệu Lịch sử Hóa đơn
+    public class HoaDonViewModel
+    {
+        public int MaHD { get; set; }
+        public DateTime NgayLap { get; set; }
+        public decimal TongTienSanPham { get; set; }
+        public string TrangThai { get; set; }
     }
 }
