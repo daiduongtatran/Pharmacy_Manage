@@ -149,7 +149,6 @@ namespace Pharmacy_Manage.GUI
 
             try
             {
-                // Gọi BUS (Bạn nhớ cập nhật BUS theo code tôi gửi ở tin nhắn trước nhé)
                 bool isSuccess = _accountBUS.RegisterAccount(name, email, phone, pass, role);
 
                 if (isSuccess)
