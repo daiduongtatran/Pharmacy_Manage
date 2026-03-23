@@ -235,13 +235,8 @@ namespace Pharmacy_Manage.GUI
 
                         string updateQuery = @"
                             UPDATE SanPham
-<<<<<<< HEAD
-                            SET TonKho = TonKho - @SoLuong
-=======
                             SET TonKho = TonKho - @SoLuong,
-                                HangXuat = HangXuat + @SoLuong
->>>>>>> 3cdd5db5fc5c5851ef1a3c23d54be47670fed283
-                            
+                            HangXuat = HangXuat + @SoLuong
                             WHERE MaSP = @MaSP";
 
                         SqlCommand updateCmd = new SqlCommand(updateQuery, conn);

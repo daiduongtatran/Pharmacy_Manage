@@ -105,7 +105,7 @@
                     </StackPanel>
                     <StackPanel Margin="10,8">
                         <TextBlock Text="Ghi chú" Style="{StaticResource LabelStyle}"/>
-                        <TextBox x:Name="txtGhiChu"/>
+                        <TextBox x:Name="txtGhiChu" TextChanged="txtGhiChu_TextChanged"/>
                     </StackPanel>
                 </UniformGrid>
             </ScrollViewer>

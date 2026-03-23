@@ -1,0 +1,84 @@
+﻿<Window x:Class="Pharmacy_Manage.GUI.AdminWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="MediTrack Admin" Height="800" Width="1280"
+        WindowStartupLocation="CenterScreen" WindowStyle="None" 
+        AllowsTransparency="True" Background="Transparent"
+        MouseDown="Window_MouseDown">
+
+    <Window.Resources>
+        <!-- Style cho nút Menu bên trái -->
+        <Style x:Key="SidebarBtnStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#A0AEC0"/>
+            <Setter Property="Height" Value="55"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="Padding" Value="25,0,0,0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" 
+                                BorderThickness="4,0,0,0" BorderBrush="Transparent">
+                            <ContentPresenter VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#2D3748"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                            
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Border Background="#F7FAFC" CornerRadius="20" BorderBrush="#E2E8F0" BorderThickness="1">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="260"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Sidebar bên trái -->
+            <Border Grid.Column="0" Background="#1C2E4A" CornerRadius="20,0,0,20">
+                <StackPanel Margin="0,40,0,0">
+                    <TextBlock Text="MEDITRACK PRO" Foreground="White" FontSize="22" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,50"/>
+
+                    <Button Style="{StaticResource SidebarBtnStyle}" Content="🏠  Trang chủ" Tag="0" Click="Menu_Click"/>
+                    <Button Style="{StaticResource SidebarBtnStyle}" Content="📦  Kho thuốc" Tag="1" Click="Menu_Click"/>
+                    <Button Style="{StaticResource SidebarBtnStyle}" Content="🧾  Hóa đơn" Tag="2" Click="Menu_Click"/>
+                    <Button Style="{StaticResource SidebarBtnStyle}" Content="👥  Nhân viên" Tag="3" Click="Menu_Click"/>
+
+                    <Button Style="{StaticResource SidebarBtnStyle}" Content="🚪  Đăng xuất" Margin="0,300,0,0" Click="Logout_Click" Foreground="#F56565"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Vùng nội dung chính bên phải -->
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="60"/>
+                    <!-- Thanh Header trên cùng -->
+                    <RowDefinition Height="*"/>
+                    <!-- Nội dung thay đổi -->
+                </Grid.RowDefinitions>
+
+                <!-- Header đơn giản -->
+                <Border Grid.Row="0" Background="White" BorderBrush="#E2E8F0" BorderThickness="0,0,0,1">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,30,0">
+                        <TextBlock Text="Chào Admin," VerticalAlignment="Center" Foreground="#718096" Margin="0,0,10,0"/>
+                        <TextBlock Text="Đại Du" FontWeight="Bold" VerticalAlignment="Center" Foreground="#2D3748"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- ĐÂY LÀ NƠI HIỂN THỊ CÁC TRANG CON -->
+                <ContentControl x:Name="MainContentArea" Grid.Row="1" Margin="20"/>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>
