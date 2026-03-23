@@ -3,8 +3,13 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:local="clr-namespace:Pharmacy_Manage.GUI.KhachHang"
              mc:Ignorable="d"
-             Background="#F7FAFC" d:DesignHeight="800" d:DesignWidth="1000">
+             Background="#F7FAFC" d:DesignHeight="800" d:DesignWidth="1100">
+
+    <UserControl.Resources>
+        <local:ByteArrayToImageConverter x:Key="BytesToImage" />
+    </UserControl.Resources>
 
     <Grid>
         <Grid>
@@ -58,38 +63,93 @@
                 </Grid>
             </Border>
 
-            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="0,10,0,0">
-                <ItemsControl x:Name="icProducts" Margin="20">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <WrapPanel ItemWidth="220" />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Border Background="White" CornerRadius="15" Margin="10" Padding="15" BorderBrush="#E2E8F0" BorderThickness="1">
-                                <StackPanel>
-                                    <Border Background="#EBF8FF" Height="120" CornerRadius="10" Margin="0,0,0,15">
-                                        <TextBlock Text="💊" FontSize="50" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                    </Border>
-                                    
-                                    <TextBlock Text="{Binding Name}" FontSize="16" FontWeight="Bold" Foreground="#2D3748" TextWrapping="Wrap" Height="45"/>
-                                    <TextBlock Text="{Binding Price, StringFormat='{}{0:N0} đ'}" FontSize="16" FontWeight="SemiBold" Foreground="#E53E3E" Margin="0,5,0,15"/>
-                                    
-                                    <Button Content="Thêm vào giỏ" Background="#E2E8F0" Foreground="#2D3748" FontWeight="Bold" Height="35" Cursor="Hand"
-                                            Click="BtnAddToCart_Click" DataContext="{Binding}">
-                                        <Button.Resources>
-                                            <Style TargetType="Border">
-                                                <Setter Property="CornerRadius" Value="8"/>
-                                            </Style>
-                                        </Button.Resources>
-                                    </Button>
-                                </StackPanel>
-                            </Border>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </ScrollViewer>
+            <Grid Grid.Row="1" Margin="0,10,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="250"/>
+                </Grid.ColumnDefinitions>
+
+                <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto">
+                    <ItemsControl x:Name="icProducts" Margin="20">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel ItemWidth="220" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Background="White" CornerRadius="15" Margin="10" Padding="15" BorderBrush="#E2E8F0" BorderThickness="1">
+                                    <StackPanel>
+                                        <Border Height="120" CornerRadius="10" Margin="0,0,0,15" Background="#EBF8FF">
+                                            <Grid>
+                                                <TextBlock Text="Chưa có ảnh" FontSize="14" Foreground="#A0AEC0" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                <Image Source="{Binding ImageData, Converter={StaticResource BytesToImage}}" Stretch="Uniform" Margin="5">
+                                                    <Image.Style>
+                                                        <Style TargetType="Image">
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding ImageData}" Value="{x:Null}">
+                                                                    <Setter Property="Visibility" Value="Hidden"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </Image.Style>
+                                                </Image>
+                                            </Grid>
+                                        </Border>
+                                        
+                                        <TextBlock Text="{Binding Name}" FontSize="16" FontWeight="Bold" Foreground="#2D3748" TextWrapping="Wrap" Height="45"/>
+                                        <TextBlock Text="{Binding Price, StringFormat='{}{0:N0} đ'}" FontSize="16" FontWeight="SemiBold" Foreground="#E53E3E" Margin="0,5,0,15"/>
+                                        
+                                        <Button Content="Thêm vào giỏ" Background="#E2E8F0" Foreground="#2D3748" FontWeight="Bold" Height="35" Cursor="Hand"
+                                                Click="BtnAddToCart_Click" DataContext="{Binding}">
+                                            <Button.Resources>
+                                                <Style TargetType="Border">
+                                                    <Setter Property="CornerRadius" Value="8"/>
+                                                </Style>
+                                            </Button.Resources>
+                                        </Button>
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+
+                <Border Grid.Column="1" Background="White" CornerRadius="15" Margin="0,10,20,10" Padding="15" BorderBrush="#E2E8F0" BorderThickness="1" VerticalAlignment="Top">
+                    <StackPanel>
+                        <TextBlock Text="Phân loại thuốc" FontSize="18" FontWeight="Bold" Foreground="#2D3748" Margin="0,0,0,15"/>
+                        <ListBox x:Name="lstCategories" BorderThickness="0" Background="Transparent" SelectionChanged="LstCategories_SelectionChanged">
+                            <ListBox.ItemContainerStyle>
+                                <Style TargetType="ListBoxItem">
+                                    <Setter Property="Padding" Value="10"/>
+                                    <Setter Property="Margin" Value="0,3"/>
+                                    <Setter Property="Cursor" Value="Hand"/>
+                                    <Setter Property="FontSize" Value="15"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="ListBoxItem">
+                                                <Border x:Name="border" CornerRadius="8" Background="Transparent" Padding="{TemplateBinding Padding}">
+                                                    <ContentPresenter/>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter TargetName="border" Property="Background" Value="#EDF2F7"/>
+                                                    </Trigger>
+                                                    <Trigger Property="IsSelected" Value="True">
+                                                        <Setter TargetName="border" Property="Background" Value="#38A169"/>
+                                                        <Setter Property="Foreground" Value="White"/>
+                                                        <Setter Property="FontWeight" Value="Bold"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </ListBox.ItemContainerStyle>
+                        </ListBox>
+                    </StackPanel>
+                </Border>
+            </Grid>
         </Grid>
 
         <Grid x:Name="CartOverlay" Visibility="Collapsed" Background="#66000000">
@@ -151,28 +211,28 @@
                         </Border>
 
                         <StackPanel Grid.Column="1" Margin="20,0,0,0">
-    <TextBlock Text="Tóm tắt đơn hàng" FontSize="18" FontWeight="Bold" Foreground="#2D3748" Margin="0,0,0,20"/>
-    
-    <Grid Margin="0,0,0,15">
-        <TextBlock Text="Tổng sản phẩm:" Foreground="#718096"/>
-        <TextBlock x:Name="txtTotalItems" Text="0" HorizontalAlignment="Right" FontWeight="Bold"/>
-    </Grid>
-    
-    <Border BorderBrush="#E2E8F0" BorderThickness="0,1,0,0" Margin="0,10,0,20" Padding="0,20,0,0">
-        <Grid>
-            <TextBlock Text="TỔNG TIỀN:" FontSize="16" FontWeight="Bold" Foreground="#2D3748"/>
-            <TextBlock x:Name="txtTotalPrice" Text="0 đ" FontSize="18" FontWeight="Bold" Foreground="#E53E3E" HorizontalAlignment="Right"/>
-        </Grid>
-    </Border>
+                            <TextBlock Text="Tóm tắt đơn hàng" FontSize="18" FontWeight="Bold" Foreground="#2D3748" Margin="0,0,0,20"/>
+                            
+                            <Grid Margin="0,0,0,15">
+                                <TextBlock Text="Tổng sản phẩm:" Foreground="#718096"/>
+                                <TextBlock x:Name="txtTotalItems" Text="0" HorizontalAlignment="Right" FontWeight="Bold"/>
+                            </Grid>
+                            
+                            <Border BorderBrush="#E2E8F0" BorderThickness="0,1,0,0" Margin="0,10,0,20" Padding="0,20,0,0">
+                                <Grid>
+                                    <TextBlock Text="TỔNG TIỀN:" FontSize="16" FontWeight="Bold" Foreground="#2D3748"/>
+                                    <TextBlock x:Name="txtTotalPrice" Text="0 đ" FontSize="18" FontWeight="Bold" Foreground="#E53E3E" HorizontalAlignment="Right"/>
+                                </Grid>
+                            </Border>
 
-    <Button Content="THANH TOÁN" Background="#38A169" Foreground="White" FontSize="16" FontWeight="Bold" Height="50" Cursor="Hand" Click="BtnCheckout_Click">
-        <Button.Resources>
-            <Style TargetType="Border">
-                <Setter Property="CornerRadius" Value="10"/>
-            </Style>
-        </Button.Resources>
-    </Button>
-</StackPanel>
+                            <Button Content="THANH TOÁN" Background="#38A169" Foreground="White" FontSize="16" FontWeight="Bold" Height="50" Cursor="Hand" Click="BtnCheckout_Click">
+                                <Button.Resources>
+                                    <Style TargetType="Border">
+                                        <Setter Property="CornerRadius" Value="10"/>
+                                    </Style>
+                                </Button.Resources>
+                            </Button>
+                        </StackPanel>
                     </Grid>
                 </Grid>
             </Border>
