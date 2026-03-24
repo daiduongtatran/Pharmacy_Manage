@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Data;
+using System.Security.Cryptography.X509Certificates;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using Microsoft.Data.SqlClient;
 
 namespace Pharmacy_Manage.GUI
@@ -156,6 +158,9 @@ namespace Pharmacy_Manage.GUI
                 MessageBox.Show("Lỗi khi thêm vào giỏ: " + ex.Message);
             }
         }
+
+
+
         // ================= CẬP NHẬT TỔNG TIỀN =================
         private void CapNhatTongTien()
         {
@@ -394,6 +399,14 @@ namespace Pharmacy_Manage.GUI
                 btnAction.Background = (Brush)new BrushConverter().ConvertFromString("#E3F2FD"); // xanh nhạt
                 btnAction.Foreground = (Brush)new BrushConverter().ConvertFromString("#2196F3"); // xanh nước
                 btnAction.BorderBrush = (Brush)new BrushConverter().ConvertFromString("#2196F3");
+            }
+        }
+        //================= COMBO BOX CHO BỆNH NHÂN (dịch vụ) =============
+        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+
             }
         }
     }

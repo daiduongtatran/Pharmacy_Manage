@@ -53,5 +53,10 @@ namespace Pharmacy_Manage.GUI
         }
 
         private void BtnCancel_Click(object sender, RoutedEventArgs e) => this.Close();
+
+        private void txtGhiChu_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
+        }
     }
 }

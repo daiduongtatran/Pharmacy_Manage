@@ -24,7 +24,6 @@ namespace Pharmacy_Manage.GUI
         private void LoadDuLieuTuDatabase()
         {
             _danhSachGoc.Clear();
-
             try
             {
                 using (SqlConnection con = _db.GetConnection())
@@ -125,17 +124,17 @@ namespace Pharmacy_Manage.GUI
         }
     }
 
-    // ================= MODEL DỮ LIỆU BINDING =================
-    public class HoaDonViewModel
+    // Lớp Model Khách Hàng (Khớp 100% với tên cột bạn yêu cầu)
+    public class KhachHangViewModel
     {
-        public int MaHD { get; set; }
-        public DateTime NgayLap { get; set; }
-        public string TenKhachHang { get; set; }
-        public string SDT { get; set; }
-        public decimal TongTienDichVu { get; set; }
-        public decimal TongTienSanPham { get; set; }
-        public decimal TongThanhToan { get; set; }
-        public string TrangThai { get; set; }
-        public string GhiChu { get; set; }
+        public string CustomerID { get; set; } = "";
+        public string FullName { get; set; } = "";
+        public string Email { get; set; } = "";
+        public string Phone { get; set; } = "";
+        public int Point { get; set; }
+        public string UserName { get; set; } = "";
+
+        // Cột phụ tự tính không lưu trong DB
+        public string HangThanhVien { get; set; } = "";
     }
 }

@@ -72,7 +72,7 @@
                 <!-- ================= KHO THUỐC ================= -->
                 <TabItem Header="Thuốc đang bán">
 
-                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <ScrollViewer VerticalScrollBarVisibility="Hidden">
 
                         <ItemsControl x:Name="icSanPham" BorderBrush="Gray" Background="White">
 
@@ -94,13 +94,19 @@
 
                                         <Grid>
                                             <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="1*"/>
                                                 <ColumnDefinition Width="3*"/>
                                                 <ColumnDefinition Width="2*"/>
                                                 <ColumnDefinition Width="1.5*"/>
                                             </Grid.ColumnDefinitions>
 
                                             <!-- THÔNG TIN -->
-                                            <StackPanel>
+                                            <Border BorderBrush="LightGray" BorderThickness="1">
+                                                <Grid ClipToBounds="True">
+                                                    <Image Source="{Binding HinhAnh}" Stretch="UniformToFill"/>
+                                                </Grid>
+                                            </Border>
+                                            <StackPanel Grid.Column="1" Margin="10,0,0,0">
                                                 <TextBlock Text="{Binding TenSP}"
                                                            FontSize="16"
                                                            FontWeight="Bold"/>
@@ -120,7 +126,7 @@
                                             </StackPanel>
 
                                             <!-- ====== SỐ LƯỢNG  ====== -->
-                                            <StackPanel Grid.Column="1"
+                                            <StackPanel Grid.Column="2"
                                                 Orientation="Horizontal"
                                                 HorizontalAlignment="Center"
                                                 VerticalAlignment="Center">
@@ -162,7 +168,7 @@
 
                                             </StackPanel>
                                             <!-- ====== NÚT MUA ====== -->
-                                            <Button Grid.Column="2"
+                                            <Button Grid.Column="3"
                                                     Content="🛒 Thêm"
                                                     Width="110"
                                                     Height="40"
@@ -197,60 +203,119 @@
 
                 <!-- ================= Hóa đơn ================= -->
                 <TabItem Header="Hóa đơn">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="4*"/>
+                            <ColumnDefinition Width="2*"/>
+                        </Grid.ColumnDefinitions>
+                        <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Hidden">
 
-                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <ItemsControl x:Name="icGioHang" Background="White">
 
-                        <ItemsControl x:Name="icGioHang" Background="White">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
 
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-
-                                    <Border BorderBrush="#DDD"
+                                        <Border BorderBrush="#DDD"
                                             BorderThickness="1"
                                             CornerRadius="10"
                                             Margin="10"
-                                            Padding="15">
+                                            >
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="50"/>
+                                                </Grid.ColumnDefinitions>
+                                                <Grid Grid.Column="0" Margin="15">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="6*"/>
+                                                        <ColumnDefinition Width="2*"/>
+                                                        <ColumnDefinition Width="4*"/>
+                                                        <ColumnDefinition Width="4*"/>
+                                                    </Grid.ColumnDefinitions>
 
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="3*"/>
-                                                <ColumnDefinition Width="1*"/>
-                                                <ColumnDefinition Width="2*"/>
-                                                <ColumnDefinition Width="2*"/>
-                                            </Grid.ColumnDefinitions>
-
-                                            <TextBlock Text="{Binding TenSP}"
+                                                    <TextBlock Text="{Binding TenSP}"
                                                        FontWeight="Bold"
                                                        VerticalAlignment="Center"/>
 
-                                            <TextBlock Grid.Column="1"
+                                                    <TextBlock Grid.Column="1"
                                                        Text="{Binding SoLuong}"
                                                        HorizontalAlignment="Center"
                                                        VerticalAlignment="Center"/>
 
-                                            <TextBlock Grid.Column="2"
+                                                    <TextBlock Grid.Column="2"
                                                        Text="{Binding DonGia, StringFormat={}{0:N0} VNĐ}"
                                                        HorizontalAlignment="Center"
                                                        VerticalAlignment="Center"/>
 
-                                            <TextBlock Grid.Column="3"
+                                                    <TextBlock Grid.Column="3"
                                                        Text="{Binding ThanhTien, StringFormat={}{0:N0} VNĐ}"
                                                        HorizontalAlignment="Center"
                                                        VerticalAlignment="Center"
                                                        FontWeight="Bold"/>
-                                        </Grid>
+                                                </Grid>
+                                                <Button Grid.Column="1" Background="Red" Foreground="White" BorderThickness="0" >
+                                                    <Button.Template>
+                                                        <ControlTemplate TargetType="Button">
+                                                            <Border Background="{TemplateBinding Background}"  CornerRadius="0,10,10,0">
+                                                                <Viewbox Width="16" Height="16" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                                    <Canvas Width="24" Height="24">
+                                                                        <Path Stroke="White" StrokeThickness="2" StrokeStartLineCap="Round" Data="M6,6 L18,18 M18,6 L6,18"/>
+                                                                    </Canvas>
+                                                                </Viewbox>
+                                                            </Border>
+                                                            <ControlTemplate.Triggers>
+                                                                <Trigger Property="IsMouseOver" Value="True">
+                                                                    <Setter Property="Background" Value="DarkRed"/>
+                                                                </Trigger>
+                                                            </ControlTemplate.Triggers>
+                                                        </ControlTemplate>
+                                                    </Button.Template>
 
-                                    </Border>
+                                                </Button>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
 
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+                            <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Hidden">
+                                    <Grid Background="White">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="1*"/>
+                                            <ColumnDefinition Width="2*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="30"/>
+                                            <RowDefinition Height="30"/>
+                                            <RowDefinition Height="30"/>
+                                            <RowDefinition Height="30"/>
+                                            <RowDefinition Height="*"/>
+                                            <RowDefinition Height="30"/>
+                                        </Grid.RowDefinitions>
+                                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Bệnh Nhân:" FontWeight="Bold" FontSize="14" VerticalAlignment="Center"/>
+                                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Mã khách hàng:" FontWeight="Bold" VerticalAlignment="Center" FontSize="14"/>
+                                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Dịch vụ:" FontWeight="Bold" FontSize="14" VerticalAlignment="Center"/>
+                                        <ComboBox Grid.Row="1" Grid.Column="1" SelectionChanged="ComboBox_SelectionChanged" Height="23"/>
+                                        <ItemsControl x:Name="icDichvu" Grid.Row="4" Grid.ColumnSpan="2" Background="White">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid Margin="5">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="1*"/>
+                                                    <ColumnDefinition Width="2*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Text="{Binding TenDichVu}"/>
+                                                <TextBlock Text="{Binding Gia, StringFormat={}{0:N0} VNĐ}" Grid.Column="1" HorizontalAlignment="Right"/>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                            </Grid>
 
-                        </ItemsControl>
-
-                    </ScrollViewer>
-
+                            </ScrollViewer>
+                    </Grid>
                 </TabItem>
-
             </TabControl>
 
         </Border>
