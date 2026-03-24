@@ -1,12 +1,17 @@
 ﻿using System;
 using System.Data;
+using System.Reflection.Metadata;
 using System.Security.Cryptography.X509Certificates;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using System.Windows.Media.Media3D;
 using Microsoft.Data.SqlClient;
+using Pharmacy_Manage.GUI.nhanvien;
+using static Pharmacy_Manage.GUI.Banthuocview;
 
 namespace Pharmacy_Manage.GUI
 {
@@ -61,7 +66,12 @@ namespace Pharmacy_Manage.GUI
                 MessageBox.Show("Lỗi load dữ liệu: " + ex.Message);
             }
         }
-
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            cbKhachHang.ItemsSource = LoadKhachHang();
+            cbKhachHang.DisplayMemberPath = "HoTen";
+            cbKhachHang.SelectedValuePath = "HoTen";
+        }
         // ================= CHECK HẠN =================
         private bool CheckHan(DateTime hanDung)
         {
@@ -164,22 +174,30 @@ namespace Pharmacy_Manage.GUI
         // ================= CẬP NHẬT TỔNG TIỀN =================
         private void CapNhatTongTien()
         {
-            tongTien = 0;
-
+            decimal tongTienThuoc = 0;
             foreach (DataRow row in gioHangTable.Rows)
             {
-                tongTien += Convert.ToDecimal(row["ThanhTien"]);
+                tongTienThuoc += Convert.ToDecimal(row["ThanhTien"]);
             }
-
-            txtTongTien.Text = "Tổng tiền: " + tongTien.ToString("N0") + " VNĐ";
+            txtTongTienThuoc.Text = "Tổng thuốc: " + tongTienThuoc.ToString("N0") + " VNĐ";
+            decimal tongTatCa = tongTienThuoc + tongTienDichVu;
+            txtTongTien.Text = "Tổng tiền: " + tongTatCa.ToString("N0") + " VNĐ";
         }
-
         // ================= THANH TOÁN =================
         private void ThanhToan()
         {
-            if (gioHangTable.Rows.Count == 0)
+            if (gioHangTable.Rows.Count == 0 && listDichVuDaChon.Count == 0)
             {
-                MessageBox.Show("Giỏ hàng đang trống.");
+                MessageBox.Show("Không có gì để thanh toán.");
+                return;
+            }
+
+            //Lấy mã khách hàng
+            string maKH = txtMaKH.Text;
+
+            if (string.IsNullOrEmpty(maKH))
+            {
+                MessageBox.Show("Vui lòng chọn khách hàng.");
                 return;
             }
 
@@ -189,15 +207,43 @@ namespace Pharmacy_Manage.GUI
                 {
                     conn.Open();
 
+                    // TÍNH TIỀN
+                    decimal tongTienThuoc = 0;
+                    foreach (DataRow row in gioHangTable.Rows)
+                    {
+                        tongTienThuoc += Convert.ToDecimal(row["ThanhTien"]);
+                    }
+
+                    
+
+                    // TẠO MÃ HÓA ĐƠN 
+                    string maHD = "HD" + DateTime.Now.Ticks;
+
+                    //INSERT HÓA ĐƠN
+                    string insertHoaDon = @"
+                INSERT INTO HoaDon
+                (MaKH, NgayLap, TongTienDichVu, TongTienSanPham)
+                VALUES
+                (@MaKH, GETDATE(), @TongDV, @TongSP)";
+
+                    SqlCommand cmdHD = new SqlCommand(insertHoaDon, conn);
+                    cmdHD.Parameters.AddWithValue("@MaKH", maKH);
+                    cmdHD.Parameters.AddWithValue("@TongDV", tongTienDichVu);
+                    cmdHD.Parameters.AddWithValue("@TongSP", tongTienThuoc);
+                    
+
+                    cmdHD.ExecuteNonQuery();
+
+                    // ================= XỬ LÝ THUỐC =================
                     foreach (DataRow row in gioHangTable.Rows)
                     {
                         string ma = row["MaSP"].ToString();
                         int soLuongMua = Convert.ToInt32(row["SoLuong"]);
 
                         string checkQuery = @"
-                            SELECT TonKho, HanDung, TrangThai
-                            FROM SanPham
-                            WHERE MaSP = @MaSP";
+                    SELECT TonKho, HanDung, TrangThai
+                    FROM SanPham
+                    WHERE MaSP = @MaSP";
 
                         SqlCommand checkCmd = new SqlCommand(checkQuery, conn);
                         checkCmd.Parameters.AddWithValue("@MaSP", ma);
@@ -234,10 +280,10 @@ namespace Pharmacy_Manage.GUI
                         }
 
                         string updateQuery = @"
-                            UPDATE SanPham
-                            SET TonKho = TonKho - @SoLuong,
-                            HangXuat = HangXuat + @SoLuong
-                            WHERE MaSP = @MaSP";
+                    UPDATE SanPham
+                    SET TonKho = TonKho - @SoLuong,
+                        HangXuat = HangXuat + @SoLuong
+                    WHERE MaSP = @MaSP";
 
                         SqlCommand updateCmd = new SqlCommand(updateQuery, conn);
                         updateCmd.Parameters.AddWithValue("@SoLuong", soLuongMua);
@@ -248,8 +294,18 @@ namespace Pharmacy_Manage.GUI
 
                 MessageBox.Show("Thanh toán thành công!");
 
+                // RESET SAU THANH TOÁN
                 gioHangTable.Clear();
-                CapNhatTongTien();
+                listDichVuDaChon.Clear();
+                icDichvu.ItemsSource = null;
+
+                tongTienDichVu = 0;
+
+                txtTongTienDichVu.Text = "Tổng DV: 0 VNĐ";
+                txtTongTienThuoc.Text = "Tổng thuốc: 0 VNĐ";
+                txtTongTien.Text = "Tổng tiền: 0 VNĐ";
+
+                CapNhatTrangThaiNut();
                 LoadDuLieuKho();
             }
             catch (Exception ex)
@@ -271,6 +327,7 @@ namespace Pharmacy_Manage.GUI
                 ThanhToan();
             }
         }
+
 
         // ================= TÌM KIẾM TỰ ĐỘNG =================
         private void txtSearch_TextChanged(object sender, TextChangedEventArgs e)
@@ -400,14 +457,137 @@ namespace Pharmacy_Manage.GUI
                 btnAction.Foreground = (Brush)new BrushConverter().ConvertFromString("#2196F3"); // xanh nước
                 btnAction.BorderBrush = (Brush)new BrushConverter().ConvertFromString("#2196F3");
             }
+            CapNhatTrangThaiNut();
         }
         //================= COMBO BOX CHO BỆNH NHÂN (dịch vụ) =============
-        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        public class KhachHang()
         {
+            public string MaKH { get; set; }
+            public string HoTen { get; set; }
+        }
+
+        public List<KhachHang> LoadKhachHang()
+        {
+            List<KhachHang> list = new List<KhachHang>();
+
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
+                conn.Open();
 
+                string query = "SELECT MaKH, HoTen FROM KhachHang";
+                SqlCommand cmd = new SqlCommand(query, conn);
+                SqlDataReader reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    list.Add(new KhachHang
+                    {
+                        MaKH = reader["MaKH"].ToString(),
+                        HoTen = reader["HoTen"].ToString()
+                    });
+                }
+
+                reader.Close();
             }
+
+            return list;
+        }
+
+        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            
+            var kh = (KhachHang)cbKhachHang.SelectedItem;
+
+            if (kh != null)
+            {
+               
+                txtMaKH.Text = kh.MaKH;
+            }
+        }
+        public class DichVu
+        {
+            public string MaDV { get; set; }
+            public string TenDichVu { get; set; }
+            public decimal Gia { get; set; }
+            public bool IsSelected { get; set; }
+        }
+
+        private void XoaItem_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (sender is Button btn && btn.Tag is DataRowView rowView)
+                {
+                    gioHangTable.Rows.Remove(rowView.Row);
+                    CapNhatTongTien();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi khi xóa: " + ex.Message);
+            }
+        }
+
+        List<DichVu> gioDichVu = new List<DichVu>();
+
+        decimal tongTienDichVu = 0;
+
+        List<DichVu> listDichVuDaChon = new List<DichVu>();
+        private void BtnChonDichVu_Click(object sender, RoutedEventArgs e)
+        {
+            ChonDichVuWindow win = new ChonDichVuWindow();
+
+            if (win.ShowDialog() == true)
+            {
+                listDichVuDaChon = win.SelectedDichVu ?? new List<DichVu>();
+                icDichvu.ItemsSource = listDichVuDaChon;
+                tongTienDichVu = listDichVuDaChon.Sum(x => x.Gia);
+                txtTongTienDichVu.Text = $"Tổng DV: {tongTienDichVu:N0} VNĐ";
+                CapNhatTongTien();
+            }
+        }
+        
+
+        private void CapNhatTrangThaiNut()
+        {
+            bool isHoaDon = tabControlMain.SelectedIndex == 1;
+
+            decimal tongThuoc = 0;
+            foreach (DataRow row in gioHangTable.Rows)
+            {
+                tongThuoc += Convert.ToDecimal(row["ThanhTien"]);
+            }
+
+            bool coTien = (tongThuoc + tongTienDichVu) > 0;
+
+            btnResetAll.Visibility = (isHoaDon && coTien)
+                ? Visibility.Visible
+                : Visibility.Collapsed;
+        }
+        private void btnResetAll_Click(object sender, RoutedEventArgs e)
+        {
+            gioHangTable.Rows.Clear();
+
+            listDichVuDaChon.Clear();
+            icDichvu.ItemsSource = null;
+
+            tongTienDichVu = 0;
+
+            txtTongTienDichVu.Text = "Tổng DV: 0 VNĐ";
+            txtTongTienThuoc.Text = "Tổng thuốc: 0 VNĐ";
+            txtTongTien.Text = "Tổng tiền: 0 VNĐ";
+
+            CapNhatTrangThaiNut();
+        }
+
+        private void XoaDV_Click(object sender, RoutedEventArgs e)
+        {
+            listDichVuDaChon.Clear();
+            icDichvu.ItemsSource = null;
+            tongTienDichVu = 0;
+            txtTongTienDichVu.Text = "Tổng DV: 0 VNĐ";
+            CapNhatTongTien();
+            CapNhatTrangThaiNut();
         }
     }
 }
