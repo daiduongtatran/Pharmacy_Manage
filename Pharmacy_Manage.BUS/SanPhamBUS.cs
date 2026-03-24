@@ -26,5 +26,7 @@ namespace Pharmacy_Manage.BUS
 
         // Hàm gọi sang DAL để lấy dữ liệu Dashboard
         public DataTable GetUrgentStats() => dal.GetUrgentStats();
+        
+public DataTable GetRevenue() => dal.GetRevenue();
     }
 }

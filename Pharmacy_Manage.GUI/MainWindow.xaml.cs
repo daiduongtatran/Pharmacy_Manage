@@ -101,9 +101,6 @@ namespace Pharmacy_Manage.GUI
 
             if (account != null)
             {
-                // =================================================================
-                // NẾU LÀ KHÁCH HÀNG: LẤY CUSTOMER ID TỪ DATABASE VÀ LƯU VÀO SESSION
-                // =================================================================
                 if (role == "Customer")
                 {
                     try
