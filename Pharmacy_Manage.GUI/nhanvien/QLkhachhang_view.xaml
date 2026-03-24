@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
-             d:DesignHeight="700" d:DesignWidth="1000" Background="#F4F7F6">
+             d:DesignHeight="800" d:DesignWidth="1100" Background="#F4F7F6">
 
     <UserControl.Resources>
         <Style TargetType="DataGridColumnHeader">
@@ -12,133 +12,145 @@
             <Setter Property="Foreground" Value="#4A5568"/>
             <Setter Property="FontWeight" Value="Bold"/>
             <Setter Property="Padding" Value="10,0"/>
-            <Setter Property="Height" Value="45"/>
+            <Setter Property="Height" Value="40"/>
             <Setter Property="BorderThickness" Value="0,0,0,1"/>
             <Setter Property="BorderBrush" Value="#E2E8F0"/>
         </Style>
 
-        <Style TargetType="TextBox">
-            <Setter Property="VerticalContentAlignment" Value="Center"/>
-            <Setter Property="Padding" Value="10,0"/>
-            <Setter Property="FontSize" Value="14"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="TextBox">
-                        <Border CornerRadius="8" BorderBrush="#E2E8F0" BorderThickness="1" Background="White">
-                            <ScrollViewer x:Name="PART_ContentHost"/>
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
+        <Style x:Key="StatusTextStyle" TargetType="TextBlock">
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding TrangThai}" Value="Đã thanh toán">
+                    <Setter Property="Foreground" Value="#48BB78"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding TrangThai}" Value="Chờ thanh toán">
+                    <Setter Property="Foreground" Value="#D69E2E"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding TrangThai}" Value="Đã hủy">
+                    <Setter Property="Foreground" Value="#E53E3E"/>
+                </DataTrigger>
+            </Style.Triggers>
         </Style>
     </UserControl.Resources>
 
-    <Grid Margin="20">
+    <Grid Margin="15">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0" Margin="0,0,0,20">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="4*"/>
-                <ColumnDefinition Width="6*"/>
-            </Grid.ColumnDefinitions>
-
-            <Border Grid.Column="0" Background="White" CornerRadius="12" Padding="20" Margin="0,0,10,0">
-                <Border.Effect>
-                    <DropShadowEffect BlurRadius="10" Opacity="0.05" ShadowDepth="2"/>
-                </Border.Effect>
-                <StackPanel>
-                    <TextBlock Text="🔍 Tra cứu khách hàng" FontSize="16" FontWeight="Bold" Foreground="#2D3748" Margin="0,0,0,15"/>
-                    <TextBlock Text="Nhập SĐT hoặc Tên khách hàng" Foreground="#718096" Margin="0,0,0,8"/>
-                    <TextBox x:Name="txtTimKiem" Height="45" TextChanged="txtTimKiem_TextChanged"/>
-                </StackPanel>
-            </Border>
-
-            <Border Grid.Column="1" Background="White" CornerRadius="12" Padding="20" Margin="10,0,0,0">
-                <Border.Effect>
-                    <DropShadowEffect BlurRadius="10" Opacity="0.05" ShadowDepth="2"/>
-                </Border.Effect>
-                <StackPanel>
-                    <TextBlock Text="✨ Thêm khách hàng mới" FontSize="16" FontWeight="Bold" Foreground="#2C9BB3" Margin="0,0,0,15"/>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-
-                        <StackPanel Grid.Column="0" Margin="0,0,10,0">
-                            <TextBlock Text="Họ và tên" Foreground="#718096" Margin="0,0,0,8"/>
-                            <TextBox x:Name="txtTenKH" Height="45"/>
-                        </StackPanel>
-
-                        <StackPanel Grid.Column="1" Margin="0,0,10,0">
-                            <TextBlock Text="Số điện thoại" Foreground="#718096" Margin="0,0,0,8"/>
-                            <TextBox x:Name="txtSDT" Height="45"/>
-                        </StackPanel>
-
-                        <Button Grid.Column="2" Content="Lưu Khách Hàng" Height="45" Width="130" VerticalAlignment="Bottom" Background="#2C9BB3" Foreground="White" FontWeight="Bold" BorderThickness="0" Cursor="Hand" Click="btnThemKhach_Click">
-                            <Button.Resources>
-                                <Style TargetType="Border">
-                                    <Setter Property="CornerRadius" Value="8"/>
-                                </Style>
-                            </Button.Resources>
-                        </Button>
-                    </Grid>
-                </StackPanel>
-            </Border>
-        </Grid>
-
-        <Border Grid.Row="1" Background="White" CornerRadius="12" Padding="20">
+        <Border Grid.Row="0" Background="White" CornerRadius="10" Padding="15" Margin="0,0,0,15">
             <Border.Effect>
-                <DropShadowEffect BlurRadius="10" Opacity="0.05" ShadowDepth="2"/>
+                <DropShadowEffect BlurRadius="8" Opacity="0.05" ShadowDepth="1"/>
+            </Border.Effect>
+            <StackPanel>
+
+                <UniformGrid Columns="3" Margin="0,0,0,15">
+                    <StackPanel Margin="0,0,15,0">
+                        <TextBlock Text="Tổng hóa đơn" Foreground="#718096" FontWeight="SemiBold" FontSize="13"/>
+                        <TextBlock x:Name="txtTongHoaDon" Text="0" FontSize="24" FontWeight="Bold" Foreground="#2C9BB3" Margin="0,2,0,0"/>
+                    </StackPanel>
+                    <StackPanel Margin="0,0,15,0">
+                        <TextBlock Text="Tổng doanh thu (VNĐ)" Foreground="#718096" FontWeight="SemiBold" FontSize="13"/>
+                        <TextBlock x:Name="txtTongDoanhThu" Text="0" FontSize="24" FontWeight="Bold" Foreground="#48BB78" Margin="0,2,0,0"/>
+                    </StackPanel>
+                    <StackPanel>
+                        <TextBlock Text="Chưa thu tiền (VNĐ)" Foreground="#718096" FontWeight="SemiBold" FontSize="13"/>
+                        <TextBlock x:Name="txtChuaThu" Text="0" FontSize="24" FontWeight="Bold" Foreground="#E53E3E" Margin="0,2,0,0"/>
+                    </StackPanel>
+                </UniformGrid>
+
+                <Separator Background="#EDF2F7" Margin="0,0,0,15"/>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0" Margin="0,0,15,0">
+                        <TextBlock Text="🔍 Tra cứu (Mã HĐ, Tên khách, SĐT)" Foreground="#718096" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,5"/>
+                        <TextBox x:Name="txtTimKiem" Height="35" Padding="10,0" FontSize="13" VerticalContentAlignment="Center" TextChanged="Filter_Changed">
+                            <TextBox.Template>
+                                <ControlTemplate TargetType="TextBox">
+                                    <Border CornerRadius="6" BorderBrush="#E2E8F0" BorderThickness="1" Background="White">
+                                        <ScrollViewer x:Name="PART_ContentHost"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </TextBox.Template>
+                        </TextBox>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1" Margin="0,0,15,0" Width="150">
+                        <TextBlock Text="📅 Lọc theo ngày:" Foreground="#718096" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,5"/>
+                        <DatePicker x:Name="dpLocNgay" Height="35" SelectedDateChanged="Filter_Changed"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="2" Width="150">
+                        <TextBlock Text="📊 Trạng thái:" Foreground="#718096" FontWeight="SemiBold" FontSize="12" Margin="0,0,0,5"/>
+                        <ComboBox x:Name="cbTrangThai" Height="35" VerticalContentAlignment="Center" FontSize="13" SelectionChanged="Filter_Changed">
+                            <ComboBoxItem Content="Tất cả" IsSelected="True"/>
+                            <ComboBoxItem Content="Đã thanh toán"/>
+                            <ComboBoxItem Content="Chờ thanh toán"/>
+                            <ComboBoxItem Content="Đã hủy"/>
+                        </ComboBox>
+                    </StackPanel>
+                </Grid>
+            </StackPanel>
+        </Border>
+
+        <Border Grid.Row="1" Background="White" CornerRadius="10" Padding="10">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="8" Opacity="0.05" ShadowDepth="1"/>
             </Border.Effect>
             <DockPanel>
-                <TextBlock DockPanel.Dock="Top" Text="👥 Danh sách khách hàng" FontSize="18" FontWeight="Bold" Foreground="#2D3748" Margin="0,0,0,15"/>
+                <TextBlock DockPanel.Dock="Top" Text="📜 LỊCH SỬ GIAO DỊCH &amp; HÓA ĐƠN" FontSize="16" FontWeight="Bold" Foreground="#2D3748" Margin="0,0,0,10"/>
 
-                <DataGrid x:Name="dgKhachHang" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" Background="White" BorderThickness="0" RowHeight="45" GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="#EDF2F7">
+                <DataGrid x:Name="dgHoaDon" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" Background="White" BorderThickness="0" RowHeight="40" GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="#EDF2F7">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Mã KH" Binding="{Binding CustomerID}" Width="80"/>
-                        <DataGridTextColumn Header="Họ và Tên" Binding="{Binding FullName}" Width="*"/>
-
-                        <DataGridTextColumn Header="Số Điện Thoại" Binding="{Binding Phone}" Width="120">
-                            <DataGridTextColumn.ElementStyle>
-                                <Style TargetType="TextBlock">
-                                    <Setter Property="FontWeight" Value="SemiBold"/>
-                                </Style>
-                            </DataGridTextColumn.ElementStyle>
-                        </DataGridTextColumn>
-
-                        <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="180"/>
-
-                        <DataGridTextColumn Header="Điểm" Binding="{Binding Point}" Width="80">
+                        <DataGridTextColumn Header="Mã HĐ" Binding="{Binding MaHD}" Width="70">
                             <DataGridTextColumn.ElementStyle>
                                 <Style TargetType="TextBlock">
                                     <Setter Property="FontWeight" Value="Bold"/>
-                                    <Setter Property="Foreground" Value="#E67E22"/>
-                                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
                                 </Style>
                             </DataGridTextColumn.ElementStyle>
                         </DataGridTextColumn>
 
-                        <DataGridTextColumn Header="Hạng Thành Viên" Binding="{Binding HangThanhVien}" Width="130">
+                        <DataGridTextColumn Header="Ngày Lập" Binding="{Binding NgayLap, StringFormat=dd/MM/yyyy HH:mm}" Width="130"/>
+                        <DataGridTextColumn Header="Khách Hàng" Binding="{Binding TenKhachHang}" Width="160"/>
+                        <DataGridTextColumn Header="SĐT" Binding="{Binding SDT}" Width="100"/>
+
+                        <DataGridTextColumn Header="Tiền Dịch Vụ" Binding="{Binding TongTienDichVu, StringFormat={}{0:N0}}" Width="100"/>
+                        <DataGridTextColumn Header="Tiền Sản Phẩm" Binding="{Binding TongTienSanPham, StringFormat={}{0:N0}}" Width="110"/>
+
+                        <DataGridTextColumn Header="Tổng Cần Thu" Binding="{Binding TongThanhToan, StringFormat={}{0:N0}}" Width="110">
                             <DataGridTextColumn.ElementStyle>
                                 <Style TargetType="TextBlock">
-                                    <Setter Property="Foreground" Value="#2C9BB3"/>
                                     <Setter Property="FontWeight" Value="Bold"/>
+                                    <Setter Property="Foreground" Value="#E53E3E"/>
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
                                 </Style>
                             </DataGridTextColumn.ElementStyle>
                         </DataGridTextColumn>
 
-                        <DataGridTemplateColumn Header="Thao tác" Width="120">
+                        <DataGridTemplateColumn Header="Trạng Thái" Width="120">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <Button Content="Xem lịch sử" Background="#EDF2F7" Foreground="#4A5568" BorderThickness="0" Padding="10,5" Cursor="Hand" Click="btnXemLichSu_Click">
+                                    <TextBlock Text="{Binding TrangThai}" Style="{StaticResource StatusTextStyle}"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <DataGridTemplateColumn Header="Thao tác" Width="100">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button Content="Chi tiết" Background="#EDF2F7" Foreground="#2C9BB3" FontWeight="Bold" BorderThickness="0" Padding="10,4" Cursor="Hand" Click="BtnChiTiet_Click">
                                         <Button.Resources>
                                             <Style TargetType="Border">
-                                                <Setter Property="CornerRadius" Value="5"/>
+                                                <Setter Property="CornerRadius" Value="4"/>
                                             </Style>
                                         </Button.Resources>
                                     </Button>

@@ -13,13 +13,49 @@ namespace Pharmacy_Manage.GUI
         private ObservableCollection<LichHenViewModel> _danhSachDatTruoc = new ObservableCollection<LichHenViewModel>();
         private ObservableCollection<LichHenViewModel> _danhSachLaySo = new ObservableCollection<LichHenViewModel>();
 
+        private ObservableCollection<DichVuModel> _danhSachDichVu = new ObservableCollection<DichVuModel>();
+
         private DbConnection _db = new DbConnection();
 
         public DatLich_view()
         {
             InitializeComponent();
-            popNgayHen.SelectedDate = DateTime.Now.Date; // Mặc định popup chọn ngày hôm nay
+            popNgayHen.SelectedDate = DateTime.Now.Date;
             LoadDuLieuTuDatabase();
+            LoadDanhSachDichVu();
+        }
+
+        // ================= TẢI DANH SÁCH DỊCH VỤ (ĐÃ SỬA CỘT 'Gia' VÀ KIỂU STRING) =================
+        private void LoadDanhSachDichVu()
+        {
+            _danhSachDichVu.Clear();
+            try
+            {
+                using (SqlConnection con = _db.GetConnection())
+                {
+                    con.Open();
+                    // Sửa lại cho đúng tên cột Gia trong Database của bạn
+                    string query = "SELECT MaDV, TenDV, Gia FROM DichVu";
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            _danhSachDichVu.Add(new DichVuModel
+                            {
+                                // Sửa lại thành ToString() thay vì Convert.ToInt32()
+                                MaDV = reader["MaDV"].ToString(),
+                                TenDV = reader["TenDV"].ToString(),
+                                GiaTien = Convert.ToDecimal(reader["Gia"]),
+                                IsSelected = false
+                            });
+                        }
+                    }
+                }
+                if (lbDichVu != null)
+                    lbDichVu.ItemsSource = _danhSachDichVu;
+            }
+            catch (Exception ex) { MessageBox.Show("Lỗi tải Dịch vụ: " + ex.Message); }
         }
 
         private void LoadDuLieuTuDatabase()
@@ -58,7 +94,10 @@ namespace Pharmacy_Manage.GUI
                                     PhongKham = reader["PhongKham"] != DBNull.Value ? reader["PhongKham"].ToString() : "",
                                     LyDo = reader["LyDoKham"] != DBNull.Value ? reader["LyDoKham"].ToString() : "",
                                     TrangThai = reader["TrangThai"] != DBNull.Value ? reader["TrangThai"].ToString() : "Đang chờ",
-                                    MaDV = reader["MaDV"] != DBNull.Value ? Convert.ToInt32(reader["MaDV"]) : 0,
+
+                                    // Sửa lại ép kiểu thành chuỗi (String) cho an toàn
+                                    MaDV = reader["MaDV"] != DBNull.Value ? reader["MaDV"].ToString() : "",
+
                                     LoaiKham = reader["LoaiKham"] != DBNull.Value ? reader["LoaiKham"].ToString() : "Lấy số trực tiếp"
                                 };
 
@@ -88,21 +127,13 @@ namespace Pharmacy_Manage.GUI
             txtChoKham.Text = dangCho.ToString();
         }
 
-        // ================= XỬ LÝ ẨN/HIỆN PHẦN CHỌN NGÀY GIỜ TRONG POPUP =================
         private void popLoaiKham_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (panelThoiGianHen == null) return;
-
-            // Nếu người dùng chọn "Đặt lịch trước" (Index = 1) thì hiện thanh chọn ngày giờ
             if (popLoaiKham.SelectedIndex == 1)
-            {
                 panelThoiGianHen.Visibility = Visibility.Visible;
-            }
             else
-            {
-                // Lấy số trực tiếp -> ẩn đi
                 panelThoiGianHen.Visibility = Visibility.Collapsed;
-            }
         }
 
         private void BtnMoFormDatLich_Click(object sender, RoutedEventArgs e)
@@ -126,7 +157,13 @@ namespace Pharmacy_Manage.GUI
             popLoaiKham.SelectedIndex = 0;
             popPhongKham.SelectedIndex = 0;
             popNgayHen.SelectedDate = DateTime.Now.Date;
-            popGioHen.SelectedIndex = 1; // Reset về 08:00 AM
+            popGioHen.SelectedIndex = 1;
+
+            foreach (var item in _danhSachDichVu)
+                item.IsSelected = false;
+
+            if (lbDichVu != null)
+                lbDichVu.Items.Refresh();
         }
 
         private void BtnLuuLich_Click(object sender, RoutedEventArgs e)
@@ -137,14 +174,22 @@ namespace Pharmacy_Manage.GUI
                 return;
             }
 
+            var dichVuDaChon = _danhSachDichVu.Where(x => x.IsSelected).ToList();
+            if (dichVuDaChon.Count == 0)
+            {
+                MessageBox.Show("Vui lòng tick chọn ít nhất 1 Dịch vụ khám bệnh!", "Cảnh báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             try
             {
                 using (SqlConnection con = _db.GetConnection())
                 {
                     con.Open();
                     int maKH = 0;
+                    decimal tongTienDichVu = dichVuDaChon.Sum(x => x.GiaTien);
 
-                    // A. Xử lý khách hàng
+                    // A. TẠO HOẶC LẤY MÃ KHÁCH HÀNG
                     string checkKH = "SELECT MaKH FROM KhachHang WHERE SoDienThoai = @phone";
                     using (SqlCommand cmdCheck = new SqlCommand(checkKH, con))
                     {
@@ -162,18 +207,53 @@ namespace Pharmacy_Manage.GUI
                             {
                                 cmdIns.Parameters.AddWithValue("@ten", popHoTen.Text.Trim());
                                 cmdIns.Parameters.AddWithValue("@sdt", popSDT.Text.Trim());
-                                maKH = Convert.ToInt32(cmdIns.ExecuteScalar());
+                                object newKhId = cmdIns.ExecuteScalar();
+                                if (newKhId != null && newKhId != DBNull.Value)
+                                    maKH = Convert.ToInt32(newKhId);
                             }
                         }
                     }
 
-                    // B. Xử lý logic chọn Giờ khám
+                    // CHỐT CHẶN: Nếu không lấy được mã khách hàng thì báo lỗi ngay, tránh lỗi FOREIGN KEY
+                    if (maKH == 0)
+                    {
+                        MessageBox.Show("Không thể tạo Khách hàng. Vui lòng kiểm tra lại bảng KhachHang trong SQL (Cột MaKH phải bật Identity = Yes).", "Lỗi CSDL", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                    }
+
+                    // B. TẠO HÓA ĐƠN TREO (Đã xóa cột TongThanhToan vì SQL sẽ tự tính)
+                    int maHD = 0;
+                    string insHoaDon = @"INSERT INTO HoaDon(MaKH, NgayLap, TongTienDichVu, TongTienSanPham, TrangThai) 
+                                         VALUES(@maKH, GETDATE(), @tienDV, 0, N'Chờ thanh toán'); 
+                                         SELECT SCOPE_IDENTITY();";
+                    using (SqlCommand cmdHD = new SqlCommand(insHoaDon, con))
+                    {
+                        cmdHD.Parameters.AddWithValue("@maKH", maKH);
+                        cmdHD.Parameters.AddWithValue("@tienDV", tongTienDichVu);
+                        object hdResult = cmdHD.ExecuteScalar();
+                        if (hdResult != null && hdResult != DBNull.Value)
+                            maHD = Convert.ToInt32(hdResult);
+                    }
+
+                    // C. LƯU CHI TIẾT DỊCH VỤ 
+                    foreach (var dv in dichVuDaChon)
+                    {
+                        string insChiTiet = "INSERT INTO ChiTietDichVu(MaHD, MaDV, ThanhTien) VALUES(@maHD, @maDV, @tien)";
+                        using (SqlCommand cmdCT = new SqlCommand(insChiTiet, con))
+                        {
+                            cmdCT.Parameters.AddWithValue("@maHD", maHD);
+                            cmdCT.Parameters.AddWithValue("@maDV", dv.MaDV);
+                            cmdCT.Parameters.AddWithValue("@tien", dv.GiaTien);
+                            cmdCT.ExecuteNonQuery();
+                        }
+                    }
+
+                    // D. LƯU LỊCH HẸN
                     DateTime thoiGianKham;
                     string loaiKham = (popLoaiKham.SelectedItem as ComboBoxItem)?.Content.ToString() ?? "Lấy số trực tiếp";
 
                     if (loaiKham == "Đặt lịch trước")
                     {
-                        // Lấy ngày hẹn + giờ hẹn từ giao diện
                         thoiGianKham = popNgayHen.SelectedDate ?? DateTime.Now.Date;
                         string timeStr = (popGioHen.SelectedItem as ComboBoxItem)?.Content.ToString() ?? "08:00 AM";
                         if (DateTime.TryParse(timeStr, out DateTime parsedTime))
@@ -183,13 +263,11 @@ namespace Pharmacy_Manage.GUI
                     }
                     else
                     {
-                        // Nếu là lấy số trực tiếp -> Tự động ghi nhận giờ hiện tại của hệ thống
                         thoiGianKham = DateTime.Now;
                     }
 
                     string phongKham = (popPhongKham.SelectedItem as ComboBoxItem)?.Content.ToString() ?? "";
 
-                    // C. Lưu vào bảng Lịch Hẹn
                     string insLich = @"INSERT INTO LichHen(MaKH, ThoiGianKham, PhongKham, LyDoKham, TrangThai, LoaiKham) 
                                        VALUES(@maKH, @tg, @phong, @lydo, N'Đang chờ', @loai)";
                     using (SqlCommand cmdLich = new SqlCommand(insLich, con))
@@ -203,7 +281,7 @@ namespace Pharmacy_Manage.GUI
                     }
                 }
 
-                MessageBox.Show("Tiếp nhận bệnh nhân thành công!", "Hoàn tất", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Đã chỉ định Dịch vụ & Tạo Hóa đơn chờ thành công!", "Hoàn tất", MessageBoxButton.OK, MessageBoxImage.Information);
                 BtnDongForm_Click(null, null);
                 LoadDuLieuTuDatabase();
             }
@@ -262,16 +340,13 @@ namespace Pharmacy_Manage.GUI
         public int MaKH { get; set; }
         public DateTime ThoiGianKham { get; set; }
 
-        // KIỂM TRA LOẠI KHÁM ĐỂ HIỂN THỊ ĐỊNH DẠNG GIỜ KHÁC NHAU
         public string ThoiGianHienThi
         {
             get
             {
                 if (ThoiGianKham == DateTime.MinValue) return "";
-                // Nếu là đặt trước, hiển thị full "Ngày/Tháng/Năm - Giờ:Phút"
                 if (LoaiKham == "Đặt lịch trước")
                     return ThoiGianKham.ToString("dd/MM/yyyy HH:mm");
-                // Nếu là lấy số, chỉ cần hiện "Giờ:Phút"
                 else
                     return ThoiGianKham.ToString("HH:mm");
             }
@@ -283,7 +358,18 @@ namespace Pharmacy_Manage.GUI
         public string PhongKham { get; set; }
         public string LyDo { get; set; }
         public string TrangThai { get; set; }
-        public int MaDV { get; set; }
+        public string MaDV { get; set; }
         public string LoaiKham { get; set; }
+    }
+
+    public class DichVuModel
+    {
+        // Đổi MaDV thành kiểu string
+        public string MaDV { get; set; }
+        public string TenDV { get; set; }
+        public decimal GiaTien { get; set; }
+        public bool IsSelected { get; set; }
+
+        public string TenHienThi => $"{TenDV} ({GiaTien:N0} VNĐ)";
     }
 }

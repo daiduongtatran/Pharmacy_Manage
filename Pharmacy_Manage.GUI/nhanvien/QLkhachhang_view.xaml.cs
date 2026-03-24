@@ -4,23 +4,20 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using Microsoft.Data.SqlClient;
-using Pharmacy_Manage.DAL; // Để gọi DbConnection
+using Pharmacy_Manage.DAL;
 
 namespace Pharmacy_Manage.GUI
 {
     public partial class QLkhachhang_view : UserControl
     {
-        // Danh sách gốc chứa dữ liệu từ SQL
-        private ObservableCollection<KhachHangViewModel> _danhSachGoc = new ObservableCollection<KhachHangViewModel>();
-        // Danh sách hiển thị trên DataGrid (thay đổi khi tìm kiếm)
-        private ObservableCollection<KhachHangViewModel> _danhSachHienThi = new ObservableCollection<KhachHangViewModel>();
-
-        // Khởi tạo đối tượng kết nối Database từ DAL
+        private ObservableCollection<HoaDonViewModel> _danhSachGoc = new ObservableCollection<HoaDonViewModel>();
+        private ObservableCollection<HoaDonViewModel> _danhSachHienThi = new ObservableCollection<HoaDonViewModel>();
         private DbConnection _db = new DbConnection();
 
         public QLkhachhang_view()
         {
             InitializeComponent();
+            dpLocNgay.SelectedDate = DateTime.Now.Date; // Mặc định hiển thị hóa đơn hôm nay
             LoadDuLieuTuDatabase();
         }
 
@@ -33,10 +30,15 @@ namespace Pharmacy_Manage.GUI
                 using (SqlConnection con = _db.GetConnection())
                 {
                     con.Open();
-
-                    // Câu lệnh SQL truy vấn trực tiếp bảng Khách hàng
-                    // ⚠️ Đảm bảo tên bảng 'Customers' là tên đúng trong SQL của bạn
-                    string query = "SELECT customerID, FullName, Email, Phone, Points, UserName FROM Customers";
+                    // Truy vấn bảng HoaDon và JOIN lấy Tên/SĐT từ KhachHang
+                    string query = @"
+                        SELECT hd.MaHD, hd.NgayLap, 
+                               kh.HoTen AS TenKhachHang, kh.SoDienThoai AS SDT,
+                               hd.TongTienDichVu, hd.TongTienSanPham, hd.TongThanhToan, 
+                               hd.TrangThai, hd.GhiChu
+                        FROM HoaDon hd
+                        LEFT JOIN KhachHang kh ON hd.MaKH = kh.MaKH
+                        ORDER BY hd.NgayLap DESC";
 
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
@@ -44,129 +46,96 @@ namespace Pharmacy_Manage.GUI
                         {
                             while (reader.Read())
                             {
-                                int diem = reader["Points"] != DBNull.Value ? Convert.ToInt32(reader["Points"]) : 0;
-
-                                _danhSachGoc.Add(new KhachHangViewModel
+                                _danhSachGoc.Add(new HoaDonViewModel
                                 {
-                                    CustomerID = reader["customerID"]?.ToString() ?? "",
-                                    FullName = reader["FullName"]?.ToString() ?? "",
-                                    Email = reader["Email"]?.ToString() ?? "",
-                                    Phone = reader["Phone"]?.ToString() ?? "",
-                                    Point = diem,
-                                    UserName = reader["UserName"]?.ToString() ?? "",
-                                    HangThanhVien = TinhHangThanhVien(diem) // Tính hạng thành viên tự động
+                                    MaHD = reader["MaHD"] != DBNull.Value ? Convert.ToInt32(reader["MaHD"]) : 0,
+                                    NgayLap = reader["NgayLap"] != DBNull.Value ? Convert.ToDateTime(reader["NgayLap"]) : DateTime.MinValue,
+                                    TenKhachHang = reader["TenKhachHang"] != DBNull.Value ? reader["TenKhachHang"].ToString() : "Khách lẻ",
+                                    SDT = reader["SDT"] != DBNull.Value ? reader["SDT"].ToString() : "",
+                                    TongTienDichVu = reader["TongTienDichVu"] != DBNull.Value ? Convert.ToDecimal(reader["TongTienDichVu"]) : 0,
+                                    TongTienSanPham = reader["TongTienSanPham"] != DBNull.Value ? Convert.ToDecimal(reader["TongTienSanPham"]) : 0,
+                                    TongThanhToan = reader["TongThanhToan"] != DBNull.Value ? Convert.ToDecimal(reader["TongThanhToan"]) : 0,
+                                    TrangThai = reader["TrangThai"] != DBNull.Value ? reader["TrangThai"].ToString() : "Chờ thanh toán",
+                                    GhiChu = reader["GhiChu"] != DBNull.Value ? reader["GhiChu"].ToString() : ""
                                 });
                             }
                         }
                     }
                 }
-
-                // Cập nhật lên màn hình
                 LocDuLieu();
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Lỗi khi tải dữ liệu Khách hàng từ Database:\n" + ex.Message, "Lỗi SQL", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Lỗi khi tải dữ liệu Hóa đơn:\n" + ex.Message, "Lỗi Database", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
-        // Logic chia hạng thành viên dựa trên điểm
-        private string TinhHangThanhVien(int point)
-        {
-            if (point >= 1000) return "Kim Cương";
-            if (point >= 500) return "Vàng";
-            if (point >= 100) return "Bạc";
-            return "Đồng";
-        }
-
-        // Sự kiện khi gõ chữ vào ô tìm kiếm (Tìm realtime)
-        private void txtTimKiem_TextChanged(object sender, TextChangedEventArgs e)
+        // ================= XỬ LÝ LỌC & TÌM KIẾM =================
+        private void Filter_Changed(object sender, RoutedEventArgs e)
         {
             LocDuLieu();
         }
 
         private void LocDuLieu()
         {
-            if (_danhSachGoc == null || dgKhachHang == null) return;
+            if (_danhSachGoc == null || dgHoaDon == null || cbTrangThai == null) return;
 
             string tuKhoa = txtTimKiem.Text.Trim().ToLower();
+            string trangThai = (cbTrangThai.SelectedItem as ComboBoxItem)?.Content.ToString() ?? "Tất cả";
+            DateTime? ngayLoc = dpLocNgay.SelectedDate;
 
-            // Lọc danh sách (Tìm theo Tên hoặc SĐT)
-            var ketQua = _danhSachGoc.Where(kh =>
-                string.IsNullOrEmpty(tuKhoa) ||
-                kh.FullName.ToLower().Contains(tuKhoa) ||
-                kh.Phone.Contains(tuKhoa)
+            var ketQua = _danhSachGoc.Where(h =>
+                (string.IsNullOrEmpty(tuKhoa) || h.TenKhachHang.ToLower().Contains(tuKhoa) || h.SDT.Contains(tuKhoa) || h.MaHD.ToString().Contains(tuKhoa)) &&
+                (trangThai == "Tất cả" || h.TrangThai == trangThai) &&
+                (ngayLoc == null || h.NgayLap.Date == ngayLoc.Value.Date)
             ).ToList();
 
             _danhSachHienThi.Clear();
+            decimal tongDoanhThu = 0;
+            decimal chuaThu = 0;
+
             foreach (var item in ketQua)
             {
                 _danhSachHienThi.Add(item);
+
+                // Tính toán số liệu thống kê
+                if (item.TrangThai == "Đã thanh toán")
+                    tongDoanhThu += item.TongThanhToan;
+                else if (item.TrangThai == "Chờ thanh toán")
+                    chuaThu += item.TongThanhToan;
             }
 
-            dgKhachHang.ItemsSource = _danhSachHienThi;
+            dgHoaDon.ItemsSource = _danhSachHienThi;
+
+            // Cập nhật lên UI
+            txtTongHoaDon.Text = _danhSachHienThi.Count.ToString("N0");
+            txtTongDoanhThu.Text = tongDoanhThu.ToString("N0");
+            txtChuaThu.Text = chuaThu.ToString("N0");
         }
 
-        // Xử lý nút Thêm Khách Hàng (Tạm thời hiển thị lên màn hình, bạn có thể gọi câu lệnh INSERT SQL tại đây)
-        private void btnThemKhach_Click(object sender, RoutedEventArgs e)
+        // ================= XEM CHI TIẾT HÓA ĐƠN =================
+        private void BtnChiTiet_Click(object sender, RoutedEventArgs e)
         {
-            string tenKH = txtTenKH.Text.Trim();
-            string sdt = txtSDT.Text.Trim();
-
-            if (string.IsNullOrEmpty(tenKH) || string.IsNullOrEmpty(sdt))
+            if (sender is Button btn && btn.DataContext is HoaDonViewModel hd)
             {
-                MessageBox.Show("Vui lòng nhập đầy đủ Họ tên và Số điện thoại!", "Cảnh báo", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
-            if (_danhSachGoc.Any(kh => kh.Phone == sdt))
-            {
-                MessageBox.Show("Số điện thoại này đã tồn tại trong hệ thống!", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-
-            // TODO: Viết câu lệnh INSERT INTO Customers(...) VALUES(...) vào CSDL ở đây
-
-            // Thêm giả lập vào giao diện (Cho đến khi bạn viết lệnh INSERT)
-            string maKHMoi = "CUS" + (_danhSachGoc.Count + 1).ToString("D3");
-            _danhSachGoc.Add(new KhachHangViewModel
-            {
-                CustomerID = maKHMoi,
-                FullName = tenKH,
-                Phone = sdt,
-                Email = "Chưa có",
-                Point = 0,
-                HangThanhVien = "Đồng"
-            });
-
-            MessageBox.Show("Thêm khách hàng thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
-
-            txtTenKH.Clear();
-            txtSDT.Clear();
-            LocDuLieu();
-        }
-
-        // Nút Xem lịch sử mua hàng
-        private void btnXemLichSu_Click(object sender, RoutedEventArgs e)
-        {
-            if (sender is Button btn && btn.DataContext is KhachHangViewModel kh)
-            {
-                MessageBox.Show($"Lịch sử mua hàng của khách hàng: {kh.FullName} ({kh.Phone})\n\nTính năng tra cứu hóa đơn cũ đang được bảo trì.", "Lịch sử mua hàng", MessageBoxButton.OK, MessageBoxImage.Information);
+                // Sau này bạn có thể tạo 1 Form (Window) mới, truyền hd.MaHD sang 
+                // để truy vấn bảng ChiTietHoaDon và hiển thị lên nhé!
+                MessageBox.Show($"Chức năng hiển thị Chi Tiết Hóa Đơn (Mã HĐ: {hd.MaHD})\nĐang được phát triển...", "Thông tin", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
     }
 
-    // Lớp Model Khách Hàng (Khớp 100% với tên cột bạn yêu cầu)
-    public class KhachHangViewModel
+    // ================= MODEL DỮ LIỆU BINDING =================
+    public class HoaDonViewModel
     {
-        public string CustomerID { get; set; } = "";
-        public string FullName { get; set; } = "";
-        public string Email { get; set; } = "";
-        public string Phone { get; set; } = "";
-        public int Point { get; set; }
-        public string UserName { get; set; } = "";
-
-        // Cột phụ tự tính không lưu trong DB
-        public string HangThanhVien { get; set; } = "";
+        public int MaHD { get; set; }
+        public DateTime NgayLap { get; set; }
+        public string TenKhachHang { get; set; }
+        public string SDT { get; set; }
+        public decimal TongTienDichVu { get; set; }
+        public decimal TongTienSanPham { get; set; }
+        public decimal TongThanhToan { get; set; }
+        public string TrangThai { get; set; }
+        public string GhiChu { get; set; }
     }
 }
