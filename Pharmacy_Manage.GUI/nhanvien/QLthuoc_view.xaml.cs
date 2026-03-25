@@ -31,7 +31,6 @@ namespace Pharmacy_Manage.GUI
                 using (SqlConnection con = _db.GetConnection())
                 {
                     con.Open();
-                    // Đã thêm MaSP vào truy vấn SQL
                     string query = "SELECT MaSP, TenSP, LoaiSP, DonVi, NhaSanXuat, HanDung, GiaBan, TonKho, TrangThai, GhiChu FROM SanPham";
 
                     using (SqlCommand cmd = new SqlCommand(query, con))
@@ -64,7 +63,7 @@ namespace Pharmacy_Manage.GUI
             }
         }
 
-        // Sự kiện khi gõ TextBox hoặc đổi ComboBox
+       
         // Sự kiện khi gõ TextBox hoặc đổi ComboBox
         private void Filter_Changed(object sender, RoutedEventArgs e)
         {
@@ -91,7 +90,7 @@ namespace Pharmacy_Manage.GUI
             string dvt = (cbDVT.SelectedItem as ComboBoxItem)?.Content.ToString() ?? "Tất cả";
             string sapXep = (cbSapXep.SelectedItem as ComboBoxItem)?.Content.ToString() ?? "Mặc định";
 
-            // Danh sách các loại sản phẩm mặc định trong ComboBox
+            
             string[] cacLoaiMacDinh = { "Giảm đau – hạ sốt", "Kháng sinh", "Tim mạch", "Thực phẩm chức năng" };
 
             // 2. Lọc Từ khóa, Trạng thái, và ĐVT trước
@@ -101,15 +100,14 @@ namespace Pharmacy_Manage.GUI
                 (dvt == "Tất cả" || t.DonVi == dvt)
             ).ToList();
 
-            // 3. Xử lý bộ lọc Loại SP (Thêm logic cho nút "Khác")
+            
             if (loaiSP == "Khác")
             {
-                // Nếu chọn "Khác": Lấy những thuốc mà Loại SP KHÔNG chứa bất kỳ từ khóa nào trong danh sách mặc định
                 ketQua = ketQua.Where(t => !cacLoaiMacDinh.Any(loai => t.LoaiSP.Contains(loai))).ToList();
             }
             else if (loaiSP != "Tất cả")
             {
-                // Lọc bình thường cho các loại còn lại
+                
                 ketQua = ketQua.Where(t => t.LoaiSP.Contains(loaiSP)).ToList();
             }
 
@@ -132,11 +130,11 @@ namespace Pharmacy_Manage.GUI
                     ketQua = ketQua.OrderBy(t => t.HanDung).ToList();
                     break;
                 default:
-                    ketQua = ketQua.OrderBy(t => t.MaSP).ToList(); // Sắp xếp theo Mã SP mặc định
+                    ketQua = ketQua.OrderBy(t => t.MaSP).ToList();
                     break;
             }
 
-            // 5. Cập nhật Bảng (DataGrid)
+            // 5. Cập nhật Bảng 
             _danhSachHienThi.Clear();
             foreach (var item in ketQua)
             {
@@ -154,7 +152,7 @@ namespace Pharmacy_Manage.GUI
     }
 }
 
-    // Model Dữ Liệu (Đã thêm MaSP)
+    // Model Dữ Liệu
     public class ThuocViewModel
     {
         public int MaSP { get; set; }
