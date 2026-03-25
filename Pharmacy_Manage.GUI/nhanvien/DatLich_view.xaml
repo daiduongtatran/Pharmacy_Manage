@@ -89,6 +89,7 @@
                             <DataGridTextColumn Header="SĐT" Binding="{Binding SDT}" Width="100"/>
                             <DataGridTextColumn Header="Lý do khám" Binding="{Binding LyDo}" Width="*"/>
                             <DataGridTextColumn Header="Phòng" Binding="{Binding PhongKham}" Width="140"/>
+
                             <DataGridTemplateColumn Header="Trạng thái" Width="120">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
@@ -113,6 +114,7 @@
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
+
                             <DataGridTemplateColumn Header="Thao tác" Width="130">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
@@ -161,6 +163,7 @@
                             <DataGridTextColumn Header="SĐT" Binding="{Binding SDT}" Width="100"/>
                             <DataGridTextColumn Header="Lý do khám" Binding="{Binding LyDo}" Width="*"/>
                             <DataGridTextColumn Header="Phòng" Binding="{Binding PhongKham}" Width="140"/>
+
                             <DataGridTemplateColumn Header="Trạng thái" Width="120">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
@@ -172,6 +175,12 @@
                                                         <DataTrigger Binding="{Binding TrangThai}" Value="Đang chờ">
                                                             <Setter Property="Foreground" Value="#D69E2E"/>
                                                         </DataTrigger>
+                                                        <DataTrigger Binding="{Binding TrangThai}" Value="Đang khám">
+                                                            <Setter Property="Foreground" Value="#3182CE"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding TrangThai}" Value="Hoàn thành">
+                                                            <Setter Property="Foreground" Value="#48BB78"/>
+                                                        </DataTrigger>
                                                     </Style.Triggers>
                                                 </Style>
                                             </TextBlock.Style>
@@ -179,6 +188,7 @@
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
+
                             <DataGridTemplateColumn Header="Thao tác" Width="130">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
@@ -208,20 +218,14 @@
         </Grid>
 
         <Grid x:Name="DialogOverlay" Background="#88000000" Visibility="Collapsed">
-            <Border Background="White" CornerRadius="12" Width="550" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="25">
+            <Border Background="White" CornerRadius="12" Width="450" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="25">
                 <Border.Effect>
                     <DropShadowEffect BlurRadius="15" Opacity="0.2" ShadowDepth="3"/>
                 </Border.Effect>
                 <StackPanel>
-                    <TextBlock Text="📝 TIẾP NHẬN &amp; CHỈ ĐỊNH DỊCH VỤ" FontSize="18" FontWeight="Bold" Foreground="#2D3748" HorizontalAlignment="Center" Margin="0,0,0,15"/>
+                    <TextBlock Text="📝 TIẾP NHẬN BỆNH NHÂN TẠI QUẦY" FontSize="18" FontWeight="Bold" Foreground="#2D3748" HorizontalAlignment="Center" Margin="0,0,0,20"/>
 
-                    <TextBlock Text="Phân loại tiếp nhận (*)" Style="{StaticResource LabelStyle}"/>
-                    <ComboBox x:Name="popLoaiKham" Height="35" VerticalContentAlignment="Center" FontSize="13" Margin="0,0,0,10" FontWeight="Bold" Foreground="#2C9BB3" SelectionChanged="popLoaiKham_SelectionChanged">
-                        <ComboBoxItem Content="Lấy số trực tiếp" IsSelected="True"/>
-                        <ComboBoxItem Content="Đặt lịch trước"/>
-                    </ComboBox>
-
-                    <Grid Margin="0,0,0,10">
+                    <Grid Margin="0,0,0,15">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="*"/>
@@ -236,42 +240,11 @@
                         </StackPanel>
                     </Grid>
 
-                    <StackPanel x:Name="panelThoiGianHen" Visibility="Collapsed" Margin="0,0,0,10">
-                        <TextBlock Text="Ngày hẹn &amp; Giờ hẹn (*)" Style="{StaticResource LabelStyle}"/>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <DatePicker x:Name="popNgayHen" Grid.Column="0" Height="35" Margin="0,0,10,0"/>
-                            <ComboBox x:Name="popGioHen" Grid.Column="1" Height="35" VerticalContentAlignment="Center" FontSize="13">
-                                <ComboBoxItem Content="07:00 AM"/>
-                                <ComboBoxItem Content="08:00 AM" IsSelected="True"/>
-                                <ComboBoxItem Content="09:00 AM"/>
-                                <ComboBoxItem Content="10:00 AM"/>
-                                <ComboBoxItem Content="14:00 PM"/>
-                                <ComboBoxItem Content="15:00 PM"/>
-                                <ComboBoxItem Content="16:00 PM"/>
-                            </ComboBox>
-                        </Grid>
-                    </StackPanel>
-
-                    <TextBlock Text="Chỉ định Dịch vụ khám (*)" Style="{StaticResource LabelStyle}"/>
-                    <Border BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="6" Height="100" Margin="0,0,0,10">
-                        <ListBox x:Name="lbDichVu" Background="#F8FAFC" BorderThickness="0" ScrollViewer.VerticalScrollBarVisibility="Auto">
-                            <ListBox.ItemTemplate>
-                                <DataTemplate>
-                                    <CheckBox Content="{Binding TenHienThi}" IsChecked="{Binding IsSelected}" Margin="5,3" FontWeight="SemiBold" Foreground="#4A5568"/>
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox>
-                    </Border>
-
                     <TextBlock Text="Lý do khám bệnh" Style="{StaticResource LabelStyle}"/>
-                    <TextBox x:Name="popLyDo" Height="40" TextWrapping="Wrap" AcceptsReturn="True" Padding="8" Margin="0,0,0,10"/>
+                    <TextBox x:Name="popLyDo" Height="50" TextWrapping="Wrap" AcceptsReturn="True" Padding="8" Margin="0,0,0,15"/>
 
                     <TextBlock Text="Chỉ định Phòng Khám" Style="{StaticResource LabelStyle}"/>
-                    <ComboBox x:Name="popPhongKham" Height="35" VerticalContentAlignment="Center" FontSize="13" Margin="0,0,0,20">
+                    <ComboBox x:Name="popPhongKham" Height="35" VerticalContentAlignment="Center" FontSize="13" Margin="0,0,0,25">
                         <ComboBoxItem Content="Phòng Khám Nội 1" IsSelected="True"/>
                         <ComboBoxItem Content="Phòng Khám Nội 2"/>
                         <ComboBoxItem Content="Phòng Răng Hàm Mặt"/>
@@ -290,7 +263,7 @@
                                 </Style>
                             </Button.Resources>
                         </Button>
-                        <Button Grid.Column="1" Content="Lưu Lịch &amp; Tạo Hóa Đơn" Height="40" Margin="5,0,0,0" Background="#2C9BB3" Foreground="White" FontWeight="Bold" BorderThickness="0" Cursor="Hand" Click="BtnLuuLich_Click">
+                        <Button Grid.Column="1" Content="Lưu Tiếp Nhận" Height="40" Margin="5,0,0,0" Background="#2C9BB3" Foreground="White" FontWeight="Bold" BorderThickness="0" Cursor="Hand" Click="BtnLuuLich_Click">
                             <Button.Resources>
                                 <Style TargetType="Border">
                                     <Setter Property="CornerRadius" Value="6"/>

@@ -24,12 +24,12 @@ namespace Pharmacy_Manage.GUI
         private void LoadDuLieuTuDatabase()
         {
             _danhSachGoc.Clear();
+
             try
             {
                 using (SqlConnection con = _db.GetConnection())
                 {
                     con.Open();
-                    // Truy vấn bảng HoaDon và JOIN lấy Tên/SĐT từ KhachHang
                     string query = @"
                         SELECT hd.MaHD, hd.NgayLap, 
                                kh.HoTen AS TenKhachHang, kh.SoDienThoai AS SDT,
@@ -97,7 +97,6 @@ namespace Pharmacy_Manage.GUI
             {
                 _danhSachHienThi.Add(item);
 
-                // Tính toán số liệu thống kê
                 if (item.TrangThai == "Đã thanh toán")
                     tongDoanhThu += item.TongThanhToan;
                 else if (item.TrangThai == "Chờ thanh toán")
@@ -105,8 +104,6 @@ namespace Pharmacy_Manage.GUI
             }
 
             dgHoaDon.ItemsSource = _danhSachHienThi;
-
-            // Cập nhật lên UI
             txtTongHoaDon.Text = _danhSachHienThi.Count.ToString("N0");
             txtTongDoanhThu.Text = tongDoanhThu.ToString("N0");
             txtChuaThu.Text = chuaThu.ToString("N0");
@@ -117,24 +114,127 @@ namespace Pharmacy_Manage.GUI
         {
             if (sender is Button btn && btn.DataContext is HoaDonViewModel hd)
             {
-                // Sau này bạn có thể tạo 1 Form (Window) mới, truyền hd.MaHD sang 
-                // để truy vấn bảng ChiTietHoaDon và hiển thị lên nhé!
-                MessageBox.Show($"Chức năng hiển thị Chi Tiết Hóa Đơn (Mã HĐ: {hd.MaHD})\nĐang được phát triển...", "Thông tin", MessageBoxButton.OK, MessageBoxImage.Information);
+                txtTieuDePopup.Text = $"CHI TIẾT HÓA ĐƠN #{hd.MaHD}";
+                txtKhachHangPopup.Text = $"Khách hàng: {hd.TenKhachHang} - SĐT: {hd.SDT} ({hd.LoaiGiaoDich})";
+
+                LoadChiTietHoaDon(hd.MaHD);
+                DialogChiTiet.Visibility = Visibility.Visible;
+            }
+        }
+
+        private void LoadChiTietHoaDon(int maHD)
+        {
+            var dsThuoc = new ObservableCollection<ChiTietThuocViewModel>();
+            var dsDichVu = new ObservableCollection<ChiTietDichVuViewModel>();
+
+            try
+            {
+                using (SqlConnection con = _db.GetConnection())
+                {
+                    con.Open();
+
+                    // 1. LẤY CHI TIẾT THUỐC
+                    string queryThuoc = @"
+                        SELECT sp.TenSP, ct.SoLuong, ct.DonGia, (ct.SoLuong * ct.DonGia) AS ThanhTien
+                        FROM ChiTietHoaDon ct
+                        JOIN SanPham sp ON ct.MaSP = sp.MaSP
+                        WHERE ct.MaHD = @MaHD";
+
+                    using (SqlCommand cmd = new SqlCommand(queryThuoc, con))
+                    {
+                        cmd.Parameters.AddWithValue("@MaHD", maHD);
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                dsThuoc.Add(new ChiTietThuocViewModel
+                                {
+                                    TenSP = reader["TenSP"].ToString(),
+                                    SoLuong = Convert.ToInt32(reader["SoLuong"]),
+                                    DonGia = Convert.ToDecimal(reader["DonGia"]),
+                                    ThanhTien = Convert.ToDecimal(reader["ThanhTien"])
+                                });
+                            }
+                        }
+                    }
+
+                    // 2. LẤY CHI TIẾT DỊCH VỤ
+                    string queryDichVu = @"
+                        SELECT dv.TenDV, cd.ThanhTien
+                        FROM ChiTietDichVu cd
+                        JOIN DichVu dv ON cd.MaDV = dv.MaDV
+                        WHERE cd.MaHD = @MaHD";
+
+                    using (SqlCommand cmd = new SqlCommand(queryDichVu, con))
+                    {
+                        cmd.Parameters.AddWithValue("@MaHD", maHD);
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                dsDichVu.Add(new ChiTietDichVuViewModel
+                                {
+                                    TenDV = reader["TenDV"].ToString(),
+                                    ThanhTien = Convert.ToDecimal(reader["ThanhTien"])
+                                });
+                            }
+                        }
+                    }
+                }
+
+                dgChiTietThuoc.ItemsSource = dsThuoc;
+                dgChiTietDichVu.ItemsSource = dsDichVu;
+
+                // Ẩn bảng Dịch Vụ đi nếu list trống (Khách chỉ mua thuốc)
+                dgChiTietDichVu.Visibility = dsDichVu.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
+            }
+            catch (Exception ex)
+            {
+                // Tạm thời catch lỗi êm ái nếu bảng chưa tồn tại
+                Console.WriteLine(ex.Message);
+            }
+        }
+
+        private void BtnDongPopup_Click(object sender, RoutedEventArgs e)
+        {
+            DialogChiTiet.Visibility = Visibility.Collapsed;
+        }
+    }
+
+    // ================= MODELS BINDING =================
+    public class HoaDonViewModel
+    {
+        public int MaHD { get; set; }
+        public DateTime NgayLap { get; set; }
+        public string TenKhachHang { get; set; }
+        public string SDT { get; set; }
+        public decimal TongTienDichVu { get; set; }
+        public decimal TongTienSanPham { get; set; }
+        public decimal TongThanhToan { get; set; }
+        public string TrangThai { get; set; }
+        public string GhiChu { get; set; }
+
+        public string LoaiGiaoDich
+        {
+            get
+            {
+                if (TongTienDichVu > 0) return "Khám bệnh & Kê đơn";
+                else return "Chỉ mua thuốc";
             }
         }
     }
 
-    // Lớp Model Khách Hàng (Khớp 100% với tên cột bạn yêu cầu)
-    public class KhachHangViewModel
+    public class ChiTietThuocViewModel
     {
-        public string CustomerID { get; set; } = "";
-        public string FullName { get; set; } = "";
-        public string Email { get; set; } = "";
-        public string Phone { get; set; } = "";
-        public int Point { get; set; }
-        public string UserName { get; set; } = "";
+        public string TenSP { get; set; }
+        public int SoLuong { get; set; }
+        public decimal DonGia { get; set; }
+        public decimal ThanhTien { get; set; }
+    }
 
-        // Cột phụ tự tính không lưu trong DB
-        public string HangThanhVien { get; set; } = "";
+    public class ChiTietDichVuViewModel
+    {
+        public string TenDV { get; set; }
+        public decimal ThanhTien { get; set; }
     }
 }

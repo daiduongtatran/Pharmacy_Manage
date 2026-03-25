@@ -89,10 +89,10 @@ namespace Pharmacy_Manage.GUI.KhachHang
 
             if (TimeSpan.TryParse(cbGioKham.Text, out TimeSpan gioKham))
             {
-                
+
                 DateTime temp = ngayChon.Date.Add(gioKham);
                 thoiGianKham = new DateTime(temp.Year, temp.Month, temp.Day, temp.Hour, temp.Minute, 0);
-                
+
             }
             else
             {
@@ -121,16 +121,15 @@ namespace Pharmacy_Manage.GUI.KhachHang
 
                     int maKH = Convert.ToInt32(cmdKH.ExecuteScalar());
 
-                    // Insert Lịch Hẹn với thời gian đã chuẩn hóa
-                    string queryLH = @"INSERT INTO LichHen (MaKH, ThoiGianKham, ChuyenKhoa, PhongKham, LyDoKham, TrangThai) 
-                               VALUES (@MaKH, @ThoiGianKham, @ChuyenKhoa, @PhongKham, @LyDoKham, N'Đang chờ');";
+                    // ================= ĐÃ SỬA Ở ĐÂY =================
+                    // Thêm trường LoaiKham và gán cứng giá trị là N'Đặt lịch trước'
+                    string queryLH = @"INSERT INTO LichHen (MaKH, ThoiGianKham, ChuyenKhoa, PhongKham, LyDoKham, TrangThai, LoaiKham) 
+                               VALUES (@MaKH, @ThoiGianKham, @ChuyenKhoa, @PhongKham, @LyDoKham, N'Đang chờ', N'Đặt lịch trước');";
+                    // ================================================
 
                     SqlCommand cmdLH = new SqlCommand(queryLH, conn);
                     cmdLH.Parameters.AddWithValue("@MaKH", maKH);
-
-                    // Truyền thoiGianKham đã xử lý (giây = 0)
                     cmdLH.Parameters.AddWithValue("@ThoiGianKham", thoiGianKham);
-
                     cmdLH.Parameters.AddWithValue("@ChuyenKhoa", cbChuyenKhoa.Text ?? (object)DBNull.Value);
                     cmdLH.Parameters.AddWithValue("@PhongKham", cbPhongKham.Text ?? (object)DBNull.Value);
                     cmdLH.Parameters.AddWithValue("@LyDoKham", txtLyDo.Text);
