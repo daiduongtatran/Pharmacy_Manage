@@ -93,5 +93,20 @@ namespace Pharmacy_Manage.DAL
                 return cmd.ExecuteNonQuery() > 0;
             }
         }
+        public DataTable GetRevenue()
+        {
+            DataTable dt = new DataTable();
+            try
+            {
+                using (Microsoft.Data.SqlClient.SqlConnection con = GetConnection())
+                {
+                    Microsoft.Data.SqlClient.SqlCommand cmd = new Microsoft.Data.SqlClient.SqlCommand("GetRevenueLast7Days", con);
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    new Microsoft.Data.SqlClient.SqlDataAdapter(cmd).Fill(dt);
+                }
+            }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine("Lỗi SQL Chart: " + ex.Message); }
+            return dt;
+        }
     }
 }
