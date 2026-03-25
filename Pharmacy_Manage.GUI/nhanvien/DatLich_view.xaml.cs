@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
@@ -15,11 +16,44 @@ namespace Pharmacy_Manage.GUI
 
         private DbConnection _db = new DbConnection();
 
+        // 1. Thêm từ điển ánh xạ (COPY Y HỆT TỪ BÊN BOOKINGVIEW)
+        private Dictionary<string, List<string>> chuyenKhoaPhongKhamMap;
+
         public DatLich_view()
         {
             InitializeComponent();
             LoadDuLieuTuDatabase();
+            
+            // 2. Gọi hàm load phòng khám khi mở màn hình
+            LoadPhongKham();
         }
+
+        // ================= THÊM HÀM NÀY =================
+        private void LoadPhongKham()
+        {
+            // Định nghĩa danh sách phòng y hệt bên khách hàng để đồng bộ
+            chuyenKhoaPhongKhamMap = new Dictionary<string, List<string>>
+            {
+                { "Khám nội tổng quát", new List<string> { "PK Nội 1 (Tầng 1)", "PK Nội 2 (Tầng 1)" } },
+                { "Khám chuyên khoa Nhi", new List<string> { "PK Nhi 1 (Tầng 2)", "PK Nhi 2 (Tầng 2)" } },
+                { "Khám Tai Mũi Họng", new List<string> { "PK TMH 1 (Tầng 3)", "PK TMH 2 (Tầng 3)" } },
+                { "Khám Răng Hàm Mặt", new List<string> { "PK Răng Hàm Mặt (Tầng 3)" } },
+                { "Khám Da Liễu", new List<string> { "PK Da Liễu (Tầng 4)" } },
+                { "Khám Mắt", new List<string> { "PK Mắt (Tầng 4)" } }
+            };
+
+            // Gom tất cả các phòng khám thành 1 list phẳng để Lễ tân chọn
+            List<string> tatCaPhongKham = new List<string>();
+            foreach (var listPhong in chuyenKhoaPhongKhamMap.Values)
+            {
+                tatCaPhongKham.AddRange(listPhong);
+            }
+
+            // Gán vào ComboBox
+            popPhongKham.ItemsSource = tatCaPhongKham;
+            popPhongKham.SelectedIndex = 0;
+        }
+        // ================================================
 
         private void LoadDuLieuTuDatabase()
         {
@@ -170,7 +204,9 @@ namespace Pharmacy_Manage.GUI
                     // 3. Lưu Lịch hẹn
                     DateTime thoiGianKham = DateTime.Now;
                     string loaiKham = "Lấy số trực tiếp";
-                    string phongKham = (popPhongKham.SelectedItem as ComboBoxItem)?.Content.ToString() ?? "";
+                    // =============== SỬA LẠI ĐỂ LẤY TEXT TỪ COMBOBOX ===============
+                    string phongKham = popPhongKham.SelectedItem?.ToString() ?? "";
+                    // ===============================================================
 
                     string insLich = @"INSERT INTO LichHen(MaKH, ThoiGianKham, PhongKham, LyDoKham, TrangThai, LoaiKham) 
                                        VALUES(@maKH, @tg, @phong, @lydo, N'Đang chờ', @loai)";
@@ -225,7 +261,7 @@ namespace Pharmacy_Manage.GUI
                         using (SqlConnection con = _db.GetConnection())
                         {
                             con.Open();
-                            SqlCommand cmd = new SqlCommand("DELETE FROM LichHen WHERE MaLichHen = @ma", con);
+                            SqlCommand cmd = new SqlCommand("UPDATE LichHen SET TrangThai = N'Đã hủy' WHERE MaLichHen = @ma", con);
                             cmd.Parameters.AddWithValue("@ma", lh.MaLichHen);
                             cmd.ExecuteNonQuery();
                         }
