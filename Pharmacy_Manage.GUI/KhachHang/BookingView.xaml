@@ -138,19 +138,12 @@
 
                         <StackPanel Grid.Row="0" Grid.Column="2">
                             <TextBlock Text="Chuyên khoa" FontSize="12" Foreground="#555"/>
-                            <ComboBox x:Name="cbChuyenKhoa" IsEditable="True">
-                                <ComboBoxItem Content="Khám nội tổng quát"/>
-                                <ComboBoxItem Content="Khám chuyên khoa Nhi"/>
-                                <ComboBoxItem Content="Khám Tai Mũi Họng"/>
-                            </ComboBox>
+                            <ComboBox x:Name="cbChuyenKhoa" IsEditable="False" SelectionChanged="cbChuyenKhoa_SelectionChanged"/>
                         </StackPanel>
 
                         <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3">
                             <TextBlock Text="Phòng khám" FontSize="12" Foreground="#555"/>
-                            <ComboBox x:Name="cbPhongKham" IsEditable="True">
-                                <ComboBoxItem Content="PK Tổng Hợp (P.101 Nhà A)"/>
-                                <ComboBoxItem Content="Phòng Khám Cơ Xương Khớp"/>
-                            </ComboBox>
+                            <ComboBox x:Name="cbPhongKham" IsEditable="False"/>
                         </StackPanel>
                     </Grid>
 

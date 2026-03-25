@@ -62,6 +62,7 @@
             <Button Style="{StaticResource SidebarBtnStyle}" Content="📦 Kho thuốc" Tag="1" Click="Menu_Click"/>
             <Button Style="{StaticResource SidebarBtnStyle}" Content="🧾 Hóa đơn" Tag="2" Click="Menu_Click"/>
             <Button Style="{StaticResource SidebarBtnStyle}" Content="👥 Nhân viên" Tag="3" Click="Menu_Click"/>
+            <Button Style="{StaticResource SidebarBtnStyle}" Content="📅 Lịch hẹn" Tag="4" Click="Menu_Click"/>
         </StackPanel>
 
         <Button Grid.Row="2" Style="{StaticResource SidebarBtnStyle}" Content="🚪 Đăng xuất" 

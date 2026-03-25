@@ -9,8 +9,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-
-        <!-- Thanh công cụ -->
+    
         <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,20">
             <TextBlock Text="Quản lý kho thuốc" FontSize="28" FontWeight="Bold" Foreground="#2D3748" VerticalAlignment="Center"/>
             <Button Content="+ Thêm mới" Click="BtnAdd_Click" Background="#48BB78" Foreground="White" Padding="20,10" Margin="30,0,0,0" FontWeight="Bold" BorderThickness="0">

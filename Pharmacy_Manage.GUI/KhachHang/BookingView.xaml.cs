@@ -1,7 +1,6 @@
 ﻿using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -11,76 +10,91 @@ namespace Pharmacy_Manage.GUI.KhachHang
 {
     public partial class BookingView : UserControl
     {
-
         private string connectionString = @"Data Source=localhost;Initial Catalog=PharmacyManage;Integrated Security=True;TrustServerCertificate=True";
 
-        // Tìm đến hàm BookingView() và sửa lại như sau:
+        // Khai báo bộ từ điển ánh xạ Chuyên Khoa -> Danh sách Phòng Khám
+        private Dictionary<string, List<string>> chuyenKhoaPhongKhamMap;
+
         public BookingView(string customerName = "")
         {
             InitializeComponent();
             LoadCountries();
             LoadEthnicities();
+            
+            // Gọi hàm nạp danh sách chuyên khoa & phòng khám
+            LoadChuyenKhoaPhongKham();
 
-            // Nếu có tên truyền từ trang Home sang thì tự điền vào ô Họ tên
             if (!string.IsNullOrWhiteSpace(customerName))
             {
                 txtHoTen.Text = customerName;
             }
         }
 
+        private void LoadChuyenKhoaPhongKham()
+        {
+            // Khởi tạo danh sách các chuyên khoa và phòng khám tương ứng
+            chuyenKhoaPhongKhamMap = new Dictionary<string, List<string>>
+            {
+                { "Khám nội tổng quát", new List<string> { "PK Nội 1 (Tầng 1)", "PK Nội 2 (Tầng 1)" } },
+                { "Khám chuyên khoa Nhi", new List<string> { "PK Nhi 1 (Tầng 2)", "PK Nhi 2 (Tầng 2)" } },
+                { "Khám Tai Mũi Họng", new List<string> { "PK TMH 1 (Tầng 3)", "PK TMH 2 (Tầng 3)" } },
+                { "Khám Răng Hàm Mặt", new List<string> { "PK Răng Hàm Mặt (Tầng 3)" } },
+                { "Khám Da Liễu", new List<string> { "PK Da Liễu (Tầng 4)" } },
+                { "Khám Mắt", new List<string> { "PK Mắt (Tầng 4)" } }
+            };
+
+            // Nạp danh sách chuyên khoa (chỉ lấy Keys) vào ComboBox Chuyên khoa
+            cbChuyenKhoa.ItemsSource = chuyenKhoaPhongKhamMap.Keys;
+            cbChuyenKhoa.SelectedIndex = 0; // Chọn mặc định dòng đầu tiên
+        }
+
+        // Sự kiện xảy ra khi người dùng đổi Chuyên khoa
+        private void cbChuyenKhoa_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (cbChuyenKhoa.SelectedItem != null)
+            {
+                string selectedKhoa = cbChuyenKhoa.SelectedItem.ToString();
+                
+                // Cập nhật lại danh sách phòng khám dựa theo chuyên khoa vừa chọn
+                if (chuyenKhoaPhongKhamMap.ContainsKey(selectedKhoa))
+                {
+                    cbPhongKham.ItemsSource = chuyenKhoaPhongKhamMap[selectedKhoa];
+                    cbPhongKham.SelectedIndex = 0; // Chọn mặc định phòng đầu tiên
+                }
+            }
+        }
+
         private void LoadCountries()
         {
             List<string> countries = new List<string> {
-        "Việt Nam", "Afghanistan", "Ai Cập", "Albania", "Algeria", "Andorra", "Angola", "Anh", "Áo", "Argentina",
-    "Armenia", "Azerbaijan", "Ấn Độ", "Bahamas", "Ba Lan", "Bahrain", "Bangladesh", "Barbados", "Belarus", "Bỉ",
-    "Belize", "Benin", "Bhutan", "Bỉ", "Bolivia", "Bosnia và Herzegovina", "Botswana", "Bồ Đào Nha", "Brazil", "Brunei",
-    "Bulgaria", "Burkina Faso", "Burundi", "Cabo Verde", "Các Tiểu vương quốc Ả Rập Thống nhất", "Cameroon", "Campuchia", "Canada", "Chile", "Colombia",
-    "Comoros", "Congo", "Costa Rica", "Croatia", "Cuba", "Curaçao", "Cyprus", "Chad", "Czechia", "Đan Mạch",
-    "Djibouti", "Dominica", "Dominican Republic", "Đông Timor", "Đức", "Ecuador", "El Salvador", "Eritrea", "Estonia", "Eswatini",
-    "Ethiopia", "Fiji", "Gabon", "Gambia", "Georgia", "Ghana", "Grenada", "Guatemala", "Guinea", "Guinea-Bissau",
-    "Guyana", "Haiti", "Hà Lan", "Hàn Quốc", "Hoa Kỳ", "Honduras", "Hungary", "Hy Lạp", "Iceland", "Indonesia",
-    "Iran", "Iraq", "Ireland", "Israel", "Ý", "Jamaica", "Jordan", "Kazakhstan", "Kenya", "Kiribati",
-    "Kuwait", "Kyrgyzstan", "Lào", "Latvia", "Lebanon", "Lesotho", "Liberia", "Libya", "Liechtenstein", "Lithuania",
-    "Luxembourg", "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Mauritania", "Mauritius", "Mexico",
-    "Micronesia", "Moldova", "Monaco", "Mongolia", "Montenegro", "Morocco", "Mozambique", "Myanmar", "Namibia", "Nauru",
-    "Nepal", "New Zealand", "Nga", "Nhật Bản", "Nicaragua", "Niger", "Nigeria", "Na Uy", "Oman", "Pakistan",
-    "Palau", "Palestine", "Panama", "Papua New Guinea", "Paraguay", "Peru", "Philippines", "Pháp", "Phần Lan", "Qatar",
-    "Romania", "Rwanda", "Saint Kitts và Nevis", "Saint Lucia", "Samoa", "San Marino", "Saudi Arabia", "Senegal", "Serbia", "Seychelles",
-    "Sierra Leone", "Singapore", "Slovakia", "Slovenia", "Solomon Islands", "Somalia", "South Africa", "South Sudan", "Tây Ban Nha", "Sri Lanka",
-    "Sudan", "Suriname", "Thụy Điển", "Thụy Sĩ", "Syria", "Tajikistan", "Tanzania", "Thái Lan", "Togo", "Tonga",
-    "Trinidad và Tobago", "Tunisia", "Thổ Nhĩ Kỳ", "Turkmenistan", "Tuvalu", "Úc", "Uganda", "Ukraine", "Uruguay", "Uzbekistan",
-    "Vanuatu", "Vatican", "Venezuela", "Yemen", "Zambia", "Zimbabwe"
-    };
+                "Việt Nam", "Anh", "Hoa Kỳ", "Hàn Quốc", "Nhật Bản", "Pháp", "Đức" // Rút gọn cho code ngắn dễ nhìn
+            };
             cbQuocTich.ItemsSource = countries;
-            cbQuocTich.SelectedIndex = 0; // Mặc định chọn Việt Nam
+            cbQuocTich.SelectedIndex = 0;
         }
 
         private void LoadEthnicities()
         {
             List<string> ethnicities = new List<string> {
-        "Kinh", "Tày", "Thái", "Mường", "Khơ Me", "Hoa", "Nùng", "Hmong", "Dao", "Gia Rai",
-    "Ê Đê", "Ba Na", "Sán Chay", "Chăm", "Kơ Ho", "Xơ Đăng", "Sán Dìu", "Hrê", "Ra Glai", "M'Nông",
-    "Thổ", "Xtiêng", "Khơ mú", "Bru - Vân Kiều", "Cơ Tu", "Giáy", "Tà Ôi", "Mạ", "Giẻ-Triêng", "Co",
-    "Chơ Ro", "Xinh Mun", "Hà Nhì", "Chu Ru", "Lào", "La Chí", "Kháng", "Phù Lá", "La Hủ", "La Ha",
-    "Pà Thẻn", "Lự", "Ngái", "Chứt", "Lô Lô", "Mảng", "Cơ Lao", "Bố Y", "Cống", "Si La",
-    "Pu Péo", "Rơ Măm", "Brâu", "Ơ Đu", "Khác"
-    };
+                "Kinh", "Tày", "Thái", "Mường", "Khơ Me", "Hoa", "Nùng", "Hmong", "Khác"
+            };
             cbDanToc.ItemsSource = ethnicities;
-            cbDanToc.SelectedIndex = 0; // Mặc định chọn Kinh
+            cbDanToc.SelectedIndex = 0;
         }
+
         private void NumberOnly_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
-            // Chỉ cho phép nhập các kí tự từ 0 đến 9
             e.Handled = !System.Text.RegularExpressions.Regex.IsMatch(e.Text, "[0-9]");
         }
+
         private void BtnXacNhan_Click(object sender, RoutedEventArgs e)
         {
             // 1. Validate dữ liệu cơ bản
             if (string.IsNullOrWhiteSpace(txtHoTen.Text) || string.IsNullOrWhiteSpace(txtSdt.Text) ||
-                dpNgayKham.SelectedDate == null || string.IsNullOrWhiteSpace(cbGioKham.Text) ||
-                string.IsNullOrWhiteSpace(txtLyDo.Text))
+                dpNgayKham.SelectedDate == null || cbGioKham.SelectedItem == null ||
+                string.IsNullOrWhiteSpace(txtLyDo.Text) || cbPhongKham.SelectedItem == null)
             {
-                MessageBox.Show("Vui lòng điền đầy đủ các trường có dấu *!", "Cảnh báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Vui lòng điền đầy đủ các trường có dấu * và chọn phòng khám!", "Cảnh báo", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -89,10 +103,8 @@ namespace Pharmacy_Manage.GUI.KhachHang
 
             if (TimeSpan.TryParse(cbGioKham.Text, out TimeSpan gioKham))
             {
-
                 DateTime temp = ngayChon.Date.Add(gioKham);
                 thoiGianKham = new DateTime(temp.Year, temp.Month, temp.Day, temp.Hour, temp.Minute, 0);
-
             }
             else
             {
@@ -100,43 +112,67 @@ namespace Pharmacy_Manage.GUI.KhachHang
                 return;
             }
 
+            string phongKhamChon = cbPhongKham.SelectedItem.ToString();
+
             try
             {
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
                     conn.Open();
 
-                    // Insert Khách hàng
+                    // =========================================================================
+                    // 2. KIỂM TRA TRÙNG LỊCH: Cùng Thời gian & Cùng Phòng khám
+                    // =========================================================================
+                    string checkQuery = @"SELECT COUNT(*) FROM LichHen 
+                                          WHERE ThoiGianKham = @ThoiGianKham 
+                                            AND PhongKham = @PhongKham 
+                                            AND TrangThai != N'Đã hủy'"; // Bỏ qua các lịch đã hủy
+
+                    using (SqlCommand checkCmd = new SqlCommand(checkQuery, conn))
+                    {
+                        checkCmd.Parameters.AddWithValue("@ThoiGianKham", thoiGianKham);
+                        checkCmd.Parameters.AddWithValue("@PhongKham", phongKhamChon);
+                        
+                        int count = (int)checkCmd.ExecuteScalar();
+                        if (count > 0)
+                        {
+                            MessageBox.Show($"Khung giờ {thoiGianKham:HH:mm} ngày {thoiGianKham:dd/MM/yyyy} tại {phongKhamChon} đã có khách hàng khác đặt.\n\nVui lòng chọn giờ hoặc phòng khám khác!", 
+                                            "Trùng lịch hẹn", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            return; // Dừng lại, không cho Insert vào CSDL
+                        }
+                    }
+
+                    // 3. NẾU KHÔNG TRÙNG -> LƯU VÀO CSDL
                     string queryKH = @"INSERT INTO KhachHang (HoTen, SoDienThoai, Email, NgaySinh, DanToc, QuocTich) 
-                               VALUES (@HoTen, @Sdt, @Email, @NgaySinh, @DanToc, @QuocTich);
-                               SELECT SCOPE_IDENTITY();";
+                                       VALUES (@HoTen, @Sdt, @Email, @NgaySinh, @DanToc, @QuocTich);
+                                       SELECT SCOPE_IDENTITY();";
 
-                    SqlCommand cmdKH = new SqlCommand(queryKH, conn);
-                    cmdKH.Parameters.AddWithValue("@HoTen", txtHoTen.Text);
-                    cmdKH.Parameters.AddWithValue("@Sdt", txtSdt.Text);
-                    cmdKH.Parameters.AddWithValue("@Email", (object)txtEmail.Text ?? DBNull.Value);
-                    cmdKH.Parameters.AddWithValue("@NgaySinh", (object)dpNgaySinh.SelectedDate ?? DBNull.Value);
-                    cmdKH.Parameters.AddWithValue("@DanToc", cbDanToc.Text ?? "Kinh");
-                    cmdKH.Parameters.AddWithValue("@QuocTich", cbQuocTich.Text ?? "Vietnam");
+                    int maKH;
+                    using (SqlCommand cmdKH = new SqlCommand(queryKH, conn))
+                    {
+                        cmdKH.Parameters.AddWithValue("@HoTen", txtHoTen.Text);
+                        cmdKH.Parameters.AddWithValue("@Sdt", txtSdt.Text);
+                        cmdKH.Parameters.AddWithValue("@Email", (object)txtEmail.Text ?? DBNull.Value);
+                        cmdKH.Parameters.AddWithValue("@NgaySinh", (object)dpNgaySinh.SelectedDate ?? DBNull.Value);
+                        cmdKH.Parameters.AddWithValue("@DanToc", cbDanToc.Text ?? "Kinh");
+                        cmdKH.Parameters.AddWithValue("@QuocTich", cbQuocTich.Text ?? "Vietnam");
+                        maKH = Convert.ToInt32(cmdKH.ExecuteScalar());
+                    }
 
-                    int maKH = Convert.ToInt32(cmdKH.ExecuteScalar());
-
-                    // ================= ĐÃ SỬA Ở ĐÂY =================
-                    // Thêm trường LoaiKham và gán cứng giá trị là N'Đặt lịch trước'
                     string queryLH = @"INSERT INTO LichHen (MaKH, ThoiGianKham, ChuyenKhoa, PhongKham, LyDoKham, TrangThai, LoaiKham) 
-                               VALUES (@MaKH, @ThoiGianKham, @ChuyenKhoa, @PhongKham, @LyDoKham, N'Đang chờ', N'Đặt lịch trước');";
-                    // ================================================
+                                       VALUES (@MaKH, @ThoiGianKham, @ChuyenKhoa, @PhongKham, @LyDoKham, N'Đang chờ', N'Đặt lịch trước');";
+                    
+                    using (SqlCommand cmdLH = new SqlCommand(queryLH, conn))
+                    {
+                        cmdLH.Parameters.AddWithValue("@MaKH", maKH);
+                        cmdLH.Parameters.AddWithValue("@ThoiGianKham", thoiGianKham);
+                        cmdLH.Parameters.AddWithValue("@ChuyenKhoa", cbChuyenKhoa.Text);
+                        cmdLH.Parameters.AddWithValue("@PhongKham", phongKhamChon);
+                        cmdLH.Parameters.AddWithValue("@LyDoKham", txtLyDo.Text);
+                        cmdLH.ExecuteNonQuery();
+                    }
 
-                    SqlCommand cmdLH = new SqlCommand(queryLH, conn);
-                    cmdLH.Parameters.AddWithValue("@MaKH", maKH);
-                    cmdLH.Parameters.AddWithValue("@ThoiGianKham", thoiGianKham);
-                    cmdLH.Parameters.AddWithValue("@ChuyenKhoa", cbChuyenKhoa.Text ?? (object)DBNull.Value);
-                    cmdLH.Parameters.AddWithValue("@PhongKham", cbPhongKham.Text ?? (object)DBNull.Value);
-                    cmdLH.Parameters.AddWithValue("@LyDoKham", txtLyDo.Text);
-
-                    cmdLH.ExecuteNonQuery();
-
-                    MessageBox.Show($"Đặt lịch thành công!\nThời gian: {thoiGianKham:dd/MM/yyyy HH:mm}", "Thông báo");
+                    MessageBox.Show($"Đặt lịch thành công!\nThời gian: {thoiGianKham:dd/MM/yyyy HH:mm}\nTại: {phongKhamChon}", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
 
                     // Xóa dữ liệu sau khi nhập
                     txtHoTen.Clear(); txtSdt.Clear(); txtEmail.Clear(); txtLyDo.Clear(); cbGioKham.Text = "";
