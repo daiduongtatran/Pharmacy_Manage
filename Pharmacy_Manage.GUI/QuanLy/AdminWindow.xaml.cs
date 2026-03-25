@@ -38,6 +38,9 @@ namespace Pharmacy_Manage.GUI
                 case "3":
                     // MainContentArea.Content = new Employee(); 
                     break;
+                case "4":
+                    MainContentArea.Content = new Pharmacy_Manage.QuanLy.AppointmentView();
+                    break;
             }
         }
 

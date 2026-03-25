@@ -57,7 +57,6 @@ namespace Pharmacy_Manage.GUI
             SwitchView(1, nameFromHome);
         }
 
-        // Các hàm phụ trợ khác
         private void Logout_Click(object sender, RoutedEventArgs e)
         {
             MainWindow login = new MainWindow();
