@@ -13,6 +13,7 @@ using Microsoft.Data.SqlClient;
 using Pharmacy_Manage.GUI.nhanvien;
 using static Pharmacy_Manage.GUI.Banthuocview;
 
+
 namespace Pharmacy_Manage.GUI
 {
     public partial class Banthuocview : UserControl
@@ -192,9 +193,7 @@ namespace Pharmacy_Manage.GUI
                 return;
             }
 
-            //Lấy mã khách hàng
             string maKH = txtMaKH.Text;
-
             if (string.IsNullOrEmpty(maKH))
             {
                 MessageBox.Show("Vui lòng chọn khách hàng.");
@@ -207,99 +206,127 @@ namespace Pharmacy_Manage.GUI
                 {
                     conn.Open();
 
-                    // TÍNH TIỀN
-                    decimal tongTienThuoc = 0;
-                    foreach (DataRow row in gioHangTable.Rows)
+                    // TRANSACTION (RẤT QUAN TRỌNG)
+                    SqlTransaction tran = conn.BeginTransaction();
+
+                    try
                     {
-                        tongTienThuoc += Convert.ToDecimal(row["ThanhTien"]);
-                    }
+                        // ===== 1. TÍNH TIỀN =====
+                        decimal tongTienThuoc = 0;
+                        foreach (DataRow row in gioHangTable.Rows)
+                        {
+                            tongTienThuoc += Convert.ToDecimal(row["ThanhTien"]);
+                        }
 
-                    
+                        decimal tongTienDV = 0;
+                        foreach (var dv in listDichVuDaChon)
+                        {
+                            tongTienDV += dv.Gia;
+                        }
 
-                    // TẠO MÃ HÓA ĐƠN 
-                    string maHD = "HD" + DateTime.Now.Ticks;
+                        // ===== 2. INSERT HÓA ĐƠN + LẤY MaHD =====
+                        string insertHoaDon = @"
+                INSERT INTO HoaDon (MaKH, NgayLap, TongTienDichVu, TongTienSanPham)
+                OUTPUT INSERTED.MaHD
+                VALUES (@MaKH, GETDATE(), @TongDV, @TongSP)";
 
-                    //INSERT HÓA ĐƠN
-                    string insertHoaDon = @"
-                INSERT INTO HoaDon
-                (MaKH, NgayLap, TongTienDichVu, TongTienSanPham)
-                VALUES
-                (@MaKH, GETDATE(), @TongDV, @TongSP)";
+                        SqlCommand cmdHD = new SqlCommand(insertHoaDon, conn, tran);
+                        cmdHD.Parameters.AddWithValue("@MaKH", maKH);
+                        cmdHD.Parameters.AddWithValue("@TongDV", tongTienDV);
+                        cmdHD.Parameters.AddWithValue("@TongSP", tongTienThuoc);
 
-                    SqlCommand cmdHD = new SqlCommand(insertHoaDon, conn);
-                    cmdHD.Parameters.AddWithValue("@MaKH", maKH);
-                    cmdHD.Parameters.AddWithValue("@TongDV", tongTienDichVu);
-                    cmdHD.Parameters.AddWithValue("@TongSP", tongTienThuoc);
-                    
+                        int maHD = (int)cmdHD.ExecuteScalar();
 
-                    cmdHD.ExecuteNonQuery();
+                        // ===== 3. CHI TIẾT THUỐC =====
+                        foreach (DataRow row in gioHangTable.Rows)
+                        {
+                            string maSP = row["MaSP"].ToString();
+                            int soLuong = Convert.ToInt32(row["SoLuong"]);
+                            decimal donGia = Convert.ToDecimal(row["DonGia"]);
 
-                    // ================= XỬ LÝ THUỐC =================
-                    foreach (DataRow row in gioHangTable.Rows)
-                    {
-                        string ma = row["MaSP"].ToString();
-                        int soLuongMua = Convert.ToInt32(row["SoLuong"]);
-
-                        string checkQuery = @"
+                            // CHECK
+                            string checkQuery = @"
                     SELECT TonKho, HanDung, TrangThai
                     FROM SanPham
                     WHERE MaSP = @MaSP";
 
-                        SqlCommand checkCmd = new SqlCommand(checkQuery, conn);
-                        checkCmd.Parameters.AddWithValue("@MaSP", ma);
+                            SqlCommand checkCmd = new SqlCommand(checkQuery, conn, tran);
+                            checkCmd.Parameters.AddWithValue("@MaSP", maSP);
 
-                        using (SqlDataReader reader = checkCmd.ExecuteReader())
-                        {
-                            if (!reader.Read())
+                            using (SqlDataReader reader = checkCmd.ExecuteReader())
                             {
-                                MessageBox.Show("Sản phẩm không tồn tại.");
-                                return;
+                                if (!reader.Read())
+                                    throw new Exception("Sản phẩm không tồn tại.");
+
+                                int tonKho = Convert.ToInt32(reader["TonKho"]);
+                                DateTime hanDung = Convert.ToDateTime(reader["HanDung"]);
+                                string trangThai = reader["TrangThai"].ToString();
+
+                                if (trangThai != "Đang bán")
+                                    throw new Exception("Sản phẩm đã ngưng bán.");
+
+                                if (!CheckHan(hanDung))
+                                    throw new Exception("Sản phẩm đã hết hạn.");
+
+                                if (tonKho < soLuong)
+                                    throw new Exception("Không đủ tồn kho.");
                             }
 
-                            int tonKho = Convert.ToInt32(reader["TonKho"]);
-                            DateTime hanDung = Convert.ToDateTime(reader["HanDung"]);
-                            string trangThai = reader["TrangThai"].ToString();
+                            // INSERT CHI TIẾT HÓA ĐƠN
+                            string insertCT = @"
+                    INSERT INTO ChiTietHoaDon (MaHD, MaSP, SoLuong, DonGia)
+                    VALUES (@MaHD, @MaSP, @SoLuong, @DonGia)";
 
-                            if (trangThai != "Đang bán")
-                            {
-                                MessageBox.Show("Sản phẩm đã ngưng bán.");
-                                return;
-                            }
+                            SqlCommand cmdCT = new SqlCommand(insertCT, conn, tran);
+                            cmdCT.Parameters.AddWithValue("@MaHD", maHD);
+                            cmdCT.Parameters.AddWithValue("@MaSP", maSP);
+                            cmdCT.Parameters.AddWithValue("@SoLuong", soLuong);
+                            cmdCT.Parameters.AddWithValue("@DonGia", donGia);
+                            cmdCT.ExecuteNonQuery();
 
-                            if (!CheckHan(hanDung))
-                            {
-                                MessageBox.Show("Sản phẩm đã hết hạn.");
-                                return;
-                            }
-
-                            if (tonKho < soLuongMua)
-                            {
-                                MessageBox.Show("Không đủ tồn kho.");
-                                return;
-                            }
-                        }
-
-                        string updateQuery = @"
+                            // UPDATE KHO
+                            string updateQuery = @"
                     UPDATE SanPham
                     SET TonKho = TonKho - @SoLuong,
                         HangXuat = HangXuat + @SoLuong
                     WHERE MaSP = @MaSP";
 
-                        SqlCommand updateCmd = new SqlCommand(updateQuery, conn);
-                        updateCmd.Parameters.AddWithValue("@SoLuong", soLuongMua);
-                        updateCmd.Parameters.AddWithValue("@MaSP", ma);
-                        updateCmd.ExecuteNonQuery();
+                            SqlCommand updateCmd = new SqlCommand(updateQuery, conn, tran);
+                            updateCmd.Parameters.AddWithValue("@SoLuong", soLuong);
+                            updateCmd.Parameters.AddWithValue("@MaSP", maSP);
+                            updateCmd.ExecuteNonQuery();
+                        }
+
+                        // ===== 4. CHI TIẾT DỊCH VỤ =====
+                        foreach (var dv in listDichVuDaChon)
+                        {
+                            string insertDV = @"
+                    INSERT INTO ChiTietDichVu (MaHD, MaDV, ThanhTien)
+                    VALUES (@MaHD, @MaDV, @ThanhTien)";
+
+                            SqlCommand cmdDV = new SqlCommand(insertDV, conn, tran);
+                            cmdDV.Parameters.AddWithValue("@MaHD", maHD);
+                            cmdDV.Parameters.AddWithValue("@MaDV", dv.MaDV);
+                            cmdDV.Parameters.AddWithValue("@ThanhTien", dv.Gia);
+                            cmdDV.ExecuteNonQuery();
+                        }
+
+                        // ===== 5. COMMIT =====
+                        tran.Commit();
+                    }
+                    catch (Exception ex)
+                    {
+                        tran.Rollback();
+                        throw new Exception("Lỗi transaction: " + ex.Message);
                     }
                 }
 
                 MessageBox.Show("Thanh toán thành công!");
 
-                // RESET SAU THANH TOÁN
+                // ===== RESET =====
                 gioHangTable.Clear();
                 listDichVuDaChon.Clear();
                 icDichvu.ItemsSource = null;
-
-                tongTienDichVu = 0;
 
                 txtTongTienDichVu.Text = "Tổng DV: 0 VNĐ";
                 txtTongTienThuoc.Text = "Tổng thuốc: 0 VNĐ";
@@ -307,14 +334,13 @@ namespace Pharmacy_Manage.GUI
 
                 CapNhatTrangThaiNut();
                 LoadDuLieuKho();
-                hamloadchung.ReloadAll?.Invoke();
+                hamloadchung.Reload();
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Lỗi thanh toán: " + ex.Message);
             }
         }
-
         // ================= BUTTON ACTION =================
         private void btnAction_Click(object sender, RoutedEventArgs e)
         {

@@ -10,7 +10,12 @@ namespace Pharmacy_Manage.GUI
 {
     public static class hamloadchung
     {
-        public static Action ReloadAll;
+        public static event Action ReloadAll;
+
+        public static void Reload()
+        {
+            ReloadAll?.Invoke();
+        }
     }
 }
 //B1: ĐẶT DÒNG NÀY: "hamloadchung.ReloadAll += LoadData;" VÀO TRONG CONSTRUCTOR CỦA FILE .CS VÀ THAY "LOADDATA" BẰNG TÊN HÀM LOADATA CỦA TÙY TRANG
