@@ -10,23 +10,24 @@ namespace Pharmacy_Manage.GUI
 {
     public partial class QLkhachhang_view : UserControl
     {
-        private ObservableCollection<HoaDonViewModel> _danhSachGoc = new ObservableCollection<HoaDonViewModel>();
-        private ObservableCollection<HoaDonViewModel> _danhSachHienThi = new ObservableCollection<HoaDonViewModel>();
+        private ObservableCollection<HoaDonViewModel> _danhSachGoc = new();
+        private ObservableCollection<HoaDonViewModel> _danhSachHienThi = new();
         private DbConnection _db = new DbConnection();
 
         public QLkhachhang_view()
         {
             InitializeComponent();
+
+            // Đăng ký reload
             hamloadchung.ReloadAll += LoadDuLieuTuDatabase;
-            dpLocNgay.SelectedDate = DateTime.Now.Date; // Mặc định hiển thị hóa đơn hôm nay
+
+            dpLocNgay.SelectedDate = DateTime.Now;
+            dgHoaDon.ItemsSource = _danhSachHienThi;
+
             LoadDuLieuTuDatabase();
         }
 
-        private void UserControl_Unloaded(object sender, RoutedEventArgs e)
-        {
-            hamloadchung.ReloadAll -= LoadDuLieuTuDatabase;
-        }
-
+        // ================= LOAD DATABASE =================
         private void LoadDuLieuTuDatabase()
         {
             _danhSachGoc.Clear();
@@ -36,46 +37,46 @@ namespace Pharmacy_Manage.GUI
                 using (SqlConnection con = _db.GetConnection())
                 {
                     con.Open();
+
                     string query = @"
                         SELECT hd.MaHD, hd.NgayLap, 
-                               kh.HoTen AS TenKhachHang, kh.SoDienThoai AS SDT,
-                               hd.TongTienDichVu, hd.TongTienSanPham, hd.TongThanhToan, 
+                               kh.HoTen, kh.SoDienThoai,
+                               hd.TongTienDichVu, hd.TongTienSanPham, hd.TongThanhToan,
                                hd.TrangThai, hd.GhiChu
                         FROM HoaDon hd
                         LEFT JOIN KhachHang kh ON hd.MaKH = kh.MaKH
                         ORDER BY hd.NgayLap DESC";
 
                     using (SqlCommand cmd = new SqlCommand(query, con))
+                    using (SqlDataReader reader = cmd.ExecuteReader())
                     {
-                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        while (reader.Read())
                         {
-                            while (reader.Read())
+                            _danhSachGoc.Add(new HoaDonViewModel
                             {
-                                _danhSachGoc.Add(new HoaDonViewModel
-                                {
-                                    MaHD = reader["MaHD"] != DBNull.Value ? Convert.ToInt32(reader["MaHD"]) : 0,
-                                    NgayLap = reader["NgayLap"] != DBNull.Value ? Convert.ToDateTime(reader["NgayLap"]) : DateTime.MinValue,
-                                    TenKhachHang = reader["TenKhachHang"] != DBNull.Value ? reader["TenKhachHang"].ToString() : "Khách lẻ",
-                                    SDT = reader["SDT"] != DBNull.Value ? reader["SDT"].ToString() : "",
-                                    TongTienDichVu = reader["TongTienDichVu"] != DBNull.Value ? Convert.ToDecimal(reader["TongTienDichVu"]) : 0,
-                                    TongTienSanPham = reader["TongTienSanPham"] != DBNull.Value ? Convert.ToDecimal(reader["TongTienSanPham"]) : 0,
-                                    TongThanhToan = reader["TongThanhToan"] != DBNull.Value ? Convert.ToDecimal(reader["TongThanhToan"]) : 0,
-                                    TrangThai = reader["TrangThai"] != DBNull.Value ? reader["TrangThai"].ToString() : "Chờ thanh toán",
-                                    GhiChu = reader["GhiChu"] != DBNull.Value ? reader["GhiChu"].ToString() : ""
-                                });
-                            }
+                                MaHD = Convert.ToInt32(reader["MaHD"]),
+                                NgayLap = Convert.ToDateTime(reader["NgayLap"]),
+                                TenKhachHang = reader["HoTen"]?.ToString() ?? "Khách lẻ",
+                                SDT = reader["SoDienThoai"]?.ToString() ?? "",
+                                TongTienDichVu = reader["TongTienDichVu"] != DBNull.Value ? Convert.ToDecimal(reader["TongTienDichVu"]) : 0,
+                                TongTienSanPham = reader["TongTienSanPham"] != DBNull.Value ? Convert.ToDecimal(reader["TongTienSanPham"]) : 0,
+                                TongThanhToan = reader["TongThanhToan"] != DBNull.Value ? Convert.ToDecimal(reader["TongThanhToan"]) : 0,
+                                TrangThai = reader["TrangThai"]?.ToString() ?? "",
+                                GhiChu = reader["GhiChu"]?.ToString() ?? ""
+                            });
                         }
                     }
                 }
+
                 LocDuLieu();
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Lỗi khi tải dữ liệu Hóa đơn:\n" + ex.Message, "Lỗi Database", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Lỗi load dữ liệu:\n" + ex.Message);
             }
         }
 
-        // ================= XỬ LÝ LỌC & TÌM KIẾM =================
+        // ================= FILTER =================
         private void Filter_Changed(object sender, RoutedEventArgs e)
         {
             LocDuLieu();
@@ -83,122 +84,136 @@ namespace Pharmacy_Manage.GUI
 
         private void LocDuLieu()
         {
-            if (_danhSachGoc == null || dgHoaDon == null || cbTrangThai == null) return;
+            if (_danhSachGoc == null) return;
 
-            string tuKhoa = txtTimKiem.Text.Trim().ToLower();
-            string trangThai = (cbTrangThai.SelectedItem as ComboBoxItem)?.Content.ToString() ?? "Tất cả";
-            DateTime? ngayLoc = dpLocNgay.SelectedDate;
+            string tuKhoa = txtTimKiem.Text?.ToLower() ?? "";
+            string trangThai = (cbTrangThai.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "Tất cả";
+            DateTime? ngay = dpLocNgay.SelectedDate;
 
-            var ketQua = _danhSachGoc.Where(h =>
-                (string.IsNullOrEmpty(tuKhoa) || h.TenKhachHang.ToLower().Contains(tuKhoa) || h.SDT.Contains(tuKhoa) || h.MaHD.ToString().Contains(tuKhoa)) &&
-                (trangThai == "Tất cả" || h.TrangThai == trangThai) &&
-                (ngayLoc == null || h.NgayLap.Date == ngayLoc.Value.Date)
+            var list = _danhSachGoc.Where(h =>
+                (string.IsNullOrEmpty(tuKhoa)
+                    || h.TenKhachHang.ToLower().Contains(tuKhoa)
+                    || h.SDT.Contains(tuKhoa)
+                    || h.MaHD.ToString().Contains(tuKhoa))
+                &&
+                (trangThai == "Tất cả" || h.TrangThai == trangThai)
+                &&
+                (ngay == null || h.NgayLap.Date == ngay.Value.Date)
             ).ToList();
 
             _danhSachHienThi.Clear();
-            decimal tongDoanhThu = 0;
+
+            decimal doanhThu = 0;
             decimal chuaThu = 0;
 
-            foreach (var item in ketQua)
+            foreach (var item in list)
             {
                 _danhSachHienThi.Add(item);
 
                 if (item.TrangThai == "Đã thanh toán")
-                    tongDoanhThu += item.TongThanhToan;
-                else if (item.TrangThai == "Chờ thanh toán")
+                    doanhThu += item.TongThanhToan;
+                else
                     chuaThu += item.TongThanhToan;
             }
 
-            dgHoaDon.ItemsSource = _danhSachHienThi;
-            txtTongHoaDon.Text = _danhSachHienThi.Count.ToString("N0");
-            txtTongDoanhThu.Text = tongDoanhThu.ToString("N0");
+            txtTongHoaDon.Text = _danhSachHienThi.Count.ToString();
+            txtTongDoanhThu.Text = doanhThu.ToString("N0");
             txtChuaThu.Text = chuaThu.ToString("N0");
         }
 
-        // ================= XEM CHI TIẾT HÓA ĐƠN =================
+        // ================= CHI TIẾT =================
         private void BtnChiTiet_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is Button btn && btn.DataContext is HoaDonViewModel hd)
-            {
-                txtTieuDePopup.Text = $"CHI TIẾT HÓA ĐƠN #{hd.MaHD}";
-                txtKhachHangPopup.Text = $"Khách hàng: {hd.TenKhachHang} - SĐT: {hd.SDT} ({hd.LoaiGiaoDich})";
+            if (!(sender is Button btn)) return;
 
+            var hd = btn.DataContext as HoaDonViewModel;
+            if (hd == null)
+            {
+                MessageBox.Show("Không lấy được dữ liệu hóa đơn!");
+                return;
+            }
+
+            txtTieuDePopup.Text = $"HÓA ĐƠN #{hd.MaHD}";
+            txtKhachHangPopup.Text = $"{hd.TenKhachHang} - {hd.SDT}";
+
+            try
+            {
                 LoadChiTietHoaDon(hd.MaHD);
                 DialogChiTiet.Visibility = Visibility.Visible;
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi mở chi tiết:\n" + ex.Message);
+            }
         }
-
         private void LoadChiTietHoaDon(int maHD)
         {
             var dsThuoc = new ObservableCollection<ChiTietThuocViewModel>();
             var dsDichVu = new ObservableCollection<ChiTietDichVuViewModel>();
 
-            try
+            using (SqlConnection con = _db.GetConnection())
             {
-                using (SqlConnection con = _db.GetConnection())
+                con.Open();
+
+                // ===== THUỐC =====
+                string sqlThuoc = @"
+                    SELECT sp.TenSP, ct.SoLuong, ct.DonGia
+                    FROM ChiTietHoaDon ct
+                    JOIN SanPham sp ON ct.MaSP = sp.MaSP
+                    WHERE ct.MaHD = @MaHD";
+
+                using (SqlCommand cmd = new SqlCommand(sqlThuoc, con))
                 {
-                    con.Open();
+                    cmd.Parameters.AddWithValue("@MaHD", maHD);
 
-                    // 1. LẤY CHI TIẾT THUỐC
-                    string queryThuoc = @"
-                        SELECT sp.TenSP, ct.SoLuong, ct.DonGia, (ct.SoLuong * ct.DonGia) AS ThanhTien
-                        FROM ChiTietHoaDon ct
-                        JOIN SanPham sp ON ct.MaSP = sp.MaSP
-                        WHERE ct.MaHD = @MaHD";
-
-                    using (SqlCommand cmd = new SqlCommand(queryThuoc, con))
+                    using (var rd = cmd.ExecuteReader())
                     {
-                        cmd.Parameters.AddWithValue("@MaHD", maHD);
-                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        while (rd.Read())
                         {
-                            while (reader.Read())
-                            {
-                                dsThuoc.Add(new ChiTietThuocViewModel
-                                {
-                                    TenSP = reader["TenSP"].ToString(),
-                                    SoLuong = Convert.ToInt32(reader["SoLuong"]),
-                                    DonGia = Convert.ToDecimal(reader["DonGia"]),
-                                    ThanhTien = Convert.ToDecimal(reader["ThanhTien"])
-                                });
-                            }
-                        }
-                    }
+                            int sl = Convert.ToInt32(rd["SoLuong"]);
+                            decimal dg = Convert.ToDecimal(rd["DonGia"]);
 
-                    // 2. LẤY CHI TIẾT DỊCH VỤ
-                    string queryDichVu = @"
-                        SELECT dv.TenDV, cd.ThanhTien
-                        FROM ChiTietDichVu cd
-                        JOIN DichVu dv ON cd.MaDV = dv.MaDV
-                        WHERE cd.MaHD = @MaHD";
-
-                    using (SqlCommand cmd = new SqlCommand(queryDichVu, con))
-                    {
-                        cmd.Parameters.AddWithValue("@MaHD", maHD);
-                        using (SqlDataReader reader = cmd.ExecuteReader())
-                        {
-                            while (reader.Read())
+                            dsThuoc.Add(new ChiTietThuocViewModel
                             {
-                                dsDichVu.Add(new ChiTietDichVuViewModel
-                                {
-                                    TenDV = reader["TenDV"].ToString(),
-                                    ThanhTien = Convert.ToDecimal(reader["ThanhTien"])
-                                });
-                            }
+                                TenSP = rd["TenSP"].ToString(),
+                                SoLuong = sl,
+                                DonGia = dg,
+                                ThanhTien = sl * dg
+                            });
                         }
                     }
                 }
 
-                dgChiTietThuoc.ItemsSource = dsThuoc;
-                dgChiTietDichVu.ItemsSource = dsDichVu;
+                // ===== DỊCH VỤ =====
+                string sqlDV = @"
+                    SELECT dv.TenDV, cd.ThanhTien
+                    FROM ChiTietDichVu cd
+                    JOIN DichVu dv ON cd.MaDV = dv.MaDV
+                    WHERE cd.MaHD = @MaHD";
 
-                // Ẩn bảng Dịch Vụ đi nếu list trống (Khách chỉ mua thuốc)
-                dgChiTietDichVu.Visibility = dsDichVu.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
+                using (SqlCommand cmd = new SqlCommand(sqlDV, con))
+                {
+                    cmd.Parameters.AddWithValue("@MaHD", maHD);
+
+                    using (var rd = cmd.ExecuteReader())
+                    {
+                        while (rd.Read())
+                        {
+                            dsDichVu.Add(new ChiTietDichVuViewModel
+                            {
+                                TenDV = rd["TenDV"].ToString(),
+                                ThanhTien = Convert.ToDecimal(rd["ThanhTien"])
+                            });
+                        }
+                    }
+                }
             }
-            catch (Exception ex)
-            {
-                // Tạm thời catch lỗi êm ái nếu bảng chưa tồn tại
-                Console.WriteLine(ex.Message);
-            }
+
+            dgChiTietThuoc.ItemsSource = dsThuoc;
+            dgChiTietDichVu.ItemsSource = dsDichVu;
+
+            dgChiTietDichVu.Visibility =
+                dsDichVu.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
         }
 
         private void BtnDongPopup_Click(object sender, RoutedEventArgs e)
@@ -207,7 +222,7 @@ namespace Pharmacy_Manage.GUI
         }
     }
 
-    // ================= MODELS BINDING =================
+    // ================= MODEL =================
     public class HoaDonViewModel
     {
         public int MaHD { get; set; }
@@ -219,15 +234,6 @@ namespace Pharmacy_Manage.GUI
         public decimal TongThanhToan { get; set; }
         public string TrangThai { get; set; }
         public string GhiChu { get; set; }
-
-        public string LoaiGiaoDich
-        {
-            get
-            {
-                if (TongTienDichVu > 0) return "Khám bệnh & Kê đơn";
-                else return "Chỉ mua thuốc";
-            }
-        }
     }
 
     public class ChiTietThuocViewModel
