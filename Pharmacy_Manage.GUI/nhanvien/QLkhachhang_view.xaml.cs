@@ -17,8 +17,14 @@ namespace Pharmacy_Manage.GUI
         public QLkhachhang_view()
         {
             InitializeComponent();
+            hamloadchung.ReloadAll += LoadDuLieuTuDatabase;
             dpLocNgay.SelectedDate = DateTime.Now.Date; // Mặc định hiển thị hóa đơn hôm nay
             LoadDuLieuTuDatabase();
+        }
+
+        private void UserControl_Unloaded(object sender, RoutedEventArgs e)
+        {
+            hamloadchung.ReloadAll -= LoadDuLieuTuDatabase;
         }
 
         private void LoadDuLieuTuDatabase()

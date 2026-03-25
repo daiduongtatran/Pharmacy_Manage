@@ -307,6 +307,7 @@ namespace Pharmacy_Manage.GUI
 
                 CapNhatTrangThaiNut();
                 LoadDuLieuKho();
+                hamloadchung.ReloadAll?.Invoke();
             }
             catch (Exception ex)
             {
