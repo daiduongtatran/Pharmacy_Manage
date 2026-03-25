@@ -36,7 +36,14 @@ namespace Pharmacy_Manage.QuanLy
                                lh.ThoiGianKham, lh.ChuyenKhoa, lh.LyDoKham, lh.TrangThai 
                         FROM LichHen lh
                         INNER JOIN KhachHang kh ON lh.MaKH = kh.MaKH
-                        ORDER BY lh.ThoiGianKham DESC"; // Sắp xếp lịch mới nhất lên đầu
+                        ORDER BY 
+                            CASE lh.TrangThai
+                                WHEN N'Đang chờ' THEN 1
+                                WHEN N'Đang khám' THEN 2
+                                WHEN N'Hoàn thành' THEN 3
+                                ELSE 4
+                            END ASC,
+                            lh.ThoiGianKham DESC";
 
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
