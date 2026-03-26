@@ -244,12 +244,7 @@
                     <TextBox x:Name="popLyDo" Height="50" TextWrapping="Wrap" AcceptsReturn="True" Padding="8" Margin="0,0,0,15"/>
 
                     <TextBlock Text="Chỉ định Phòng Khám" Style="{StaticResource LabelStyle}"/>
-                    <ComboBox x:Name="popPhongKham" Height="35" VerticalContentAlignment="Center" FontSize="13" Margin="0,0,0,25">
-                        <ComboBoxItem Content="Phòng Khám Nội 1" IsSelected="True"/>
-                        <ComboBoxItem Content="Phòng Khám Nội 2"/>
-                        <ComboBoxItem Content="Phòng Răng Hàm Mặt"/>
-                        <ComboBoxItem Content="Phòng Tai Mũi Họng"/>
-                    </ComboBox>
+                    <ComboBox x:Name="popPhongKham" Height="35" VerticalContentAlignment="Center" FontSize="13" Margin="0,0,0,25" />
 
                     <Grid>
                         <Grid.ColumnDefinitions>
