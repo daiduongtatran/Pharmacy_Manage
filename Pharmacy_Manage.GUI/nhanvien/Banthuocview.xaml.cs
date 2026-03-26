@@ -20,7 +20,7 @@ namespace Pharmacy_Manage.GUI
     {
         private DataTable gioHangTable = new DataTable();
         private decimal tongTien = 0;
-
+        
         private string connectionString =
             "Server=.;Database=PharmacyManage;Trusted_Connection=True;TrustServerCertificate=True;";
 
@@ -36,10 +36,10 @@ namespace Pharmacy_Manage.GUI
             gioHangTable.Columns.Add("ThanhTien", typeof(decimal));
 
             icGioHang.ItemsSource = gioHangTable.DefaultView;
-
             LoadDuLieuKho();
+            hamloadchung.ReloadAll += LoadDuLieuKho;
         }
-
+      
         // ================= LOAD KHO =================
         private void LoadDuLieuKho()
         {
@@ -71,7 +71,7 @@ namespace Pharmacy_Manage.GUI
         {
             cbKhachHang.ItemsSource = LoadKhachHang();
             cbKhachHang.DisplayMemberPath = "HoTen";
-            cbKhachHang.SelectedValuePath = "HoTen";
+            cbKhachHang.SelectedValuePath = "MaKH";
         }
         // ================= CHECK HẠN =================
         private bool CheckHan(DateTime hanDung)
@@ -205,8 +205,6 @@ namespace Pharmacy_Manage.GUI
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
                     conn.Open();
-
-                    // TRANSACTION (RẤT QUAN TRỌNG)
                     SqlTransaction tran = conn.BeginTransaction();
 
                     try
@@ -224,20 +222,50 @@ namespace Pharmacy_Manage.GUI
                             tongTienDV += dv.Gia;
                         }
 
-                        // ===== 2. INSERT HÓA ĐƠN + LẤY MaHD =====
-                        string insertHoaDon = @"
-                INSERT INTO HoaDon (MaKH, NgayLap, TongTienDichVu, TongTienSanPham)
-                OUTPUT INSERTED.MaHD
-                VALUES (@MaKH, GETDATE(), @TongDV, @TongSP)";
+                        // ===== 2. LẤY MaHD TỪ DB =====
+                        string getMaHD = @"
+                    SELECT TOP 1 MaHD
+                    FROM HoaDon
+                    WHERE MaKH = @MaKH
+                    AND TrangThai = N'Chờ Thanh Toán'
+                    ORDER BY NgayLap DESC";
 
-                        SqlCommand cmdHD = new SqlCommand(insertHoaDon, conn, tran);
-                        cmdHD.Parameters.AddWithValue("@MaKH", maKH);
+                        SqlCommand cmdGetHD = new SqlCommand(getMaHD, conn, tran);
+                        cmdGetHD.Parameters.AddWithValue("@MaKH", maKH);
+
+                        object result = cmdGetHD.ExecuteScalar();
+
+                        if (result == null)
+                            throw new Exception("Không tìm thấy hóa đơn chờ thanh toán.");
+
+                        int maHD = Convert.ToInt32(result);
+
+                        // ===== 3. UPDATE HÓA ĐƠN =====
+                        string updateHoaDon = @"
+                    UPDATE HoaDon
+                    SET TongTienDichVu = @TongDV,
+                        TongTienSanPham = @TongSP,
+                        TrangThai = N'Đã Thanh Toán'
+                    WHERE MaHD = @MaHD";
+
+                        SqlCommand cmdHD = new SqlCommand(updateHoaDon, conn, tran);
                         cmdHD.Parameters.AddWithValue("@TongDV", tongTienDV);
                         cmdHD.Parameters.AddWithValue("@TongSP", tongTienThuoc);
+                        cmdHD.Parameters.AddWithValue("@MaHD", maHD);
+                        cmdHD.ExecuteNonQuery();
 
-                        int maHD = (int)cmdHD.ExecuteScalar();
+                        // ===== 4. XÓA CHI TIẾT CŨ =====
+                        SqlCommand cmdDelCT = new SqlCommand(
+                            "DELETE FROM ChiTietHoaDon WHERE MaHD = @MaHD", conn, tran);
+                        cmdDelCT.Parameters.AddWithValue("@MaHD", maHD);
+                        cmdDelCT.ExecuteNonQuery();
 
-                        // ===== 3. CHI TIẾT THUỐC =====
+                        SqlCommand cmdDelDV = new SqlCommand(
+                            "DELETE FROM ChiTietDichVu WHERE MaHD = @MaHD", conn, tran);
+                        cmdDelDV.Parameters.AddWithValue("@MaHD", maHD);
+                        cmdDelDV.ExecuteNonQuery();
+
+                        // ===== 5. CHI TIẾT THUỐC =====
                         foreach (DataRow row in gioHangTable.Rows)
                         {
                             string maSP = row["MaSP"].ToString();
@@ -246,9 +274,9 @@ namespace Pharmacy_Manage.GUI
 
                             // CHECK
                             string checkQuery = @"
-                    SELECT TonKho, HanDung, TrangThai
-                    FROM SanPham
-                    WHERE MaSP = @MaSP";
+                        SELECT TonKho, HanDung, TrangThai
+                        FROM SanPham
+                        WHERE MaSP = @MaSP";
 
                             SqlCommand checkCmd = new SqlCommand(checkQuery, conn, tran);
                             checkCmd.Parameters.AddWithValue("@MaSP", maSP);
@@ -274,8 +302,8 @@ namespace Pharmacy_Manage.GUI
 
                             // INSERT CHI TIẾT HÓA ĐƠN
                             string insertCT = @"
-                    INSERT INTO ChiTietHoaDon (MaHD, MaSP, SoLuong, DonGia)
-                    VALUES (@MaHD, @MaSP, @SoLuong, @DonGia)";
+                        INSERT INTO ChiTietHoaDon (MaHD, MaSP, SoLuong, DonGia)
+                        VALUES (@MaHD, @MaSP, @SoLuong, @DonGia)";
 
                             SqlCommand cmdCT = new SqlCommand(insertCT, conn, tran);
                             cmdCT.Parameters.AddWithValue("@MaHD", maHD);
@@ -286,10 +314,10 @@ namespace Pharmacy_Manage.GUI
 
                             // UPDATE KHO
                             string updateQuery = @"
-                    UPDATE SanPham
-                    SET TonKho = TonKho - @SoLuong,
-                        HangXuat = HangXuat + @SoLuong
-                    WHERE MaSP = @MaSP";
+                        UPDATE SanPham
+                        SET TonKho = TonKho - @SoLuong,
+                            HangXuat = HangXuat + @SoLuong
+                        WHERE MaSP = @MaSP";
 
                             SqlCommand updateCmd = new SqlCommand(updateQuery, conn, tran);
                             updateCmd.Parameters.AddWithValue("@SoLuong", soLuong);
@@ -297,12 +325,12 @@ namespace Pharmacy_Manage.GUI
                             updateCmd.ExecuteNonQuery();
                         }
 
-                        // ===== 4. CHI TIẾT DỊCH VỤ =====
+                        // ===== 6. CHI TIẾT DỊCH VỤ =====
                         foreach (var dv in listDichVuDaChon)
                         {
                             string insertDV = @"
-                    INSERT INTO ChiTietDichVu (MaHD, MaDV, ThanhTien)
-                    VALUES (@MaHD, @MaDV, @ThanhTien)";
+                        INSERT INTO ChiTietDichVu (MaHD, MaDV, ThanhTien)
+                        VALUES (@MaHD, @MaDV, @ThanhTien)";
 
                             SqlCommand cmdDV = new SqlCommand(insertDV, conn, tran);
                             cmdDV.Parameters.AddWithValue("@MaHD", maHD);
@@ -311,7 +339,7 @@ namespace Pharmacy_Manage.GUI
                             cmdDV.ExecuteNonQuery();
                         }
 
-                        // ===== 5. COMMIT =====
+                        // ===== 7. COMMIT =====
                         tran.Commit();
                     }
                     catch (Exception ex)
@@ -340,8 +368,7 @@ namespace Pharmacy_Manage.GUI
             {
                 MessageBox.Show("Lỗi thanh toán: " + ex.Message);
             }
-        }
-        // ================= BUTTON ACTION =================
+        }        // ================= BUTTON ACTION =================
         private void btnAction_Click(object sender, RoutedEventArgs e)
         {
             if (btnAction.Content.ToString() == "Xóa giỏ 🗑")
@@ -501,7 +528,9 @@ namespace Pharmacy_Manage.GUI
             {
                 conn.Open();
 
-                string query = "SELECT MaKH, HoTen FROM KhachHang";
+                string query = "SELECT DISTINCT kh.MaKH, kh.HoTen FROM HoaDon hd " +
+                    "join KhachHang kh on hd.MaKH = kh.MaKH " +
+                    "Where hd.TrangThai =N'Chờ Thanh Toán'";
                 SqlCommand cmd = new SqlCommand(query, conn);
                 SqlDataReader reader = cmd.ExecuteReader();
 
