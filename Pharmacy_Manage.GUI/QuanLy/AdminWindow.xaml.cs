@@ -47,10 +47,11 @@ namespace Pharmacy_Manage.GUI
                 case "2":
                     // MainContentArea.Content = new Invoice(); 
                     break;
-                case "3":
-                    // MainContentArea.Content = new Employee(); 
+               
+                    case "3":
+                    // MainContentArea.Content = new Employee();
                     break;
-                case "4":
+                     case "4":
                     MainContentArea.Content = new Pharmacy_Manage.QuanLy.AppointmentView();
                     break;
             }
