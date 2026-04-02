@@ -5,28 +5,30 @@
         WindowStartupLocation="CenterScreen" WindowStyle="None" 
         AllowsTransparency="True" Background="Transparent"
         MouseDown="Window_MouseDown">
-    
+
     <Window.Resources>
         <Style x:Key="SidebarBtnStyle" TargetType="Button">
             <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Foreground" Value="#CBD5E1"/>
+            <Setter Property="Foreground" Value="#A0AEC0"/>
             <Setter Property="Height" Value="50"/>
-            <Setter Property="Margin" Value="10,5"/>
             <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="FontSize" Value="16"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="Medium"/>
             <Setter Property="HorizontalContentAlignment" Value="Left"/>
-            <Setter Property="Padding" Value="20,0,0,0"/>
+            <Setter Property="Padding" Value="25,0,0,0"/>
             <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Margin" Value="0,2,0,2"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="8">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" 
+                                BorderThickness="4,0,0,0" BorderBrush="Transparent">
                             <ContentPresenter VerticalAlignment="Center" Margin="{TemplateBinding Padding}"/>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#334155"/>
+                                <Setter TargetName="border" Property="Background" Value="#2A3B5C"/>
+                                <Setter TargetName="border" Property="BorderBrush" Value="#4299E1"/>
                                 <Setter Property="Foreground" Value="White"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
@@ -35,7 +37,6 @@
             </Setter>
         </Style>
     </Window.Resources>
-   
 
     <Border Background="#F7FAFC" CornerRadius="20" BorderBrush="#E2E8F0" BorderThickness="1">
         <Grid>
@@ -44,49 +45,43 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <!-- Sidebar bên trái -->
             <Border Grid.Column="0" Background="#1C2E4A" CornerRadius="20,0,0,20">
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0" Text="MEDITRACK PRO" Foreground="White" FontSize="20" FontWeight="Bold" 
-                   HorizontalAlignment="Center" Margin="0,45,0,45"/>
+                    <TextBlock Grid.Row="0" Text="MEDITRACK PRO" Foreground="White" FontSize="20" FontWeight="Bold" 
+                               HorizontalAlignment="Center" Margin="0,45,0,45"/>
 
-        <StackPanel Grid.Row="1">
-            <Button Style="{StaticResource SidebarBtnStyle}" Content="🏠 Trang chủ" Tag="0" Click="Menu_Click"/>
-            <Button Style="{StaticResource SidebarBtnStyle}" Content="📦 Kho thuốc" Tag="1" Click="Menu_Click"/>
-            <Button Style="{StaticResource SidebarBtnStyle}" Content="🧾 Hóa đơn" Tag="2" Click="Menu_Click"/>
-            <Button Style="{StaticResource SidebarBtnStyle}" Content="👥 Nhân viên" Tag="3" Click="Menu_Click"/>
-            <Button Style="{StaticResource SidebarBtnStyle}" Content="📅 Lịch hẹn" Tag="4" Click="Menu_Click"/>
-        </StackPanel>
+                    <StackPanel Grid.Row="1">
+                        <Button x:Name="btnMenu0" Style="{StaticResource SidebarBtnStyle}" Content="🏠 Trang chủ" Tag="0" Click="Menu_Click"/>
+                        <Button x:Name="btnMenu1" Style="{StaticResource SidebarBtnStyle}" Content="📦 Kho thuốc" Tag="1" Click="Menu_Click"/>
+                        <Button x:Name="btnMenu2" Style="{StaticResource SidebarBtnStyle}" Content="🧾 Hóa đơn" Tag="2" Click="Menu_Click"/>
+                        <Button x:Name="btnMenu3" Style="{StaticResource SidebarBtnStyle}" Content="👥 Nhân viên" Tag="3" Click="Menu_Click"/>
+                        <Button x:Name="btnMenu4" Style="{StaticResource SidebarBtnStyle}" Content="📅 Lịch hẹn" Tag="4" Click="Menu_Click"/>
+                    </StackPanel>
 
-        <Button Grid.Row="2" Style="{StaticResource SidebarBtnStyle}" Content="🚪 Đăng xuất" 
-                Click="Logout_Click" Foreground="#F56565" Margin="0,0,0,30"/>
-    </Grid>
-</Border>
+                    <Button Grid.Row="2" Style="{StaticResource SidebarBtnStyle}" Content="🚪 Đăng xuất" 
+                            Click="Logout_Click" Foreground="#F56565" Margin="0,0,0,30"/>
+                </Grid>
+            </Border>
 
-            <!-- Vùng nội dung chính bên phải -->
             <Grid Grid.Column="1">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="60"/>
-                    <!-- Thanh Header trên cùng -->
                     <RowDefinition Height="*"/>
-                    <!-- Nội dung thay đổi -->
-                </Grid.RowDefinitions>
+                    </Grid.RowDefinitions>
 
-                <!-- Header đơn giản -->
                 <Border Grid.Row="0" Background="White" BorderBrush="#E2E8F0" BorderThickness="0,0,0,1">
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,30,0">
-                        <TextBlock Text="Chào Admin," VerticalAlignment="Center" Foreground="#718096" Margin="0,0,10,0"/>
-                        <TextBlock Text="Đại Du" FontWeight="Bold" VerticalAlignment="Center" Foreground="#2D3748"/>
+                        <TextBlock Text="Chào Quản lý," VerticalAlignment="Center" Foreground="#718096" Margin="0,0,10,0"/>
+                        <TextBlock x:Name="txtAdminName" Text="Admin" FontWeight="Bold" VerticalAlignment="Center" Foreground="#2D3748"/>
                     </StackPanel>
                 </Border>
 
-                <!-- ĐÂY LÀ NƠI HIỂN THỊ CÁC TRANG CON -->
                 <ContentControl x:Name="MainContentArea" Grid.Row="1" Margin="20"/>
             </Grid>
         </Grid>

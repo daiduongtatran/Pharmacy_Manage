@@ -26,8 +26,9 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#334155"/>
-                                <Setter Property="Foreground" Value="White"/>
+                                <Setter TargetName="border" Property="Background" Value="#334155"/>
+                                
+                                <Setter TargetName="border" Property="TextElement.Foreground" Value="White"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -46,37 +47,29 @@
             <Border Grid.Column="0" Background="#1E293B" CornerRadius="25,0,0,25">
                 <Grid>
                     <StackPanel Margin="0,50,0,0">
-
                         <TextBlock FontSize="28" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,50">
-                            <Run Text="Clinic" Foreground="White" />
-                            <Run Text="Admin" Foreground="#4FD1C5" />
+                            <Run Text="Medi" Foreground="White" />
+                            <Run Text="Track" Foreground="#4FD1C5" />
                         </TextBlock>
 
-                        <Button x:Name="BtnDashboard" Style="{StaticResource SidebarBtnStyle}" Tag="0" Click="Menu_Click">
+                        <Button x:Name="btnMenu0" Style="{StaticResource SidebarBtnStyle}" Tag="0" Click="Menu_Click">
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="📊" FontSize="18" Margin="0,0,15,0"/>
-                                <TextBlock Text="Tổng quan"/>
+                                <TextBlock Text="🏠" FontSize="18" Margin="0,0,15,0"/>
+                                <TextBlock Text="Trang chủ"/>
                             </StackPanel>
                         </Button>
 
-                        <Button x:Name="BtnProduct" Style="{StaticResource SidebarBtnStyle}" Tag="1" Click="Menu_Click">
+                        <Button x:Name="btnMenu1" Style="{StaticResource SidebarBtnStyle}" Tag="1" Click="Menu_Click">
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="💊" FontSize="18" Margin="0,0,15,0"/>
-                                <TextBlock Text="Quản lý kho thuốc"/>
+                                <TextBlock Text="📅" FontSize="18" Margin="0,0,15,0"/>
+                                <TextBlock Text="Đặt lịch khám"/>
                             </StackPanel>
                         </Button>
 
-                        <Button x:Name="BtnStaff" Style="{StaticResource SidebarBtnStyle}" Tag="2" Click="Menu_Click">
+                        <Button x:Name="btnMenu2" Style="{StaticResource SidebarBtnStyle}" Tag="2" Click="Menu_Click">
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="👥" FontSize="18" Margin="0,0,15,0"/>
-                                <TextBlock Text="Quản lý nhân viên"/>
-                            </StackPanel>
-                        </Button>
-
-                        <Button x:Name="BtnCustomer" Style="{StaticResource SidebarBtnStyle}" Tag="3" Click="Menu_Click">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="📁" FontSize="18" Margin="0,0,15,0"/>
-                                <TextBlock Text="Khách hàng &amp; Lịch"/>
+                                <TextBlock Text="🛒" FontSize="18" Margin="0,0,15,0"/>
+                                <TextBlock Text="Cửa hàng thuốc"/>
                             </StackPanel>
                         </Button>
                     </StackPanel>
