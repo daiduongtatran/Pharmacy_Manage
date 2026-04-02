@@ -1,4 +1,5 @@
 ﻿using Pharmacy_Manage.DTO;
+using Pharmacy_Manage.GUI.QuanLy;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -45,7 +46,7 @@ namespace Pharmacy_Manage.GUI
                     MainContentArea.Content = new Pharmacy_Manage.QuanLy.Product();
                     break;
                 case "2":
-                    // MainContentArea.Content = new Invoice(); 
+                    MainContentArea.Content = new Report();
                     break;
                
                     case "3":
