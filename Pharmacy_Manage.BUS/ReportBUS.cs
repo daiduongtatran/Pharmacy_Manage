@@ -1,4 +1,5 @@
-﻿using System;
+﻿// File: Pharmacy_Manage.BUS/ReportBUS.cs
+using System;
 using System.Data;
 using System.Collections.Generic;
 using Pharmacy_Manage.DAL;
@@ -15,20 +16,18 @@ namespace Pharmacy_Manage.BUS
             DataTable dt = dal.GetRecentInvoices();
             var list = new List<HoaDonDTO>();
 
-            // Trong file ReportBUS.cs, phần vòng lặp foreach:
             foreach (DataRow row in dt.Rows)
             {
                 list.Add(new HoaDonDTO
                 {
                     MaHD = row["MaHD"].ToString(),
-
-                    // Kiểm tra xem cột HoTen có tồn tại trong DataTable trả về không
-                    HoTen = row.Table.Columns.Contains("HoTen") && row["HoTen"] != DBNull.Value
+                    // Nếu khách hàng xóa hoặc không có tên, hiển thị "Khách vãng lai"
+                    HoTen = (row["HoTen"] != DBNull.Value && !string.IsNullOrEmpty(row["HoTen"].ToString()))
                             ? row["HoTen"].ToString()
                             : "Khách vãng lai",
-
                     NgayLap = Convert.ToDateTime(row["NgayLap"]),
-                    TongThanhToan = Convert.ToDecimal(row["TongThanhToan"])
+                    TongThanhToan = Convert.ToDecimal(row["TongThanhToan"]),
+                    LoiNhuan = Convert.ToDecimal(row["LoiNhuanThuc"])
                 });
             }
             return list;
@@ -38,8 +37,6 @@ namespace Pharmacy_Manage.BUS
 
         public int LaySoLuongDon() => dal.GetOrderCount();
 
-        // Lợi nhuận có thể tính toán chính xác hơn nếu bạn có cột giá vốn, 
-        // tạm thời để 20% doanh thu như cũ.
-        public decimal LayLoiNhuan() => LayTongDoanhThu() * 0.2m;
+        public decimal LayLoiNhuan() => dal.GetTotalProfit();
     }
 }

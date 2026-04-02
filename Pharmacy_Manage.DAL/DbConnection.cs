@@ -1,6 +1,7 @@
 ﻿using Microsoft.Data.SqlClient;
 using System.Data;
 using System;
+using System.Text.RegularExpressions;
 
 namespace Pharmacy_Manage.DAL
 {
@@ -36,15 +37,37 @@ namespace Pharmacy_Manage.DAL
         // Hàm thực thi truy vấn trả về bảng dữ liệu (dùng cho DataGrid)
         public DataTable ExecuteQuery(string query)
         {
+            return ExecuteQuery(query, null);
+        }
+
+        // Overload hỗ trợ tham số truyền vào (ví dụ: @MaHD)
+        public DataTable ExecuteQuery(string query, object[] parameters)
+        {
             DataTable data = new DataTable();
             using (SqlConnection connection = GetConnection()) // Gọi hàm từ lớp cha
             {
                 try
                 {
                     connection.Open();
-                    SqlCommand command = new SqlCommand(query, connection);
-                    SqlDataAdapter adapter = new SqlDataAdapter(command);
-                    adapter.Fill(data);
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        // Nếu có tham số, parse tên tham số theo dạng @name và map theo thứ tự
+                        if (parameters != null && parameters.Length > 0)
+                        {
+                            // Tìm tất cả các tên tham số xuất hiện trong query theo thứ tự
+                            MatchCollection matches = Regex.Matches(query, @"@\w+");
+                            int paramCount = Math.Min(matches.Count, parameters.Length);
+                            for (int i = 0; i < paramCount; i++)
+                            {
+                                string paramName = matches[i].Value;
+                                object value = parameters[i] ?? DBNull.Value;
+                                command.Parameters.AddWithValue(paramName, value);
+                            }
+                        }
+
+                        SqlDataAdapter adapter = new SqlDataAdapter(command);
+                        adapter.Fill(data);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -61,14 +84,34 @@ namespace Pharmacy_Manage.DAL
         // Hàm thực thi trả về 1 giá trị đơn lẻ (dùng cho SUM, COUNT)
         public object ExecuteScalar(string query)
         {
+            return ExecuteScalar(query, null);
+        }
+
+        // Overload ExecuteScalar hỗ trợ tham số
+        public object ExecuteScalar(string query, object[] parameters)
+        {
             object data = 0;
             using (SqlConnection connection = GetConnection())
             {
                 try
                 {
                     connection.Open();
-                    SqlCommand command = new SqlCommand(query, connection);
-                    data = command.ExecuteScalar();
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        if (parameters != null && parameters.Length > 0)
+                        {
+                            MatchCollection matches = Regex.Matches(query, @"@\w+");
+                            int paramCount = Math.Min(matches.Count, parameters.Length);
+                            for (int i = 0; i < paramCount; i++)
+                            {
+                                string paramName = matches[i].Value;
+                                object value = parameters[i] ?? DBNull.Value;
+                                command.Parameters.AddWithValue(paramName, value);
+                            }
+                        }
+
+                        data = command.ExecuteScalar();
+                    }
                 }
                 catch (Exception ex)
                 {
