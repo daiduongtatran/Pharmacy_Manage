@@ -46,29 +46,37 @@
             <Border Grid.Column="0" Background="#1E293B" CornerRadius="25,0,0,25">
                 <Grid>
                     <StackPanel Margin="0,50,0,0">
+
                         <TextBlock FontSize="28" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,50">
-                            <Run Text="Medi" Foreground="White" />
-                            <Run Text="Track" Foreground="#4FD1C5" />
+                            <Run Text="Clinic" Foreground="White" />
+                            <Run Text="Admin" Foreground="#4FD1C5" />
                         </TextBlock>
 
-                        <Button Style="{StaticResource SidebarBtnStyle}" Tag="0" Click="Menu_Click">
+                        <Button x:Name="BtnDashboard" Style="{StaticResource SidebarBtnStyle}" Tag="0" Click="Menu_Click">
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="🏠" FontSize="18" Margin="0,0,15,0"/>
-                                <TextBlock Text="Trang chủ"/>
+                                <TextBlock Text="📊" FontSize="18" Margin="0,0,15,0"/>
+                                <TextBlock Text="Tổng quan"/>
                             </StackPanel>
                         </Button>
 
-                        <Button Style="{StaticResource SidebarBtnStyle}" Tag="1" Click="Menu_Click">
+                        <Button x:Name="BtnProduct" Style="{StaticResource SidebarBtnStyle}" Tag="1" Click="Menu_Click">
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="📅" FontSize="18" Margin="0,0,15,0"/>
-                                <TextBlock Text="Đặt lịch khám"/>
+                                <TextBlock Text="💊" FontSize="18" Margin="0,0,15,0"/>
+                                <TextBlock Text="Quản lý kho thuốc"/>
                             </StackPanel>
                         </Button>
 
-                        <Button Style="{StaticResource SidebarBtnStyle}" Tag="2" Click="Menu_Click">
+                        <Button x:Name="BtnStaff" Style="{StaticResource SidebarBtnStyle}" Tag="2" Click="Menu_Click">
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="🛒" FontSize="18" Margin="0,0,15,0"/>
-                                <TextBlock Text="Cửa hàng thuốc"/>
+                                <TextBlock Text="👥" FontSize="18" Margin="0,0,15,0"/>
+                                <TextBlock Text="Quản lý nhân viên"/>
+                            </StackPanel>
+                        </Button>
+
+                        <Button x:Name="BtnCustomer" Style="{StaticResource SidebarBtnStyle}" Tag="3" Click="Menu_Click">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="📁" FontSize="18" Margin="0,0,15,0"/>
+                                <TextBlock Text="Khách hàng &amp; Lịch"/>
                             </StackPanel>
                         </Button>
                     </StackPanel>
