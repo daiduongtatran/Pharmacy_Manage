@@ -133,7 +133,7 @@ namespace Pharmacy_Manage.GUI
 
                 if (account.Role == "Admin")
                 {
-                    new AdminWindow().Show();
+                    new AdminWindow(account).Show();
                 }
                 else if (account.Role == "Staff")
                 {
