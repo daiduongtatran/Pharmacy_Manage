@@ -53,8 +53,6 @@ namespace Pharmacy_Manage.GUI
                     break;
             }
         }
-
-        // Logic làm mờ tất cả các nút
         private void ResetMenuHighlight()
         {
             Brush transparent = Brushes.Transparent;
@@ -66,7 +64,6 @@ namespace Pharmacy_Manage.GUI
             btnMenu4.Background = transparent; btnMenu4.Foreground = grayText;
         }
 
-        // Logic làm sáng nút được chọn
         private void SetButtonActive(Button btn)
         {
             btn.Background = (Brush)new BrushConverter().ConvertFrom("#2A3B5C");
