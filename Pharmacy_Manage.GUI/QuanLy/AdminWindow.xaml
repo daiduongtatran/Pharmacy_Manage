@@ -88,7 +88,7 @@
                         </Button>
                     </StackPanel>
 
-                    <Button Grid.Row="2" Style="{StaticResource SidebarBtnStyle}" Click="Logout_Click" Margin="0,0,0,30">
+                    <Button Grid.Row="2" Style="{StaticResource SidebarBtnStyle}" Click="Logout_Click" Margin="0,700,0,30">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="&#xF3B1;" FontFamily="Segoe MDL2 Assets" FontSize="18" Foreground="#F56565" Margin="0,0,15,0" VerticalAlignment="Center"/>
                             <TextBlock Text="Đăng xuất" Foreground="#F56565" FontWeight="SemiBold" VerticalAlignment="Center"/>
