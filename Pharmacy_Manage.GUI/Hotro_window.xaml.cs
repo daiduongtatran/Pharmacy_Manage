@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
+using Microsoft.Data.SqlClient;
+using Pharmacy_Manage.DAL;
 
 namespace Pharmacy_Manage.GUI
 {
@@ -10,11 +12,33 @@ namespace Pharmacy_Manage.GUI
         {
             InitializeComponent();
 
-            AdminList.ItemsSource = new List<Admin>
+            AdminList.ItemsSource = GetAdmins();
+        }
+        public List<Admin> GetAdmins()
+        {
+            List<Admin> list = new List<Admin>();
+            DbConnection db = new DbConnection();
+            using (SqlConnection conn = db.GetConnection() )
             {
-                new Admin { Ten="Femboy ngon vc", SDT="0123456789", Email="abc@gmail.com" },
-                new Admin { Ten="t k nói thế", SDT="0987654321", Email="xyz@gmail.com" }
-            };
+                conn.Open();
+
+                string query = "SELECT FullName, Phone, Email FROM Employees";
+
+                SqlCommand cmd = new SqlCommand(query, conn);
+                SqlDataReader reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    list.Add(new Admin
+                    {
+                        Ten = reader["FullName"].ToString(),
+                        SDT = reader["Phone"].ToString(),
+                        Email = reader["Email"].ToString()
+                    });
+                }
+            }
+
+            return list;
         }
         private void Window_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
