@@ -188,18 +188,7 @@ namespace Pharmacy_Manage.GUI
                         return;
                     }
 
-                    // 2. Tạo Hóa đơn chờ (Tiền Dịch Vụ mặc định = 0)
-                    int maHD = 0;
-                    string insHoaDon = @"INSERT INTO HoaDon(MaKH, NgayLap, TongTienDichVu, TongTienSanPham, TrangThai) 
-                                         VALUES(@maKH, GETDATE(), 0, 0, N'Chờ thanh toán'); 
-                                         SELECT SCOPE_IDENTITY();";
-                    using (SqlCommand cmdHD = new SqlCommand(insHoaDon, con))
-                    {
-                        cmdHD.Parameters.AddWithValue("@maKH", maKH);
-                        object hdResult = cmdHD.ExecuteScalar();
-                        if (hdResult != null && hdResult != DBNull.Value)
-                            maHD = Convert.ToInt32(hdResult);
-                    }
+                    
 
                     // 3. Lưu Lịch hẹn
                     DateTime thoiGianKham = DateTime.Now;
@@ -240,16 +229,47 @@ namespace Pharmacy_Manage.GUI
                     using (SqlConnection con = _db.GetConnection())
                     {
                         con.Open();
-                        SqlCommand cmd = new SqlCommand("UPDATE LichHen SET TrangThai = N'Đang khám' WHERE MaLichHen = @ma", con);
+
+                        SqlCommand cmd = new SqlCommand(
+                            "UPDATE LichHen SET TrangThai = N'Đang khám' WHERE MaLichHen = @ma",
+                            con);
                         cmd.Parameters.AddWithValue("@ma", lh.MaLichHen);
                         cmd.ExecuteNonQuery();
+
+                        int maKH = 0;
+                        SqlCommand cmdGetKH = new SqlCommand(
+                            "SELECT MaKH FROM LichHen WHERE MaLichHen = @ma",
+                            con);
+                        cmdGetKH.Parameters.AddWithValue("@ma", lh.MaLichHen);
+
+                        object result = cmdGetKH.ExecuteScalar();
+                        if (result != null && result != DBNull.Value)
+                        {
+                            maKH = Convert.ToInt32(result);
+                        }
+
+                        if (maKH == 0)
+                        {
+                            MessageBox.Show("Không tìm thấy khách hàng!", "Lỗi");
+                            return;
+                        }
+                        string insHoaDon = @"
+                    INSERT INTO HoaDon(MaKH, NgayLap, TongTienDichVu, TongTienSanPham, TrangThai) 
+                    VALUES(@maKH, GETDATE(), 0, 0, N'Chờ Thanh Toán')";
+
+                        SqlCommand cmdHD = new SqlCommand(insHoaDon, con);
+                        cmdHD.Parameters.AddWithValue("@maKH", maKH);
+                        cmdHD.ExecuteNonQuery();
                     }
+
                     LoadDuLieuTuDatabase();
                 }
-                catch (Exception ex) { MessageBox.Show("Lỗi: " + ex.Message); }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Lỗi: " + ex.Message);
+                }
             }
         }
-
         private void BtnHuy_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button btn && btn.DataContext is LichHenViewModel lh)

@@ -48,17 +48,11 @@ namespace Pharmacy_Manage.GUI
                 case "2":
                     MainContentArea.Content = new Report();
                     break;
-               
-                    case "3":
-                    // MainContentArea.Content = new Employee();
-                    break;
                      case "4":
                     MainContentArea.Content = new Pharmacy_Manage.QuanLy.AppointmentView();
                     break;
             }
         }
-
-        // Logic làm mờ tất cả các nút
         private void ResetMenuHighlight()
         {
             Brush transparent = Brushes.Transparent;
@@ -67,11 +61,9 @@ namespace Pharmacy_Manage.GUI
             btnMenu0.Background = transparent; btnMenu0.Foreground = grayText;
             btnMenu1.Background = transparent; btnMenu1.Foreground = grayText;
             btnMenu2.Background = transparent; btnMenu2.Foreground = grayText;
-            btnMenu3.Background = transparent; btnMenu3.Foreground = grayText;
             btnMenu4.Background = transparent; btnMenu4.Foreground = grayText;
         }
 
-        // Logic làm sáng nút được chọn
         private void SetButtonActive(Button btn)
         {
             btn.Background = (Brush)new BrushConverter().ConvertFrom("#2A3B5C");
