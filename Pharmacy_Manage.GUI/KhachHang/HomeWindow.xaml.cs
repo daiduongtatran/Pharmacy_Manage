@@ -25,7 +25,7 @@ namespace Pharmacy_Manage.GUI
                 pnlHomeContent.Visibility = Visibility.Collapsed;
                 MainContent.Visibility = Visibility.Visible;
 
-                
+
                 MainContent.Content = new BookingView(name);
             }
             else if (index == 2) // THÊM INDEX NÀY CHO STOREVIEW
@@ -36,32 +36,36 @@ namespace Pharmacy_Manage.GUI
             }
         }
 
-        
+
         private void Menu_Click(object sender, RoutedEventArgs e)
         {
             Button btn = sender as Button;
             if (btn != null && btn.Tag != null)
             {
                 int index = int.Parse(btn.Tag.ToString());
-                SwitchView(index); 
+                SwitchView(index);
             }
         }
 
-        
+
         private void BtnBooking_Click(object sender, RoutedEventArgs e)
         {
-           
+
             string nameFromHome = txtCustomerName.Text;
 
-           
+
             SwitchView(1, nameFromHome);
         }
 
+        // ================== CẬP NHẬT: THÊM XÁC NHẬN ĐĂNG XUẤT ==================
         private void Logout_Click(object sender, RoutedEventArgs e)
         {
-            MainWindow login = new MainWindow();
-            login.Show();
-            this.Close();
+            if (MessageBox.Show("Bạn có chắc chắn muốn đăng xuất?", "Xác nhận", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+            {
+                MainWindow login = new MainWindow();
+                login.Show();
+                this.Close();
+            }
         }
 
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)

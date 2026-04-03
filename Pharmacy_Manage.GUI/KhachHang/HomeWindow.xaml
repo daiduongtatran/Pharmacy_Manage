@@ -26,8 +26,9 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#334155"/>
-                                <Setter Property="Foreground" Value="White"/>
+                                <Setter TargetName="border" Property="Background" Value="#334155"/>
+                                
+                                <Setter TargetName="border" Property="TextElement.Foreground" Value="White"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -51,21 +52,21 @@
                             <Run Text="Track" Foreground="#4FD1C5" />
                         </TextBlock>
 
-                        <Button Style="{StaticResource SidebarBtnStyle}" Tag="0" Click="Menu_Click">
+                        <Button x:Name="btnMenu0" Style="{StaticResource SidebarBtnStyle}" Tag="0" Click="Menu_Click">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="🏠" FontSize="18" Margin="0,0,15,0"/>
                                 <TextBlock Text="Trang chủ"/>
                             </StackPanel>
                         </Button>
 
-                        <Button Style="{StaticResource SidebarBtnStyle}" Tag="1" Click="Menu_Click">
+                        <Button x:Name="btnMenu1" Style="{StaticResource SidebarBtnStyle}" Tag="1" Click="Menu_Click">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="📅" FontSize="18" Margin="0,0,15,0"/>
                                 <TextBlock Text="Đặt lịch khám"/>
                             </StackPanel>
                         </Button>
 
-                        <Button Style="{StaticResource SidebarBtnStyle}" Tag="2" Click="Menu_Click">
+                        <Button x:Name="btnMenu2" Style="{StaticResource SidebarBtnStyle}" Tag="2" Click="Menu_Click">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="🛒" FontSize="18" Margin="0,0,15,0"/>
                                 <TextBlock Text="Cửa hàng thuốc"/>

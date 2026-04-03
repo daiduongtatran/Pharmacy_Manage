@@ -13,31 +13,16 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Pharmacy_Manage.GUI
+namespace Pharmacy_Manage.GUI.QuanLy
 {
     /// <summary>
-    /// Interaction logic for QLlichhen_view.xaml
+    /// Interaction logic for InvoiceDetailWindow.xaml
     /// </summary>
-    public partial class QLlichhen_view : UserControl
+    public partial class InvoiceDetailWindow : Window
     {
-        public QLlichhen_view()
+        public InvoiceDetailWindow()
         {
             InitializeComponent();
-        }
-
-        private void BtnClearForm_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void BtnSubmitBooking_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void BtnExecuteSearch_Click(object sender, RoutedEventArgs e)
-        {
-
         }
     }
 }

@@ -75,14 +75,16 @@
                         <TextBlock Text="Pharmacy Management Portal" Foreground="White" FontSize="18" Opacity="0.9" FontWeight="SemiBold" Margin="0,0,0,30"/>
 
                         <StackPanel Orientation="Horizontal" Margin="0,0,0,30">
-                            <Button Content="ℹ Hướng dẫn" Width="110" Height="35" Background="#5D99C6" Foreground="White" BorderThickness="0" Margin="0,0,10,0" Cursor="Hand">
-                                <Button.Resources>
-                                    <Style TargetType="Border">
-                                        <Setter Property="CornerRadius" Value="15"/>
-                                    </Style>
-                                </Button.Resources>
+                            <Button Content="ℹ Hướng dẫn" Width="110" Height="35" Background="#5D99C6" 
+                                    Foreground="White" BorderThickness="0" Margin="0,0,10,0" Cursor="Hand"
+                                    Click="btnGuide_Click"> 
+                                    <Button.Resources>
+                                        <Style TargetType="Border">
+            <                           Setter Property="CornerRadius" Value="15"/>
+                                        </Style>
+                                    </Button.Resources>
                             </Button>
-                            <Button Content="📞 Hỗ trợ" Width="100" Height="35" Background="Transparent" Foreground="White" BorderBrush="White" BorderThickness="1" Cursor="Hand" Click="Button_Click">
+                            <Button Content="📞 Hỗ trợ" Width="100" Height="35" Background="Transparent" Foreground="White" BorderBrush="White" BorderThickness="1" Cursor="Hand">
                                 <Button.Resources>
                                     <Style TargetType="Border">
                                         <Setter Property="CornerRadius" Value="15"/>
@@ -92,19 +94,87 @@
                         </StackPanel>
                     </StackPanel>
 
-                    <Viewbox Height="180" VerticalAlignment="Center" Margin="0,40,0,0">
-                        <Canvas Width="300" Height="200">
-                            <Path Data="M 50,50 L 110,50 L 110,100 Q 80,150 50,150 Q 20,150 20,100 L 20,50 Z" Stroke="White" StrokeThickness="2" Fill="Transparent"/>
-                            <Path Data="M 65,80 L 65,120 M 45,100 L 85,100" Stroke="White" StrokeThickness="3"/>
-                            <Rectangle Canvas.Left="130" Canvas.Top="70" Width="50" Height="70" RadiusX="5" RadiusY="5" Stroke="White" StrokeThickness="2"/>
-                            <Rectangle Canvas.Left="135" Canvas.Top="60" Width="40" Height="10" Fill="White"/>
-                            <Line X1="130" Y1="90" X2="180" Y2="90" Stroke="White" StrokeThickness="1"/>
-                            <Path Data="M 210,60 Q 260,60 260,120 Q 260,160 220,160" Stroke="White" StrokeThickness="2" Fill="Transparent"/>
-                            <Ellipse Canvas.Left="200" Canvas.Top="145" Width="25" Height="25" Stroke="White" StrokeThickness="2"/>
-                            <Path Data="M 250,150 A 10,10 0 1 1 270,170 L 280,180 A 10,10 0 1 1 260,200 Z" Stroke="White" StrokeThickness="2" Fill="Transparent"/>
-                            <Ellipse Canvas.Left="20" Canvas.Top="100" Width="15" Height="15" Stroke="White" StrokeThickness="1"/>
-                        </Canvas>
-                    </Viewbox>
+                    <Viewbox Height="260" VerticalAlignment="Center" Margin="0,20,0,-10">
+    <Canvas Width="500" Height="300">
+        <Ellipse Canvas.Left="150" Canvas.Top="50" Width="300" Height="200" Fill="White" Opacity="0.08">
+            <Ellipse.Effect>
+                <BlurEffect Radius="40"/>
+            </Ellipse.Effect>
+        </Ellipse>
+
+        <Path Data="M 90,90 L 220,90 Q 230,90 230,100 L 230,210 Q 230,220 220,220 L 90,220 Q 80,220 80,210 L 80,100 Q 80,90 90,90" 
+              Stroke="White" StrokeThickness="3" Fill="Transparent"/>
+        
+        <Path Data="M 120,90 L 120,70 Q 120,60 130,60 L 180,60 Q 190,60 190,70 L 190,90" 
+              Stroke="White" StrokeThickness="3" Fill="Transparent"/>
+        
+        <Rectangle Canvas.Left="145" Canvas.Top="85" Width="20" Height="10" RadiusX="2" RadiusY="2" Fill="White" Opacity="0.8"/>
+        
+        <Ellipse Canvas.Left="130" Canvas.Top="125" Width="50" Height="50" Fill="White"/>
+        <Rectangle Canvas.Left="152" Canvas.Top="135" Width="6" Height="30" Fill="#2C8DA5" RadiusX="1" RadiusY="1"/>
+        <Rectangle Canvas.Left="140" Canvas.Top="147" Width="30" Height="6" Fill="#2C8DA5" RadiusX="1" RadiusY="1"/>
+        
+        <Line X1="80" Y1="190" X2="230" Y2="190" Stroke="White" StrokeThickness="1" Opacity="0.3"/>
+
+
+        <Rectangle Canvas.Left="380" Canvas.Top="60" Width="50" Height="12" RadiusX="2" RadiusY="2" Fill="White"/>
+        <Rectangle Canvas.Left="385" Canvas.Top="72" Width="40" Height="8" RadiusX="1" RadiusY="1" Fill="White" Opacity="0.6"/>
+        
+        <Path Data="M 375,85 L 435,85 Q 445,85 445,95 L 445,200 Q 445,215 430,215 L 380,215 Q 365,215 365,200 L 365,95 Q 365,85 375,85" 
+              Stroke="White" StrokeThickness="3" Fill="Transparent"/>
+        
+        <Rectangle Canvas.Left="375" Canvas.Top="110" Width="60" Height="70" RadiusX="3" RadiusY="3" Fill="White" Opacity="0.9"/>
+        
+        <TextBlock Canvas.Left="385" Canvas.Top="120" Text="Rx" Foreground="#2C8DA5" FontSize="24" FontWeight="Bold" FontFamily="Times New Roman"/>
+        
+        <Rectangle Canvas.Left="385" Canvas.Top="155" Width="40" Height="2" Fill="#2C8DA5" Opacity="0.5"/>
+        <Rectangle Canvas.Left="385" Canvas.Top="162" Width="30" Height="2" Fill="#2C8DA5" Opacity="0.5"/>
+        <Rectangle Canvas.Left="385" Canvas.Top="169" Width="45" Height="2" Fill="#2C8DA5" Opacity="0.5"/>
+
+        <Path Data="M 368,150 Q 405,145 442,150 L 442,200 Q 442,212 430,212 L 380,212 Q 368,212 368,200 Z" 
+              Fill="White" Opacity="0.15"/>
+        
+        <Path Data="M 372,95 Q 372,140 375,200" Stroke="White" StrokeThickness="4" Opacity="0.2">
+            <Path.Effect>
+                <BlurEffect Radius="2"/>
+            </Path.Effect>
+        </Path>
+
+
+        <Path Data="M 260,75 L 290,75 A 10,10 0 0 1 290,95 L 260,95 A 10,10 0 0 1 260,75 Z" 
+              Stroke="White" StrokeThickness="2" Fill="Transparent" RenderTransformOrigin="0.5,0.5">
+            <Path.RenderTransform>
+                <RotateTransform Angle="130"/>
+            </Path.RenderTransform>
+        </Path>
+        <Path Data="M 275,75 L 275,95" Stroke="White" StrokeThickness="2" Opacity="0.6" RenderTransformOrigin="0.5,0.5">
+            <Path.RenderTransform>
+                <RotateTransform Angle="130"/>
+            </Path.RenderTransform>
+        </Path>
+
+        <Ellipse Canvas.Left="310" Canvas.Top="110" Width="30" Height="30" Stroke="White" StrokeThickness="2.5" Fill="Transparent"/>
+        <Line X1="312" Y1="125" X2="338" Y2="125" Stroke="White" StrokeThickness="2" Opacity="0.6"/>
+
+        <Path Data="M 280,170 L 310,170 A 10,10 0 0 1 310,190 L 280,190 A 10,10 0 0 1 280,170 Z" 
+              Stroke="White" StrokeThickness="2" Fill="Transparent" RenderTransformOrigin="0.5,0.5">
+            <Path.RenderTransform>
+                <RotateTransform Angle="160"/>
+            </Path.RenderTransform>
+        </Path>
+        <Path Data="M 295,170 L 295,190" Stroke="White" StrokeThickness="2" Fill="White" Opacity="0.8" RenderTransformOrigin="0.5,0.5">
+             <Path.RenderTransform>
+                <RotateTransform Angle="160"/>
+            </Path.RenderTransform>
+        </Path>
+        
+        <Ellipse Canvas.Left="260" Canvas.Top="130" Width="4" Height="4" Fill="White" Opacity="0.4"/>
+        <Ellipse Canvas.Left="345" Canvas.Top="90" Width="5" Height="5" Fill="White" Opacity="0.6"/>
+        <Ellipse Canvas.Left="355" Canvas.Top="160" Width="3" Height="3" Fill="White" Opacity="0.3"/>
+        <Ellipse Canvas.Left="240" Canvas.Top="180" Width="4" Height="4" Fill="White" Opacity="0.5"/>
+
+    </Canvas>
+</Viewbox>
 
                     <TextBlock Text="Hệ thống quản lý dược phẩm thông minh, tối ưu hóa quy trình bán hàng." Foreground="White" FontSize="14" TextAlignment="Left" Opacity="0.8" VerticalAlignment="Bottom" TextWrapping="Wrap" Margin="0,0,20,10"/>
                 </Grid>

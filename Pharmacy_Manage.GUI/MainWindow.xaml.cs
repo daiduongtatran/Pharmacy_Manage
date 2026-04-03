@@ -133,7 +133,7 @@ namespace Pharmacy_Manage.GUI
 
                 if (account.Role == "Admin")
                 {
-                    new AdminWindow().Show();
+                    new AdminWindow(account).Show();
                 }
                 else if (account.Role == "Staff")
                 {
@@ -185,6 +185,35 @@ namespace Pharmacy_Manage.GUI
                 MessageBox.Show("Đăng ký thất bại. Email có thể đã tồn tại.\n" + ex.Message, "Lỗi");
             }
         }
+        private void btnGuide_Click(object sender, RoutedEventArgs e)
+{
+    // Cấu trúc dữ liệu tĩnh hướng dẫn sử dụng nhà thuốc
+    string guideText = 
+        "CẨM NANG SỬ DỤNG HỆ THỐNG NHÀ THUỐC MEDITRACK PRO\n\n" +
+        
+        "1. ĐĂNG NHẬP & QUYỀN HẠN:\n" +
+        "   • Admin: Có toàn quyền hệ thống (Nhân sự, Doanh thu, Nhập kho).\n" +
+        "   • Nhân viên: Chỉ được phép tạo hóa đơn bán hàng và tra cứu thuốc.\n\n" +
+        
+        "2. QUẢN LÝ KHO THUỐC (Mục 'Kho thuốc'):\n" +
+        "   • Nơi theo dõi toàn bộ danh mục thuốc hiện có.\n" +
+        "   • Hệ thống sẽ tự động bôi đỏ/cảnh báo ở màn hình chính đối với các loại thuốc sắp hết hàng (tồn kho thấp) hoặc sắp hết HSD.\n\n" +
+        
+        "3. NGHIỆP VỤ BÁN HÀNG (Mục 'Hóa đơn'):\n" +
+        "   • Chọn thuốc cần bán, nhập số lượng, hệ thống tự động trừ vào kho.\n" +
+        "   • Lịch sử bán hàng được lưu lại để Admin đối soát doanh thu cuối ngày.\n\n" +
+        
+        "4. QUẢN LÝ KHÁCH HÀNG: \n" +
+        "   • Chỉ Admin mới xem được trang này để quản lý khách hàng đã đặt lịch hẹn và lịch sử mua hàng.\n\n" +
+        
+        "5. THỐNG KÊ DOANH THU (Trang chủ):\n" +
+        "   • Biểu đồ doanh thu 7 ngày gần nhất được cập nhật theo thời gian thực mỗi khi có đơn hàng mới.\n\n" +
+        
+        "💡 Mẹo: Trong các bảng dữ liệu, nhân viên có thể nhập từ khóa vào ô Tìm kiếm phía trên để lọc dữ liệu ngay lập tức!";
+
+    // Hiển thị ra cửa sổ thông báo
+    MessageBox.Show(guideText, "Hướng Dẫn Sử Dụng", MessageBoxButton.OK, MessageBoxImage.Information);
+}
 
         private void rbAdmin_Checked(object sender, RoutedEventArgs e)
         {
