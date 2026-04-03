@@ -189,6 +189,11 @@ namespace Pharmacy_Manage.GUI
         private void rbAdmin_Checked(object sender, RoutedEventArgs e)
         {
         }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            new Hotro_window().Show();
+        }
     }
 
     // =================================================================
