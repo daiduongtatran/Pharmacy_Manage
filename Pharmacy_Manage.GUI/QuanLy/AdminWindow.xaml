@@ -48,8 +48,8 @@
                     <StackPanel Margin="0,50,0,0">
                         
                         <TextBlock FontSize="28" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,50">
-                            <Run Text="Clinic" Foreground="White" />
-                            <Run Text="Admin" Foreground="#4FD1C5" />
+                            <Run Text="Meditrack" Foreground="White" />
+                            <Run Text="Pro" Foreground="#4FD1C5" />
                         </TextBlock>
 
                         <Button x:Name="btnMenu0" Style="{StaticResource SidebarBtnStyle}" Tag="0" Click="Menu_Click">
