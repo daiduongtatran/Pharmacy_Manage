@@ -11,7 +11,6 @@
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Foreground" Value="#A0AEC0"/>
             <Setter Property="Height" Value="50"/>
-            <Setter Property="Margin" Value="10,5"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="FontWeight" Value="Medium"/>
