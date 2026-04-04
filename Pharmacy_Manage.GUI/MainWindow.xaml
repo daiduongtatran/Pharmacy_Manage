@@ -76,14 +76,15 @@
 
                         <StackPanel Orientation="Horizontal" Margin="0,0,0,30">
                             <Button Content="ℹ Hướng dẫn" Width="110" Height="35" Background="#5D99C6" 
-        Foreground="White" BorderThickness="0" Margin="0,0,10,0" Cursor="Hand"
-        Click="btnGuide_Click"> <Button.Resources>
-        <Style TargetType="Border">
-            <Setter Property="CornerRadius" Value="15"/>
-        </Style>
-    </Button.Resources>
-</Button>
-                            <Button Content="📞 Hỗ trợ" Width="100" Height="35" Background="Transparent" Foreground="White" BorderBrush="White" BorderThickness="1" Cursor="Hand">
+                                    Foreground="White" BorderThickness="0" Margin="0,0,10,0" Cursor="Hand"
+                                    Click="btnGuide_Click"> 
+                                    <Button.Resources>
+                                        <Style TargetType="Border">
+                                            <Setter Property="CornerRadius" Value="15"/>
+                                        </Style>
+                                    </Button.Resources>
+                            </Button>
+                            <Button Content="📞 Hỗ trợ" Width="100" Height="35" Background="Transparent" Foreground="White" BorderBrush="White" BorderThickness="1" Cursor="Hand" Click="Button_Click_1">
                                 <Button.Resources>
                                     <Style TargetType="Border">
                                         <Setter Property="CornerRadius" Value="15"/>

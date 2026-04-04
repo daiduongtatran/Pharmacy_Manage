@@ -1,0 +1,111 @@
+﻿CREATE DATABASE PharmacyManage;
+GO
+
+USE PharmacyManage;
+GO
+
+-- Accounts
+CREATE TABLE Accounts (
+    Username VARCHAR(50) PRIMARY KEY,
+    Password VARCHAR(255) NOT NULL,
+    RoleName NVARCHAR(20) NOT NULL,
+    CreatedAt DATETIME DEFAULT GETDATE()
+);
+
+-- Categories
+CREATE TABLE Categories (
+    CategoryID INT IDENTITY(1,1) PRIMARY KEY,
+    CategoryName NVARCHAR(100) NOT NULL
+);
+
+-- SanPham
+CREATE TABLE SanPham (
+    MaSP INT IDENTITY(1,1) PRIMARY KEY,
+    TenSP NVARCHAR(255) NOT NULL,
+    LoaiSP NVARCHAR(100),
+    DonVi NVARCHAR(100),
+    NhaSanXuat NVARCHAR(255),
+    HanDung DATE,
+    NgayNhap DATE DEFAULT GETDATE(),
+    GiaNhap DECIMAL(18,2) CHECK (GiaNhap > 0),
+    GiaBan DECIMAL(18,2) CHECK (GiaBan > 0),
+    HangXuat INT DEFAULT 0 CHECK (HangXuat >= 0),
+    TonKho INT CHECK (TonKho >= 0),
+    TrangThai NVARCHAR(50) DEFAULT N'Đang bán',
+    GhiChu NVARCHAR(500),
+    HinhAnh VARBINARY(MAX)
+);
+
+-- KhachHang
+CREATE TABLE KhachHang (
+    MaKH INT IDENTITY(1,1) PRIMARY KEY,
+    HoTen NVARCHAR(100) NOT NULL,
+    SoDienThoai VARCHAR(15),
+    Email VARCHAR(100),
+    NgaySinh DATE,
+    DanToc NVARCHAR(50) DEFAULT N'Kinh',
+    QuocTich NVARCHAR(50) DEFAULT N'Việt Nam',
+    DiaChi NVARCHAR(255)
+);
+
+-- HoaDon
+CREATE TABLE HoaDon (
+    MaHD INT IDENTITY(1,1) PRIMARY KEY,
+    MaKH INT NOT NULL,
+    NgayLap DATETIME DEFAULT GETDATE(),
+    TongTienDichVu DECIMAL(18,2) DEFAULT 0,
+    TongTienSanPham DECIMAL(18,2) DEFAULT 0,
+    TongThanhToan AS (TongTienDichVu + TongTienSanPham),
+    TrangThai NVARCHAR(50) DEFAULT N'Đã thanh toán',
+    GhiChu NVARCHAR(255)
+);
+
+-- ChiTietHoaDon
+CREATE TABLE ChiTietHoaDon (
+    MaCTHD INT IDENTITY(1,1) PRIMARY KEY,
+    MaHD INT NOT NULL,
+    MaSP INT NOT NULL,
+    SoLuong INT NOT NULL CHECK (SoLuong > 0),
+    DonGia DECIMAL(18,2) NOT NULL,
+    ThanhTien AS (SoLuong * DonGia)
+);
+
+-- Foreign Keys
+ALTER TABLE HoaDon
+ADD CONSTRAINT FK_HoaDon_KhachHang
+FOREIGN KEY (MaKH) REFERENCES KhachHang(MaKH);
+
+ALTER TABLE ChiTietHoaDon
+ADD CONSTRAINT FK_CTHD_HoaDon
+FOREIGN KEY (MaHD) REFERENCES HoaDon(MaHD) ON DELETE CASCADE;
+
+ALTER TABLE ChiTietHoaDon
+ADD CONSTRAINT FK_CTHD_SanPham
+FOREIGN KEY (MaSP) REFERENCES SanPham(MaSP);
+
+-- Stored Procedure: thống kê
+CREATE PROCEDURE GetProductUrgentStats
+AS
+BEGIN
+    SELECT 
+        SUM(CASE WHEN HanDung <= DATEADD(month, 6, GETDATE()) OR TonKho < 50 THEN 1 ELSE 0 END) AS TongCanXuLy,
+        SUM(CASE WHEN HanDung <= DATEADD(month, 6, GETDATE()) THEN 1 ELSE 0 END) AS SapHetHan,
+        SUM(CASE WHEN TonKho < 50 THEN 1 ELSE 0 END) AS TonThap
+    FROM SanPham;
+END;
+GO
+
+-- Stored Procedure: doanh thu 7 ngày
+CREATE PROCEDURE GetRevenueLast7Days
+AS
+BEGIN
+    SELECT 
+        FORMAT(NgayLap, 'dd/MM') AS Ngay,
+        SUM(TongThanhToan) AS DoanhThu
+    FROM HoaDon
+    WHERE NgayLap >= DATEADD(DAY, -7, GETDATE())
+      AND TrangThai = N'Đã thanh toán'
+    GROUP BY CAST(NgayLap AS DATE), FORMAT(NgayLap, 'dd/MM')
+    ORDER BY CAST(NgayLap AS DATE);
+END;
+GO

@@ -6,7 +6,6 @@ namespace Pharmacy_Manage.DAL
 {
     public class SanPhamDAL : DbConnection
     {
-        // 1. Lấy đủ các cột
         public DataTable GetAllProducts()
         {
             DataTable dt = new DataTable();
@@ -37,7 +36,6 @@ namespace Pharmacy_Manage.DAL
             }
             return dt;
         }
-        // 2. Thêm mới (Không truyền MaSP vì SQL tự tăng)
         public bool InsertProduct(string ten, string loai, string dv, string nsx, DateTime hsd, DateTime nn, decimal gn, decimal gb, string hx, int ton, string tt, string gc)
         {
             using (SqlConnection con = GetConnection())
@@ -51,7 +49,6 @@ namespace Pharmacy_Manage.DAL
             }
         }
 
-        // 3. Sửa (Truyền đủ 13 tham số, dùng MaSP để định danh WHERE)
         public bool UpdateProduct(int ma, string ten, string loai, string dv, string nsx, DateTime hsd, DateTime nn, decimal gn, decimal gb, string hx, int ton, string tt, string gc)
         {
             using (SqlConnection con = GetConnection())
@@ -65,8 +62,6 @@ namespace Pharmacy_Manage.DAL
                 return cmd.ExecuteNonQuery() > 0;
             }
         }
-
-        // Hàm phụ để tránh viết lặp code add parameter
         private void AddParameters(SqlCommand cmd, string ten, string loai, string dv, string nsx, DateTime hsd, DateTime nn, decimal gn, decimal gb, string hx, int ton, string tt, string gc)
         {
             cmd.Parameters.AddWithValue("@ten", ten);

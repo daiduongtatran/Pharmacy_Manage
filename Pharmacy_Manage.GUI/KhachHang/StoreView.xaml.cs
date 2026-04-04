@@ -43,7 +43,8 @@ namespace Pharmacy_Manage.GUI.KhachHang
                 {
                     conn.Open();
                     // Lấy thêm cột LoaiSP để làm bộ lọc
-                    string query = "SELECT MaSP, TenSP, GiaBan, HinhAnh, LoaiSP FROM SanPham WHERE TrangThai = N'Đang bán'"; 
+                    // 1. Sửa lại câu SQL (thêm cột TonKho)
+                    string query = "SELECT MaSP, TenSP, GiaBan, HinhAnh, LoaiSP, TonKho FROM SanPham WHERE TrangThai = N'Đang bán'"; 
                     
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
@@ -57,7 +58,10 @@ namespace Pharmacy_Manage.GUI.KhachHang
                                     Name = reader.GetString(1),
                                     Price = reader.IsDBNull(2) ? 0 : reader.GetDecimal(2),
                                     ImageData = reader.IsDBNull(3) ? null : (byte[])reader["HinhAnh"],
-                                    Category = reader.IsDBNull(4) ? "Khác" : reader.GetString(4)
+                                    Category = reader.IsDBNull(4) ? "Khác" : reader.GetString(4),
+                                    
+                                    // 2. Đọc giá trị TonKho vào (THÊM DÒNG NÀY)
+                                    TonKho = reader.IsDBNull(5) ? 0 : reader.GetInt32(5) 
                                 });
                             }
                         }
@@ -143,6 +147,18 @@ namespace Pharmacy_Manage.GUI.KhachHang
             if (selectedProduct != null)
             {
                 var existingItem = CartList.FirstOrDefault(c => c.Product.Id == selectedProduct.Id);
+                
+                // Tính xem nếu cộng thêm thì số lượng là bao nhiêu
+                int slDuKien = (existingItem != null) ? existingItem.Quantity + 1 : 1;
+
+                // CHẶN NGAY NẾU VƯỢT QUÁ TỒN KHO
+                if (slDuKien > selectedProduct.TonKho)
+                {
+                    MessageBox.Show($"Thuốc '{selectedProduct.Name}' hiện chỉ còn lại {selectedProduct.TonKho} sản phẩm.\nKhông thể mua thêm!", 
+                                    "Hết hàng", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return; // Đuổi về, không cho chạy lệnh thêm bên dưới
+                }
+
                 if (existingItem != null)
                 {
                     existingItem.Quantity++;
@@ -154,12 +170,19 @@ namespace Pharmacy_Manage.GUI.KhachHang
                 UpdateCheckoutSummary();
             }
         }
-
         private void BtnIncreaseQty_Click(object sender, RoutedEventArgs e)
         {
             var cartItem = (sender as Button).DataContext as CartItem;
             if (cartItem != null)
             {
+                // CHẶN KHI BẤM DẤU CỘNG TRONG GIỎ HÀNG
+                if (cartItem.Quantity >= cartItem.Product.TonKho)
+                {
+                    MessageBox.Show($"Thuốc '{cartItem.Product.Name}' hiện chỉ còn lại {cartItem.Product.TonKho} sản phẩm.\nKhông thể tăng thêm!", 
+                                    "Giới hạn tồn kho", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
                 cartItem.Quantity++;
                 UpdateCheckoutSummary();
             }
@@ -207,23 +230,68 @@ namespace Pharmacy_Manage.GUI.KhachHang
                 {
                     conn.Open();
 
-                    // BẮT ĐẦU TRANSACTION: Bảo vệ tính toàn vẹn dữ liệu
                     using (SqlTransaction transaction = conn.BeginTransaction())
                     {
                         try
                         {
-                            // 1. TẠO HÓA ĐƠN MỚI
-                            // LƯU Ý: Hiện tại tạm gán MaKH = 1. Khi làm chức năng Đăng Nhập, 
-                            // bạn cần truyền biến chứa ID của user đang đăng nhập vào đây.
-                            int maKhachHang = Pharmacy_Manage.GUI.AppSession.CurrentCustomerID;
-                            if (maKhachHang == 0)
-{
-    MessageBox.Show("Lỗi: Không tìm thấy thông tin đăng nhập của bạn!", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
-    return;
-}
+                            int idTuCustomers = Pharmacy_Manage.GUI.AppSession.CurrentCustomerID;
+                            if (idTuCustomers == 0)
+                            {
+                                MessageBox.Show("Lỗi: Không tìm thấy thông tin đăng nhập của bạn!", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                                return;
+                            }
+
+                            int maKH_ThucSu = 0;
+
+                            // 1. Lấy thông tin và đồng bộ Khách hàng
+                            string getCust = "SELECT FullName, Phone, Email FROM Customers WHERE CustomerID = @id";
+                            using (SqlCommand cmdGet = new SqlCommand(getCust, conn, transaction))
+                            {
+                                cmdGet.Parameters.AddWithValue("@id", idTuCustomers);
+                                using (SqlDataReader reader = cmdGet.ExecuteReader())
+                                {
+                                    if (reader.Read())
+                                    {
+                                        string ten = reader["FullName"].ToString();
+                                        string sdt = reader["Phone"].ToString();
+                                        string email = reader["Email"].ToString();
+                                        reader.Close();
+
+                                        string checkKH = "SELECT MaKH FROM KhachHang WHERE SoDienThoai = @sdt OR Email = @email";
+                                        using (SqlCommand cmdCheck = new SqlCommand(checkKH, conn, transaction))
+                                        {
+                                            cmdCheck.Parameters.AddWithValue("@sdt", sdt);
+                                            cmdCheck.Parameters.AddWithValue("@email", email);
+                                            object kq = cmdCheck.ExecuteScalar();
+                                            
+                                            if (kq != null && kq != DBNull.Value)
+                                            {
+                                                maKH_ThucSu = Convert.ToInt32(kq);
+                                            }
+                                            else
+                                            {
+                                                string insKH = "INSERT INTO KhachHang(HoTen, SoDienThoai, Email) VALUES(@ten, @sdt, @email); SELECT SCOPE_IDENTITY();";
+                                                using (SqlCommand cmdIns = new SqlCommand(insKH, conn, transaction))
+                                                {
+                                                    cmdIns.Parameters.AddWithValue("@ten", ten);
+                                                    cmdIns.Parameters.AddWithValue("@sdt", sdt);
+                                                    cmdIns.Parameters.AddWithValue("@email", email);
+                                                    maKH_ThucSu = Convert.ToInt32(cmdIns.ExecuteScalar());
+                                                }
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        reader.Close();
+                                        throw new Exception("Không tìm thấy dữ liệu Customer.");
+                                    }
+                                }
+                            }
+
                             decimal tongTienSP = CartList.Sum(c => c.Product.Price * c.Quantity);
 
-                            // Lệnh INSERT kết hợp OUTPUT INSERTED.MaHD để lấy ngay mã hóa đơn vừa tạo
+                            // 2. Tạo Hóa đơn
                             string queryHoaDon = @"INSERT INTO HoaDon (MaKH, TongTienSanPham, TrangThai) 
                                                    OUTPUT INSERTED.MaHD 
                                                    VALUES (@MaKH, @TongTien, N'Đã thanh toán')";
@@ -231,23 +299,33 @@ namespace Pharmacy_Manage.GUI.KhachHang
                             int maHD = 0;
                             using (SqlCommand cmdHD = new SqlCommand(queryHoaDon, conn, transaction))
                             {
-                                cmdHD.Parameters.AddWithValue("@MaKH", maKhachHang);
+                                cmdHD.Parameters.AddWithValue("@MaKH", maKH_ThucSu);
                                 cmdHD.Parameters.AddWithValue("@TongTien", tongTienSP);
-                                maHD = (int)cmdHD.ExecuteScalar(); // Lấy ID hóa đơn
+                                maHD = (int)cmdHD.ExecuteScalar();
                             }
 
-                            // 2. LƯU CHI TIẾT HÓA ĐƠN VÀ TRỪ TỒN KHO CHO TỪNG MÓN
-                            string queryCTHD = @"INSERT INTO ChiTietHoaDon (MaHD, MaSP, SoLuong, DonGia) 
-                                                 VALUES (@MaHD, @MaSP, @SoLuong, @DonGia)";
-                            
-                            string queryUpdateKho = @"UPDATE SanPham 
-                                                      SET TonKho = TonKho - @SoLuong,
-                                                          HangXuat = HangXuat + @SoLuong 
-                                                      WHERE MaSP = @MaSP";
+                            // 3. LƯU CHI TIẾT & TRỪ KHO (CÓ KIỂM TRA SỐ LƯỢNG)
+                            string checkStockQuery = "SELECT TonKho FROM SanPham WHERE MaSP = @MaSP";
+                            string queryCTHD = "INSERT INTO ChiTietHoaDon (MaHD, MaSP, SoLuong, DonGia) VALUES (@MaHD, @MaSP, @SoLuong, @DonGia)";
+                            string queryUpdateKho = "UPDATE SanPham SET TonKho = TonKho - @SoLuong, HangXuat = HangXuat + @SoLuong WHERE MaSP = @MaSP";
 
                             foreach (var item in CartList)
                             {
-                                // Thêm vào bảng ChiTietHoaDon
+                                // BƯỚC ĐỆM: KIỂM TRA TỒN KHO TRƯỚC KHI TRỪ
+                                using (SqlCommand cmdCheckStock = new SqlCommand(checkStockQuery, conn, transaction))
+                                {
+                                    cmdCheckStock.Parameters.AddWithValue("@MaSP", item.Product.Id);
+                                    int tonKhoHienTai = Convert.ToInt32(cmdCheckStock.ExecuteScalar());
+
+                                    // Nếu mua nhiều hơn kho đang có -> Chủ động ném lỗi để ngưng giao dịch
+                                    // Nếu mua nhiều hơn kho đang có -> Chủ động ném lỗi để ngưng giao dịch
+                                    if (item.Quantity > tonKhoHienTai)
+                                    {
+                                        throw new Exception($"Sản phẩm '{item.Product.Name}' không đủ tồn kho (hiện chỉ còn {tonKhoHienTai}).\n\nVui lòng giảm số lượng mua hoặc quay lại sau khi cửa hàng nhập thêm hàng nhé!");
+                                    }
+                                }
+
+                                // Nếu kho đủ -> Lưu chi tiết
                                 using (SqlCommand cmdCT = new SqlCommand(queryCTHD, conn, transaction))
                                 {
                                     cmdCT.Parameters.AddWithValue("@MaHD", maHD);
@@ -257,7 +335,7 @@ namespace Pharmacy_Manage.GUI.KhachHang
                                     cmdCT.ExecuteNonQuery();
                                 }
 
-                                // Trừ tồn kho và cộng dồn số lượng hàng xuất trong bảng SanPham
+                                // Trừ kho
                                 using (SqlCommand cmdUpdate = new SqlCommand(queryUpdateKho, conn, transaction))
                                 {
                                     cmdUpdate.Parameters.AddWithValue("@SoLuong", item.Quantity);
@@ -266,37 +344,39 @@ namespace Pharmacy_Manage.GUI.KhachHang
                                 }
                             }
 
+                            // 4. Cộng điểm
                             int diemCong = (int)(tongTienSP / 1000);
-
-                            string queryCongDiem = @"UPDATE Customers 
-                                                     SET Points = ISNULL(Points, 0) + @DiemCong 
-                                                     WHERE CustomerID = @MaKH"; 
-                            
+                            string queryCongDiem = "UPDATE Customers SET Points = ISNULL(Points, 0) + @DiemCong WHERE CustomerID = @IDCust"; 
                             using (SqlCommand cmdDiem = new SqlCommand(queryCongDiem, conn, transaction))
                             {
                                 cmdDiem.Parameters.AddWithValue("@DiemCong", diemCong);
-                                cmdDiem.Parameters.AddWithValue("@MaKH", maKhachHang);
+                                cmdDiem.Parameters.AddWithValue("@IDCust", idTuCustomers);
                                 cmdDiem.ExecuteNonQuery();
                             }
 
-                            // 3. XÁC NHẬN (COMMIT) LƯU DỮ LIỆU
+                            // 5. Xác nhận thành công
                             transaction.Commit();
 
                             MessageBox.Show("Thanh toán thành công! Hóa đơn đã được lưu vào hệ thống.", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
-                            
-                            // Xóa giỏ hàng và đóng giao diện
                             CartList.Clear();
                             UpdateCheckoutSummary();
                             CartOverlay.Visibility = Visibility.Collapsed;
-
-                            // Refresh lại dữ liệu để lỡ khách muốn mua thêm thì không bị mua lố tồn kho
                             LoadData(); 
                         }
                         catch (Exception ex)
                         {
-                            // NẾU CÓ BẤT KỲ LỖI NÀO (ví dụ rớt mạng, lỗi khóa ngoại) -> HỦY BỎ TẤT CẢ (ROLLBACK)
+                            // NẾU CÓ LỖI (Ví dụ kho không đủ) -> HỦY GIAO DỊCH VÀ BÁO LỖI LỊCH SỰ
                             transaction.Rollback();
-                            MessageBox.Show("Lỗi trong quá trình xử lý đơn hàng: " + ex.Message, "Lỗi thanh toán", MessageBoxButton.OK, MessageBoxImage.Error);
+                            
+                            // Phân loại thông báo lỗi để hiển thị thân thiện hơn
+                            if (ex.Message.Contains("chỉ còn lại"))
+                            {
+                                MessageBox.Show(ex.Message, "Sản phẩm không đủ", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            }
+                            else
+                            {
+                                MessageBox.Show("Lỗi trong quá trình xử lý đơn hàng:\n" + ex.Message, "Lỗi thanh toán", MessageBoxButton.OK, MessageBoxImage.Error);
+                            }
                         }
                     }
                 }
@@ -316,6 +396,7 @@ namespace Pharmacy_Manage.GUI.KhachHang
         public decimal Price { get; set; }
         public byte[] ImageData { get; set; }
         public string Category { get; set; } // THÊM TRƯỜNG CATEGORY VÀO ĐÂY
+        public int TonKho { get; set; }
     }
 
     public class CartItem : INotifyPropertyChanged

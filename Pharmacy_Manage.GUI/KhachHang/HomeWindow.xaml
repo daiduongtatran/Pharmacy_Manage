@@ -76,8 +76,8 @@
 
                     <Button Style="{StaticResource SidebarBtnStyle}" VerticalAlignment="Bottom" Margin="10,0,10,40" Click="Logout_Click">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="🚪" FontSize="18" Margin="0,0,15,0"/>
-                            <TextBlock Text="Đăng xuất" Foreground="#F87171"/>
+                            <TextBlock Text="&#xF3B1;" FontFamily="Segoe MDL2 Assets" FontSize="18" Foreground="#F87171" Margin="0,0,15,0" VerticalAlignment="Center"/>
+                            <TextBlock Text="Đăng xuất" Foreground="#F87171" FontWeight="SemiBold" VerticalAlignment="Center"/>
                         </StackPanel>
                     </Button>
                 </Grid>

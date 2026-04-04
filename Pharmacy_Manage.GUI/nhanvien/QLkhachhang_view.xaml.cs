@@ -45,8 +45,6 @@ namespace Pharmacy_Manage.GUI
                                hd.TrangThai, hd.GhiChu
                         FROM HoaDon hd
                         LEFT JOIN KhachHang kh ON hd.MaKH = kh.MaKH
-                        Join LichHen lh on kh.MaKH =  lh.MaKH
-                        Where lh.TrangThai = N'Hoàn Thành'
                         ORDER BY hd.NgayLap DESC";
 
                     using (SqlCommand cmd = new SqlCommand(query, con))
