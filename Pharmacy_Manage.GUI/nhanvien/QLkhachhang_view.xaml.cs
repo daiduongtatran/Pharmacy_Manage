@@ -18,7 +18,6 @@ namespace Pharmacy_Manage.GUI
         {
             InitializeComponent();
 
-            // Đăng ký reload
             hamloadchung.ReloadAll += LoadDuLieuTuDatabase;
 
             dpLocNgay.SelectedDate = DateTime.Now;
@@ -27,7 +26,6 @@ namespace Pharmacy_Manage.GUI
             LoadDuLieuTuDatabase();
         }
 
-        // ================= LOAD DATABASE =================
         private void LoadDuLieuTuDatabase()
         {
             _danhSachGoc.Clear();
@@ -76,7 +74,6 @@ namespace Pharmacy_Manage.GUI
             }
         }
 
-        // ================= FILTER =================
         private void Filter_Changed(object sender, RoutedEventArgs e)
         {
             LocDuLieu();
@@ -121,7 +118,6 @@ namespace Pharmacy_Manage.GUI
             txtChuaThu.Text = chuaThu.ToString("N0");
         }
 
-        // ================= CHI TIẾT =================
         private void BtnChiTiet_Click(object sender, RoutedEventArgs e)
         {
             if (!(sender is Button btn)) return;
@@ -155,7 +151,6 @@ namespace Pharmacy_Manage.GUI
             {
                 con.Open();
 
-                // ===== THUỐC =====
                 string sqlThuoc = @"
                     SELECT sp.TenSP, ct.SoLuong, ct.DonGia
                     FROM ChiTietHoaDon ct
@@ -184,7 +179,6 @@ namespace Pharmacy_Manage.GUI
                     }
                 }
 
-                // ===== DỊCH VỤ =====
                 string sqlDV = @"
                     SELECT dv.TenDV, cd.ThanhTien
                     FROM ChiTietDichVu cd
@@ -222,7 +216,6 @@ namespace Pharmacy_Manage.GUI
         }
     }
 
-    // ================= MODEL =================
     public class HoaDonViewModel
     {
         public int MaHD { get; set; }

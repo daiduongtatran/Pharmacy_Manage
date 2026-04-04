@@ -72,13 +72,6 @@
                                 <TextBlock Text="Hóa đơn"/>
                             </StackPanel>
                         </Button>
-
-                        <Button x:Name="btnMenu3" Style="{StaticResource SidebarBtnStyle}" Tag="3" Click="Menu_Click">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="👥" FontSize="18" Margin="0,0,15,0"/>
-                                <TextBlock Text="Nhân viên"/>
-                            </StackPanel>
-                        </Button>
                         
                         <Button x:Name="btnMenu4" Style="{StaticResource SidebarBtnStyle}" Tag="4" Click="Menu_Click">
                             <StackPanel Orientation="Horizontal">

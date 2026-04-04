@@ -16,7 +16,6 @@ namespace Pharmacy_Manage.GUI
 
         private DbConnection _db = new DbConnection();
 
-        // 1. Thêm từ điển ánh xạ (COPY Y HỆT TỪ BÊN BOOKINGVIEW)
         private Dictionary<string, List<string>> chuyenKhoaPhongKhamMap;
 
         public DatLich_view()
@@ -24,14 +23,11 @@ namespace Pharmacy_Manage.GUI
             InitializeComponent();
             LoadDuLieuTuDatabase();
             
-            // 2. Gọi hàm load phòng khám khi mở màn hình
             LoadPhongKham();
         }
 
-        // ================= THÊM HÀM NÀY =================
         private void LoadPhongKham()
         {
-            // Định nghĩa danh sách phòng y hệt bên khách hàng để đồng bộ
             chuyenKhoaPhongKhamMap = new Dictionary<string, List<string>>
             {
                 { "Khám nội tổng quát", new List<string> { "PK Nội 1 (Tầng 1)", "PK Nội 2 (Tầng 1)" } },
@@ -42,18 +38,15 @@ namespace Pharmacy_Manage.GUI
                 { "Khám Mắt", new List<string> { "PK Mắt (Tầng 4)" } }
             };
 
-            // Gom tất cả các phòng khám thành 1 list phẳng để Lễ tân chọn
             List<string> tatCaPhongKham = new List<string>();
             foreach (var listPhong in chuyenKhoaPhongKhamMap.Values)
             {
                 tatCaPhongKham.AddRange(listPhong);
             }
 
-            // Gán vào ComboBox
             popPhongKham.ItemsSource = tatCaPhongKham;
             popPhongKham.SelectedIndex = 0;
         }
-        // ================================================
 
         private void LoadDuLieuTuDatabase()
         {
@@ -157,7 +150,6 @@ namespace Pharmacy_Manage.GUI
                     con.Open();
                     int maKH = 0;
 
-                    // 1. Tạo hoặc lấy Khách hàng
                     string checkKH = "SELECT MaKH FROM KhachHang WHERE SoDienThoai = @phone";
                     using (SqlCommand cmdCheck = new SqlCommand(checkKH, con))
                     {
@@ -189,13 +181,9 @@ namespace Pharmacy_Manage.GUI
                     }
 
                     
-
-                    // 3. Lưu Lịch hẹn
                     DateTime thoiGianKham = DateTime.Now;
                     string loaiKham = "Lấy số trực tiếp";
-                    // =============== SỬA LẠI ĐỂ LẤY TEXT TỪ COMBOBOX ===============
                     string phongKham = popPhongKham.SelectedItem?.ToString() ?? "";
-                    // ===============================================================
 
                     string insLich = @"INSERT INTO LichHen(MaKH, ThoiGianKham, PhongKham, LyDoKham, TrangThai, LoaiKham) 
                                        VALUES(@maKH, @tg, @phong, @lydo, N'Đang chờ', @loai)";
@@ -293,7 +281,6 @@ namespace Pharmacy_Manage.GUI
         }
     }
 
-    // ================= MODEL DỮ LIỆU BINDING =================
     public class LichHenViewModel
     {
         public int MaLichHen { get; set; }

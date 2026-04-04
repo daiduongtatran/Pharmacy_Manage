@@ -3,7 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using Microsoft.Data.SqlClient; // Mới thêm để truy vấn lấy Mã KH
+using Microsoft.Data.SqlClient; 
 using Pharmacy_Manage.BUS;
 using Pharmacy_Manage.DTO;
 
@@ -18,7 +18,6 @@ namespace Pharmacy_Manage.GUI
             InitializeComponent();
         }
 
-        // Kéo thả cửa sổ (Drag Move)
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.ChangedButton == MouseButton.Left)
@@ -30,7 +29,6 @@ namespace Pharmacy_Manage.GUI
             Application.Current.Shutdown();
         }
 
-        // === LOGIC CHUYỂN ĐỔI MÀN HÌNH ===
         private void SwitchToRegister(object sender, MouseButtonEventArgs e)
         {
             LoginPanel.Visibility = Visibility.Collapsed;
@@ -43,7 +41,6 @@ namespace Pharmacy_Manage.GUI
             LoginPanel.Visibility = Visibility.Visible;
         }
 
-        // === XỬ LÝ HIỆU ỨNG MÀU KHI CHỌN ROLE (ĐĂNG KÝ) ===
         private void RegRole_Checked(object sender, RoutedEventArgs e)
         {
             if (rbRegAdmin == null || rbRegStaff == null || rbRegCust == null) return;
@@ -65,7 +62,6 @@ namespace Pharmacy_Manage.GUI
             }
         }
 
-        // === XỬ LÝ HIỆU ỨNG MÀU KHI CHỌN ROLE (ĐĂNG NHẬP) ===
         private void LoginRole_Checked(object sender, RoutedEventArgs e)
         {
             if (rbAdmin == null || rbStaff == null || rbCust == null) return;
@@ -87,7 +83,6 @@ namespace Pharmacy_Manage.GUI
             }
         }
 
-        // === XỬ LÝ ĐĂNG NHẬP ===
         private void btnLogin_Click(object sender, RoutedEventArgs e)
         {
             string user = txtUsername.Text;
@@ -116,7 +111,6 @@ namespace Pharmacy_Manage.GUI
                                 object result = cmd.ExecuteScalar();
                                 if (result != null)
                                 {
-                                    // Lưu ID vào biến toàn cục để trang Cửa hàng dùng
                                     AppSession.CurrentCustomerID = Convert.ToInt32(result);
                                 }
                             }
@@ -152,7 +146,6 @@ namespace Pharmacy_Manage.GUI
             }
         }
 
-        // === XỬ LÝ ĐĂNG KÝ ===
         private void btnDoRegister_Click(object sender, RoutedEventArgs e)
         {
             string name = regName.Text;
@@ -187,7 +180,6 @@ namespace Pharmacy_Manage.GUI
         }
         private void btnGuide_Click(object sender, RoutedEventArgs e)
 {
-    // Cấu trúc dữ liệu tĩnh hướng dẫn sử dụng nhà thuốc
     string guideText = 
         "CẨM NANG SỬ DỤNG HỆ THỐNG NHÀ THUỐC MEDITRACK PRO\n\n" +
         
@@ -211,7 +203,7 @@ namespace Pharmacy_Manage.GUI
         
         "💡 Mẹo: Trong các bảng dữ liệu, nhân viên có thể nhập từ khóa vào ô Tìm kiếm phía trên để lọc dữ liệu ngay lập tức!";
 
-    // Hiển thị ra cửa sổ thông báo
+    
     MessageBox.Show(guideText, "Hướng Dẫn Sử Dụng", MessageBoxButton.OK, MessageBoxImage.Information);
 }
 
@@ -227,9 +219,6 @@ namespace Pharmacy_Manage.GUI
         }
     }
 
-    // =================================================================
-    // LỚP LƯU TRỮ PHIÊN ĐĂNG NHẬP (Bất kỳ file nào cũng có thể gọi được)
-    // =================================================================
     public static class AppSession
     {
         public static int CurrentCustomerID { get; set; } = 0;

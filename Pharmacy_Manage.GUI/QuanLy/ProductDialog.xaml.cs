@@ -36,7 +36,6 @@ namespace Pharmacy_Manage.GUI
 
         private void BtnSave_Click(object sender, RoutedEventArgs e)
         {
-            // KIỂM TRA TRỐNG TOÀN BỘ
             if (IsAnyEmpty(txtTen, txtLoai, txtDonVi, txtNSX, txtGiaNhap, txtGiaBan, txtHangXuat, txtTon, txtGhiChu)
                 || dpHSD.SelectedDate == null || dpNN.SelectedDate == null || cbTrangThai.SelectedItem == null)
             {

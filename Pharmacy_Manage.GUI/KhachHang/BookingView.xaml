@@ -46,7 +46,6 @@
                     <TextBlock Text="Xác nhận thông tin đặt lịch" FontSize="26" FontWeight="Bold" Foreground="#2D8C4E" HorizontalAlignment="Center"/>
                     <TextBlock Text="Vui lòng kiểm tra và hoàn thiện thông tin dưới đây" Foreground="#888888" HorizontalAlignment="Center" Margin="0,5,0,30"/>
 
-                    <!-- PHẦN 1: THÔNG TIN KHÁCH HÀNG -->
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,15">
                         <TextBlock Text="👤" FontSize="18" VerticalAlignment="Center" Margin="0,0,8,0"/>
                         <TextBlock Text="THÔNG TIN KHÁCH HÀNG" FontSize="15" FontWeight="Bold" Foreground="#2D8C4E" VerticalAlignment="Center"/>
@@ -70,7 +69,7 @@
                         </StackPanel>
                         <StackPanel Grid.Row="0" Grid.Column="2">
                             <TextBlock Text="Số điện thoại *" FontSize="12" Foreground="#555"/>
-                            <!-- Đã thêm sự kiện chặn nhập chữ từ file cs -->
+                           
                             <TextBox x:Name="txtSdt" MaxLength="10" PreviewTextInput="NumberOnly_PreviewTextInput"/>
                         </StackPanel>
 
@@ -95,7 +94,6 @@
 
                     <Separator Margin="0,5,0,25" Background="#F0F0F0"/>
 
-                    <!-- PHẦN 2: ĐẶT LỊCH -->
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,15">
                         <TextBlock Text="📅" FontSize="18" VerticalAlignment="Center" Margin="0,0,8,0"/>
                         <TextBlock Text="CHI TIẾT ĐẶT LỊCH" FontSize="15" FontWeight="Bold" Foreground="#2D8C4E" VerticalAlignment="Center"/>
@@ -149,7 +147,6 @@
 
                     <Separator Margin="0,5,0,25" Background="#F0F0F0"/>
 
-                    <!-- PHẦN 3: LÝ DO -->
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
                         <TextBlock Text="LÝ DO KHÁM *" FontSize="15" FontWeight="Bold" Foreground="#2D8C4E" VerticalAlignment="Center"/>
                     </StackPanel>

@@ -7,7 +7,6 @@
         Background="Transparent"
         Height="400" Width="500">
 
-    <!-- Khung bo góc -->
     <Border CornerRadius="20" Background="White" Margin="20" MouseDown="Window_MouseDown">
         <Border.Effect>
             <DropShadowEffect BlurRadius="25" Opacity="0.3"/>
@@ -19,15 +18,10 @@
                 <RowDefinition Height="8*"/>
             </Grid.RowDefinitions>
 
-            <!-- HEADER CHA -->
             <Border Grid.Row="0" Grid.ColumnSpan="2"
         CornerRadius="20,20,0,0">
-                <!-- FIX: bo góc toàn header -->
-
-                <!-- FIX: chỉ dùng 1 gradient -->
                 <Border.Background>
                     <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
-                        <!-- FIX: ngang -->
                         <GradientStop Color="#3B68A8" Offset="0"/>
                         <GradientStop Color="#2C9BB3" Offset="1"/>
                     </LinearGradientBrush>
@@ -39,7 +33,6 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
-                    <!-- BÊN TRÁI -->
                     <StackPanel Orientation="Horizontal"
                     VerticalAlignment="Center"
                     Margin="15,0">
@@ -55,7 +48,6 @@
                        Margin="10,5,0,0"/>
                     </StackPanel>
 
-                    <!-- NÚT X -->
                     <Button Grid.Column="1"
                 Content="✕"
                 Width="35"
@@ -67,7 +59,6 @@
                 Cursor="Hand"
                 Click="Close_Click">
 
-                        <!-- FIX: hover effect -->
                         <Button.Style>
                             <Style TargetType="Button">
                                 <Setter Property="Opacity" Value="0.8"/>

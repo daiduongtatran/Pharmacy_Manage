@@ -12,7 +12,6 @@ namespace Pharmacy_Manage.GUI.KhachHang
     {
         private string connectionString = @"Data Source=localhost;Initial Catalog=PharmacyManage;Integrated Security=True;TrustServerCertificate=True";
 
-        // Khai báo bộ từ điển ánh xạ Chuyên Khoa -> Danh sách Phòng Khám
         private Dictionary<string, List<string>> chuyenKhoaPhongKhamMap;
 
         public BookingView(string customerName = "")
@@ -21,7 +20,6 @@ namespace Pharmacy_Manage.GUI.KhachHang
             LoadCountries();
             LoadEthnicities();
             
-            // Gọi hàm nạp danh sách chuyên khoa & phòng khám
             LoadChuyenKhoaPhongKham();
 
             if (!string.IsNullOrWhiteSpace(customerName))
@@ -32,7 +30,6 @@ namespace Pharmacy_Manage.GUI.KhachHang
 
         private void LoadChuyenKhoaPhongKham()
         {
-            // Khởi tạo danh sách các chuyên khoa và phòng khám tương ứng
             chuyenKhoaPhongKhamMap = new Dictionary<string, List<string>>
             {
                 { "Khám nội tổng quát", new List<string> { "PK Nội 1 (Tầng 1)", "PK Nội 2 (Tầng 1)" } },
@@ -43,23 +40,19 @@ namespace Pharmacy_Manage.GUI.KhachHang
                 { "Khám Mắt", new List<string> { "PK Mắt (Tầng 4)" } }
             };
 
-            // Nạp danh sách chuyên khoa (chỉ lấy Keys) vào ComboBox Chuyên khoa
             cbChuyenKhoa.ItemsSource = chuyenKhoaPhongKhamMap.Keys;
-            cbChuyenKhoa.SelectedIndex = 0; // Chọn mặc định dòng đầu tiên
+            cbChuyenKhoa.SelectedIndex = 0; 
         }
 
-        // Sự kiện xảy ra khi người dùng đổi Chuyên khoa
         private void cbChuyenKhoa_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (cbChuyenKhoa.SelectedItem != null)
             {
                 string selectedKhoa = cbChuyenKhoa.SelectedItem.ToString();
-                
-                // Cập nhật lại danh sách phòng khám dựa theo chuyên khoa vừa chọn
                 if (chuyenKhoaPhongKhamMap.ContainsKey(selectedKhoa))
                 {
                     cbPhongKham.ItemsSource = chuyenKhoaPhongKhamMap[selectedKhoa];
-                    cbPhongKham.SelectedIndex = 0; // Chọn mặc định phòng đầu tiên
+                    cbPhongKham.SelectedIndex = 0; 
                 }
             }
         }
@@ -89,7 +82,6 @@ namespace Pharmacy_Manage.GUI.KhachHang
 
         private void BtnXacNhan_Click(object sender, RoutedEventArgs e)
         {
-            // 1. Validate dữ liệu cơ bản
             if (string.IsNullOrWhiteSpace(txtHoTen.Text) || string.IsNullOrWhiteSpace(txtSdt.Text) ||
                 dpNgayKham.SelectedDate == null || cbGioKham.SelectedItem == null ||
                 string.IsNullOrWhiteSpace(txtLyDo.Text) || cbPhongKham.SelectedItem == null)
@@ -119,14 +111,10 @@ namespace Pharmacy_Manage.GUI.KhachHang
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
                     conn.Open();
-
-                    // =========================================================================
-                    // 2. KIỂM TRA TRÙNG LỊCH: Cùng Thời gian & Cùng Phòng khám
-                    // =========================================================================
                     string checkQuery = @"SELECT COUNT(*) FROM LichHen 
                                           WHERE ThoiGianKham = @ThoiGianKham 
                                             AND PhongKham = @PhongKham 
-                                            AND TrangThai != N'Đã hủy'"; // Bỏ qua các lịch đã hủy
+                                            AND TrangThai != N'Đã hủy'"; 
 
                     using (SqlCommand checkCmd = new SqlCommand(checkQuery, conn))
                     {
@@ -138,11 +126,10 @@ namespace Pharmacy_Manage.GUI.KhachHang
                         {
                             MessageBox.Show($"Khung giờ {thoiGianKham:HH:mm} ngày {thoiGianKham:dd/MM/yyyy} tại {phongKhamChon} đã có khách hàng khác đặt.\n\nVui lòng chọn giờ hoặc phòng khám khác!", 
                                             "Trùng lịch hẹn", MessageBoxButton.OK, MessageBoxImage.Warning);
-                            return; // Dừng lại, không cho Insert vào CSDL
+                            return; 
                         }
                     }
 
-                    // 3. NẾU KHÔNG TRÙNG -> LƯU VÀO CSDL
                     string queryKH = @"INSERT INTO KhachHang (HoTen, SoDienThoai, Email, NgaySinh, DanToc, QuocTich) 
                                        VALUES (@HoTen, @Sdt, @Email, @NgaySinh, @DanToc, @QuocTich);
                                        SELECT SCOPE_IDENTITY();";
@@ -174,7 +161,6 @@ namespace Pharmacy_Manage.GUI.KhachHang
 
                     MessageBox.Show($"Đặt lịch thành công!\nThời gian: {thoiGianKham:dd/MM/yyyy HH:mm}\nTại: {phongKhamChon}", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
 
-                    // Xóa dữ liệu sau khi nhập
                     txtHoTen.Clear(); txtSdt.Clear(); txtEmail.Clear(); txtLyDo.Clear(); cbGioKham.Text = "";
                 }
             }

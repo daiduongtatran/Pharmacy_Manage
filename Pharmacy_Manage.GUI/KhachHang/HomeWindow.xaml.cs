@@ -2,7 +2,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Pharmacy_Manage.GUI.KhachHang; // Đảm bảo có dòng này để gọi được BookingView
+using Pharmacy_Manage.GUI.KhachHang; 
 
 namespace Pharmacy_Manage.GUI
 {
@@ -28,11 +28,11 @@ namespace Pharmacy_Manage.GUI
 
                 MainContent.Content = new BookingView(name);
             }
-            else if (index == 2) // THÊM INDEX NÀY CHO STOREVIEW
+            else if (index == 2) 
             {
                 pnlHomeContent.Visibility = Visibility.Collapsed;
                 MainContent.Visibility = Visibility.Visible;
-                MainContent.Content = new StoreView(); // Gọi màn hình cửa hàng
+                MainContent.Content = new StoreView();
             }
         }
 
@@ -57,7 +57,6 @@ namespace Pharmacy_Manage.GUI
             SwitchView(1, nameFromHome);
         }
 
-        // ================== CẬP NHẬT: THÊM XÁC NHẬN ĐĂNG XUẤT ==================
         private void Logout_Click(object sender, RoutedEventArgs e)
         {
             if (MessageBox.Show("Bạn có chắc chắn muốn đăng xuất?", "Xác nhận", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)

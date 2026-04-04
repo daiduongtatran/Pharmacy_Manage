@@ -28,7 +28,6 @@ namespace Pharmacy_Manage.GUI
         {
             InitializeComponent();
 
-            // Tạo cấu trúc giỏ hàng
             gioHangTable.Columns.Add("MaSP");
             gioHangTable.Columns.Add("TenSP");
             gioHangTable.Columns.Add("SoLuong", typeof(int));
@@ -40,7 +39,6 @@ namespace Pharmacy_Manage.GUI
             hamloadchung.ReloadAll += LoadDuLieuKho;
         }
       
-        // ================= LOAD KHO =================
         private void LoadDuLieuKho()
         {
             try
@@ -73,13 +71,11 @@ namespace Pharmacy_Manage.GUI
             cbKhachHang.DisplayMemberPath = "HoTen";
             cbKhachHang.SelectedValuePath = "MaKH";
         }
-        // ================= CHECK HẠN =================
         private bool CheckHan(DateTime hanDung)
         {
             return hanDung >= DateTime.Now.Date;
         }
 
-        // ================= TĂNG GIẢM SỐ LƯỢNG =================
         private void TangSoLuong_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button btn &&
@@ -119,7 +115,6 @@ namespace Pharmacy_Manage.GUI
             }
         }
 
-        // ================= THÊM VÀO GIỎ =================
         private void Mua_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -162,7 +157,7 @@ namespace Pharmacy_Manage.GUI
 
                 CapNhatTongTien();
 
-                txtSoLuong.Text = "1"; // reset sau khi mua
+                txtSoLuong.Text = "1"; 
             }
             catch (Exception ex)
             {
@@ -172,7 +167,6 @@ namespace Pharmacy_Manage.GUI
 
 
 
-        // ================= CẬP NHẬT TỔNG TIỀN =================
         private void CapNhatTongTien()
         {
             decimal tongTienThuoc = 0;
@@ -184,7 +178,6 @@ namespace Pharmacy_Manage.GUI
             decimal tongTatCa = tongTienThuoc + tongTienDichVu;
             txtTongTien.Text = "Tổng tiền: " + tongTatCa.ToString("N0") + " VNĐ";
         }
-        // ================= THANH TOÁN =================
         private void ThanhToan()
         {
             if (gioHangTable.Rows.Count == 0 && listDichVuDaChon.Count == 0)
@@ -209,7 +202,6 @@ namespace Pharmacy_Manage.GUI
 
                     try
                     {
-                        // ===== 1. TÍNH TIỀN =====
                         decimal tongTienThuoc = 0;
                         foreach (DataRow row in gioHangTable.Rows)
                         {
@@ -222,7 +214,6 @@ namespace Pharmacy_Manage.GUI
                             tongTienDV += dv.Gia;
                         }
 
-                        // ===== 2. LẤY MaHD TỪ DB =====
                         string getMaHD = @"
                     SELECT TOP 1 MaHD
                     FROM HoaDon
@@ -240,7 +231,6 @@ namespace Pharmacy_Manage.GUI
 
                         int maHD = Convert.ToInt32(result);
 
-                        // ===== 3. UPDATE HÓA ĐƠN =====
                         string updateHoaDon = @"
                     UPDATE HoaDon
                     SET TongTienDichVu = @TongDV,
@@ -254,7 +244,6 @@ namespace Pharmacy_Manage.GUI
                         cmdHD.Parameters.AddWithValue("@MaHD", maHD);
                         cmdHD.ExecuteNonQuery();
 
-                        // ===== 4. XÓA CHI TIẾT CŨ =====
                         SqlCommand cmdDelCT = new SqlCommand(
                             "DELETE FROM ChiTietHoaDon WHERE MaHD = @MaHD", conn, tran);
                         cmdDelCT.Parameters.AddWithValue("@MaHD", maHD);
@@ -265,14 +254,12 @@ namespace Pharmacy_Manage.GUI
                         cmdDelDV.Parameters.AddWithValue("@MaHD", maHD);
                         cmdDelDV.ExecuteNonQuery();
 
-                        // ===== 5. CHI TIẾT THUỐC =====
                         foreach (DataRow row in gioHangTable.Rows)
                         {
                             string maSP = row["MaSP"].ToString();
                             int soLuong = Convert.ToInt32(row["SoLuong"]);
                             decimal donGia = Convert.ToDecimal(row["DonGia"]);
 
-                            // CHECK
                             string checkQuery = @"
                         SELECT TonKho, HanDung, TrangThai
                         FROM SanPham
@@ -300,7 +287,6 @@ namespace Pharmacy_Manage.GUI
                                     throw new Exception("Không đủ tồn kho.");
                             }
 
-                            // INSERT CHI TIẾT HÓA ĐƠN
                             string insertCT = @"
                         INSERT INTO ChiTietHoaDon (MaHD, MaSP, SoLuong, DonGia)
                         VALUES (@MaHD, @MaSP, @SoLuong, @DonGia)";
@@ -312,7 +298,6 @@ namespace Pharmacy_Manage.GUI
                             cmdCT.Parameters.AddWithValue("@DonGia", donGia);
                             cmdCT.ExecuteNonQuery();
 
-                            // UPDATE KHO
                             string updateQuery = @"
                         UPDATE SanPham
                         SET TonKho = TonKho - @SoLuong,
@@ -325,7 +310,6 @@ namespace Pharmacy_Manage.GUI
                             updateCmd.ExecuteNonQuery();
                         }
 
-                        // ===== 6. CHI TIẾT DỊCH VỤ =====
                         foreach (var dv in listDichVuDaChon)
                         {
                             string insertDV = @"
@@ -339,7 +323,6 @@ namespace Pharmacy_Manage.GUI
                             cmdDV.ExecuteNonQuery();
                         }
 
-                        // ===== 7. COMMIT =====
                         tran.Commit();
                     }
                     catch (Exception ex)
@@ -351,7 +334,6 @@ namespace Pharmacy_Manage.GUI
 
                 MessageBox.Show("Thanh toán thành công!");
 
-                // ===== RESET =====
                 gioHangTable.Clear();
                 listDichVuDaChon.Clear();
                 icDichvu.ItemsSource = null;
@@ -368,7 +350,7 @@ namespace Pharmacy_Manage.GUI
             {
                 MessageBox.Show("Lỗi thanh toán: " + ex.Message);
             }
-        }        // ================= BUTTON ACTION =================
+        }        
         private void btnAction_Click(object sender, RoutedEventArgs e)
         {
             if (btnAction.Content.ToString() == "Xóa giỏ 🗑")
@@ -383,7 +365,6 @@ namespace Pharmacy_Manage.GUI
         }
 
 
-        // ================= TÌM KIẾM TỰ ĐỘNG =================
         private void txtSearch_TextChanged(object sender, TextChangedEventArgs e)
         {
             string keyword = txtSearch.Text.Trim();
@@ -488,14 +469,13 @@ namespace Pharmacy_Manage.GUI
 
 
 
-        // ================= TAB CONTROL =================
         private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             TabControl tab = sender as TabControl;
 
             if (tab.SelectedIndex == 0)
             {
-                // ===== XÓA GIỎ =====
+                
                 btnAction.Content = "Xóa giỏ 🗑";
 
                 btnAction.Background = (Brush)new BrushConverter().ConvertFromString("#FFEBEE"); // hồng nhạt
@@ -504,7 +484,7 @@ namespace Pharmacy_Manage.GUI
             }
             else
             {
-                // ===== THANH TOÁN =====
+                
                 btnAction.Content = "Thanh toán 💳";
 
                 btnAction.Background = (Brush)new BrushConverter().ConvertFromString("#E3F2FD"); // xanh nhạt
@@ -513,7 +493,6 @@ namespace Pharmacy_Manage.GUI
             }
             CapNhatTrangThaiNut();
         }
-        //================= COMBO BOX CHO BỆNH NHÂN (dịch vụ) =============
         public class KhachHang()
         {
             public string MaKH { get; set; }

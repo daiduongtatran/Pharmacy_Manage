@@ -18,9 +18,6 @@ using Pharmacy_Manage.DAL;
 
 namespace Pharmacy_Manage.GUI.nhanvien
 {
-    /// <summary>
-    /// Interaction logic for ChonDichVuWindow.xaml
-    /// </summary>
     public partial class ChonDichVuWindow : Window
     {
         public ChonDichVuWindow()

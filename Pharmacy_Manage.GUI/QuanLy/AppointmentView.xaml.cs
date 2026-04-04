@@ -30,7 +30,6 @@ namespace Pharmacy_Manage.QuanLy
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
                     conn.Open();
-                    // SÁNG TẠO: Dùng lệnh JOIN để nối bảng LichHen và KhachHang để lấy Tên và SĐT
                     string query = @"
                         SELECT lh.MaLichHen, kh.HoTen, kh.SoDienThoai, 
                                lh.ThoiGianKham, lh.ChuyenKhoa, lh.LyDoKham, lh.TrangThai 
@@ -65,7 +64,7 @@ namespace Pharmacy_Manage.QuanLy
                         }
                     }
                 }
-                LocDuLieu(); // Nạp vào danh sách hiển thị
+                LocDuLieu(); 
             }
             catch (Exception ex)
             {
@@ -73,7 +72,6 @@ namespace Pharmacy_Manage.QuanLy
             }
         }
 
-        // Tính năng tìm kiếm theo Tên hoặc Số điện thoại
         private void TxtSearch_TextChanged(object sender, TextChangedEventArgs e)
         {
             LocDuLieu();
@@ -100,8 +98,6 @@ namespace Pharmacy_Manage.QuanLy
             dgLichHen.ItemsSource = DanhSachHienThi;
         }
 
-        // Xử lý khi Admin bấm nút "Xử lý"
-        // Xử lý khi Admin bấm nút "Xử lý"
         private void BtnXuLy_Click(object sender, RoutedEventArgs e)
         {
             var btn = sender as Button;
@@ -111,7 +107,6 @@ namespace Pharmacy_Manage.QuanLy
             {
                 if (lich.TrangThai == "Đang chờ")
                 {
-                    // Hỏi xác nhận trước khi chuyển
                     var result = MessageBox.Show($"Xác nhận tiếp nhận bệnh nhân {lich.HoTen} vào khám?", 
                                                  "Xác nhận", MessageBoxButton.YesNo, MessageBoxImage.Question);
                     
@@ -122,7 +117,6 @@ namespace Pharmacy_Manage.QuanLy
                             using (SqlConnection conn = new SqlConnection(connectionString))
                             {
                                 conn.Open();
-                                // Lệnh cập nhật trạng thái thành Đang khám
                                 string query = "UPDATE LichHen SET TrangThai = N'Đang khám' WHERE MaLichHen = @MaLH";
                                 using (SqlCommand cmd = new SqlCommand(query, conn))
                                 {
@@ -131,7 +125,6 @@ namespace Pharmacy_Manage.QuanLy
                                 }
                             }
                             
-                            // Load lại danh sách để màn hình cập nhật ngay lập tức
                             LoadData();
                             MessageBox.Show("Đã chuyển trạng thái thành: Đang khám", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
                         }
@@ -143,7 +136,6 @@ namespace Pharmacy_Manage.QuanLy
                 }
                 else if (lich.TrangThai == "Đang khám")
                 {
-                    // Tương tự, nếu đang khám mà bấm Xử lý thì chuyển thành Hoàn thành
                     var result = MessageBox.Show($"Bệnh nhân {lich.HoTen} đã khám xong?", 
                                                  "Xác nhận", MessageBoxButton.YesNo, MessageBoxImage.Question);
                     
@@ -178,7 +170,6 @@ namespace Pharmacy_Manage.QuanLy
         }
     }
 
-    // Lớp chứa dữ liệu gộp từ 2 bảng (DTO)
     public class LichHenViewModel
     {
         public int MaLichHen { get; set; }

@@ -14,7 +14,7 @@ namespace Pharmacy_Manage.GUI
         private ObservableCollection<ThuocViewModel> _danhSachHienThi = new ObservableCollection<ThuocViewModel>();
 
         private DbConnection _db = new DbConnection();
-        private string _trangThaiLoc = "Tất cả"; // Biến lưu trạng thái của Filter Chips
+        private string _trangThaiLoc = "Tất cả"; 
 
         public QLthuoc_view()
         {
@@ -64,13 +64,11 @@ namespace Pharmacy_Manage.GUI
         }
 
        
-        // Sự kiện khi gõ TextBox hoặc đổi ComboBox
         private void Filter_Changed(object sender, RoutedEventArgs e)
         {
             LocDuLieu();
         }
 
-        // Sự kiện khi bấm vào Filter Chips (Radio Button)
         private void Filter_Checked(object sender, RoutedEventArgs e)
         {
             if (sender is RadioButton rb && rb.Tag != null)
@@ -84,7 +82,6 @@ namespace Pharmacy_Manage.GUI
         {
             if (_danhSachGoc == null || dgKhoThuoc == null || cbLoaiSP == null || cbDVT == null || cbSapXep == null) return;
 
-            // 1. Đọc dữ liệu từ Form Lọc
             string tuKhoa = txtTimKiem.Text.Trim().ToLower();
             string loaiSP = (cbLoaiSP.SelectedItem as ComboBoxItem)?.Content.ToString() ?? "Tất cả";
             string dvt = (cbDVT.SelectedItem as ComboBoxItem)?.Content.ToString() ?? "Tất cả";
@@ -93,7 +90,6 @@ namespace Pharmacy_Manage.GUI
             
             string[] cacLoaiMacDinh = { "Giảm đau – hạ sốt", "Kháng sinh", "Tim mạch", "Thực phẩm chức năng" };
 
-            // 2. Lọc Từ khóa, Trạng thái, và ĐVT trước
             var ketQua = _danhSachGoc.Where(t =>
                 (string.IsNullOrEmpty(tuKhoa) || t.TenSP.ToLower().Contains(tuKhoa) || t.MaSP.ToString().Contains(tuKhoa) || t.NhaSanXuat.ToLower().Contains(tuKhoa)) &&
                 (_trangThaiLoc == "Tất cả" || t.TrangThai == _trangThaiLoc) &&
@@ -111,7 +107,6 @@ namespace Pharmacy_Manage.GUI
                 ketQua = ketQua.Where(t => t.LoaiSP.Contains(loaiSP)).ToList();
             }
 
-            // 4. Sắp xếp hiển thị
             switch (sapXep)
             {
                 case "Giá bán: Cao -> Thấp":
@@ -134,7 +129,6 @@ namespace Pharmacy_Manage.GUI
                     break;
             }
 
-            // 5. Cập nhật Bảng 
             _danhSachHienThi.Clear();
             foreach (var item in ketQua)
             {
@@ -152,7 +146,6 @@ namespace Pharmacy_Manage.GUI
     }
 }
 
-    // Model Dữ Liệu
     public class ThuocViewModel
     {
         public int MaSP { get; set; }

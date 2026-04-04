@@ -35,17 +35,14 @@
             </Button>
         </StackPanel>
 
-        <!-- Bảng dữ liệu -->
         <Border Grid.Row="1" Background="White" CornerRadius="20" Padding="15" BorderBrush="#E2E8F0" BorderThickness="1">
             <DataGrid x:Name="dgSanPham" AutoGenerateColumns="False" CanUserAddRows="False" 
                       IsReadOnly="True" Background="White" BorderThickness="0" RowHeight="50">
                 <DataGrid.Columns>
-                    <!-- 1. Các cột cơ bản đầu bảng -->
                     <DataGridTextColumn Header="Mã" Binding="{Binding MaSP}" Width="60"/>
                     <DataGridTextColumn Header="Tên sản phẩm" Binding="{Binding TenSP}" Width="130"/>
                     <DataGridTextColumn Header="Loại" Binding="{Binding LoaiSP}" Width="120"/>
 
-                    <!-- 2. HAI CỘT THÊM MỚI Ở GIỮA -->
                     <DataGridTextColumn Header="Giá nhập" 
                         Binding="{Binding GiaNhap, StringFormat='#,##0 đ'}" 
                         Width="110" Foreground="#2D3748"/>
@@ -54,7 +51,6 @@
                         Binding="{Binding TonKho}" 
                         Width="80" FontWeight="Bold"/>
 
-                    <!-- 3. Các cột còn lại -->
                     <DataGridTextColumn Header="Giá bán" 
                         Binding="{Binding GiaBan, StringFormat='#,##0 đ'}" 
                         Width="120" Foreground="#3182CE"/>

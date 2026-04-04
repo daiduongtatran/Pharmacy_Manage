@@ -15,9 +15,6 @@ using System.Windows.Shapes;
 
 namespace Pharmacy_Manage.GUI.QuanLy
 {
-    /// <summary>
-    /// Interaction logic for InvoiceDetailWindow.xaml
-    /// </summary>
     public partial class InvoiceDetailWindow : Window
     {
         public InvoiceDetailWindow()

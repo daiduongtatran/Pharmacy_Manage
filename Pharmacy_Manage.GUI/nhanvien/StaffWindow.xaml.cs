@@ -18,20 +18,16 @@ namespace Pharmacy_Manage.GUI
             SetupWindow();
         }
 
-        // Hàm này sẽ tự động chạy và nhận AccountDTO khi bạn đăng nhập thành công từ MainWindow
         public StaffWindow(AccountDTO staff)
         {
             InitializeComponent();
             _currentStaff = staff;
 
-            // KIỂM TRA VÀ GÁN DỮ LIỆU TỪ _currentStaff VÀO GIAO DIỆN
             if (_currentStaff != null)
             {
-                // 1. Hiển thị ở góc trên cùng bên phải màn hình
                 txtStaffName.Text = string.IsNullOrEmpty(_currentStaff.FullName) ? _currentStaff.Username : _currentStaff.FullName;
                 txtStaffRole.Text = "Nhân viên (Staff)";
 
-                // 2. Truyền dữ liệu vào các TextBlock bên trong Popup
                 popFullName.Text = string.IsNullOrEmpty(_currentStaff.FullName) ? "Chưa cập nhật" : _currentStaff.FullName;
                 popUsername.Text = _currentStaff.Username;
                 popRole.Text = _currentStaff.Role == "Staff" ? "Tiếp đón / Bán hàng" : _currentStaff.Role;
@@ -41,7 +37,6 @@ namespace Pharmacy_Manage.GUI
         }
         private void SetupWindow()
         {
-            // Mở mặc định thẻ đầu tiên
             MainTabControl.SelectedIndex = 0;
             SetButtonActive(BtnLichhen);
 
@@ -65,7 +60,6 @@ namespace Pharmacy_Manage.GUI
 
             SetButtonActive(btn);
 
-            // Chuyển đổi thẻ (Card) dựa vào Tag của nút bấm
             int tag = int.Parse(btn.Tag.ToString());
             MainTabControl.SelectedIndex = tag;
         }
@@ -106,12 +100,11 @@ namespace Pharmacy_Manage.GUI
                 this.Close();
             }
         }
-        // ================= SỰ KIỆN LIÊN QUAN ĐẾN POPUP THÔNG TIN ================= //
         private void ProfileBorder_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (ProfilePopup != null)
             {
-                // Mở popup ra
+                
                 ProfilePopup.IsOpen = true;
             }
             e.Handled = true;
@@ -121,7 +114,7 @@ namespace Pharmacy_Manage.GUI
         {
             if (ProfilePopup != null)
             {
-                // Đóng popup lại
+                
                 ProfilePopup.IsOpen = false;
             }
         }

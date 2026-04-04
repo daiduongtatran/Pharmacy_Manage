@@ -15,10 +15,9 @@ namespace Pharmacy_Manage.GUI
         {
             InitializeComponent();
             MainContentArea.Content = new Pharmacy_Manage.QuanLy.Dashboard();
-            SetButtonActive(btnMenu0); // Mặc định sáng nút Trang chủ
+            SetButtonActive(btnMenu0); 
         }
 
-        // Constructor mới nhận dữ liệu từ form Đăng nhập
         public AdminWindow(AccountDTO admin) : this()
         {
             _currentAdmin = admin;
@@ -34,7 +33,7 @@ namespace Pharmacy_Manage.GUI
             if (btn == null || btn.Tag == null) return;
 
             ResetMenuHighlight();
-            SetButtonActive(btn); // Làm sáng nút vừa bấm
+            SetButtonActive(btn); 
 
             string tag = btn.Tag.ToString();
             switch (tag)
@@ -48,20 +47,24 @@ namespace Pharmacy_Manage.GUI
                 case "2":
                     MainContentArea.Content = new Report();
                     break;
-                     case "4":
+                case "4":
                     MainContentArea.Content = new Pharmacy_Manage.QuanLy.AppointmentView();
                     break;
             }
         }
         private void ResetMenuHighlight()
         {
-            Brush transparent = Brushes.Transparent;
-            Brush grayText = (Brush)new BrushConverter().ConvertFrom("#A0AEC0");
+            btnMenu0.ClearValue(Button.BackgroundProperty);
+            btnMenu0.ClearValue(Button.ForegroundProperty);
 
-            btnMenu0.Background = transparent; btnMenu0.Foreground = grayText;
-            btnMenu1.Background = transparent; btnMenu1.Foreground = grayText;
-            btnMenu2.Background = transparent; btnMenu2.Foreground = grayText;
-            btnMenu4.Background = transparent; btnMenu4.Foreground = grayText;
+            btnMenu1.ClearValue(Button.BackgroundProperty);
+            btnMenu1.ClearValue(Button.ForegroundProperty);
+
+            btnMenu2.ClearValue(Button.BackgroundProperty);
+            btnMenu2.ClearValue(Button.ForegroundProperty);
+
+            btnMenu4.ClearValue(Button.BackgroundProperty);
+            btnMenu4.ClearValue(Button.ForegroundProperty);
         }
 
         private void SetButtonActive(Button btn)

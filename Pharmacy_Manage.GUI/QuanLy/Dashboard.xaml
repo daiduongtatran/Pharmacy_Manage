@@ -16,11 +16,10 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <!-- Trong phần Grid chứa 3 thẻ Border -->
             <Border Grid.Column="0" Background="#FFF5F5" CornerRadius="15" Padding="20" Margin="0,0,10,0">
                 <StackPanel>
                     <TextBlock Text="Thuốc sắp hết hàng" Foreground="#C53030" FontSize="16" FontWeight="SemiBold"/>
-                    <!-- Đặt tên cho con số tồn kho thấp -->
+                    
                     <TextBlock x:Name="txtLowStock" Text="0" FontSize="32" FontWeight="Bold" Foreground="#E53E3E" Margin="0,10"/>
                 </StackPanel>
             </Border>
@@ -28,7 +27,7 @@
             <Border Grid.Column="1" Background="#FFF5F5" CornerRadius="15" Padding="20" Margin="10,0,10,0">
                 <StackPanel>
                     <TextBlock Text="Thuốc sắp/đã hết hạn" Foreground="#C53030" FontSize="16" FontWeight="SemiBold"/>
-                    <!-- Đặt tên cho con số hết hạn -->
+                   
                     <TextBlock x:Name="txtExpired" Text="0" FontSize="32" FontWeight="Bold" Foreground="#E53E3E" Margin="0,10"/>
                 </StackPanel>
             </Border>
