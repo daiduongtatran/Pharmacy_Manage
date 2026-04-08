@@ -60,7 +60,7 @@ namespace Pharmacy_Manage.GUI.KhachHang
         private void LoadCountries()
         {
             List<string> countries = new List<string> {
-                "Việt Nam", "Anh", "Hoa Kỳ", "Hàn Quốc", "Nhật Bản", "Pháp", "Đức" // Rút gọn cho code ngắn dễ nhìn
+                "Việt Nam", "Anh", "Hoa Kỳ", "Hàn Quốc", "Nhật Bản", "Pháp", "Đức"
             };
             cbQuocTich.ItemsSource = countries;
             cbQuocTich.SelectedIndex = 0;
