@@ -16,16 +16,17 @@ namespace Pharmacy_Manage.GUI
 
         private DbConnection _db = new DbConnection();
 
+       
         private Dictionary<string, List<string>> chuyenKhoaPhongKhamMap;
 
         public DatLich_view()
         {
             InitializeComponent();
             LoadDuLieuTuDatabase();
-            
             LoadPhongKham();
         }
 
+       
         private void LoadPhongKham()
         {
             chuyenKhoaPhongKhamMap = new Dictionary<string, List<string>>
@@ -38,16 +39,18 @@ namespace Pharmacy_Manage.GUI
                 { "Khám Mắt", new List<string> { "PK Mắt (Tầng 4)" } }
             };
 
+           
             List<string> tatCaPhongKham = new List<string>();
             foreach (var listPhong in chuyenKhoaPhongKhamMap.Values)
             {
                 tatCaPhongKham.AddRange(listPhong);
             }
 
+            
             popPhongKham.ItemsSource = tatCaPhongKham;
             popPhongKham.SelectedIndex = 0;
         }
-
+     
         private void LoadDuLieuTuDatabase()
         {
             _danhSachDatTruoc.Clear();
@@ -150,6 +153,7 @@ namespace Pharmacy_Manage.GUI
                     con.Open();
                     int maKH = 0;
 
+                    // 1. Tạo hoặc lấy Khách hàng
                     string checkKH = "SELECT MaKH FROM KhachHang WHERE SoDienThoai = @phone";
                     using (SqlCommand cmdCheck = new SqlCommand(checkKH, con))
                     {
@@ -179,12 +183,10 @@ namespace Pharmacy_Manage.GUI
                         MessageBox.Show("Không thể tạo Khách hàng. Vui lòng kiểm tra lại bảng KhachHang trong SQL.", "Lỗi CSDL", MessageBoxButton.OK, MessageBoxImage.Error);
                         return;
                     }
-
-                    
+                   
                     DateTime thoiGianKham = DateTime.Now;
                     string loaiKham = "Lấy số trực tiếp";
                     string phongKham = popPhongKham.SelectedItem?.ToString() ?? "";
-
                     string insLich = @"INSERT INTO LichHen(MaKH, ThoiGianKham, PhongKham, LyDoKham, TrangThai, LoaiKham) 
                                        VALUES(@maKH, @tg, @phong, @lydo, N'Đang chờ', @loai)";
                     using (SqlCommand cmdLich = new SqlCommand(insLich, con))
