@@ -31,7 +31,6 @@ namespace Pharmacy_Manage.DAL
             }
             catch (Exception ex)
             {
-                // Ghi log lỗi để bạn biết cụ thể lỗi gì (ví dụ: sai tên server, sai DB...)
                 System.Diagnostics.Debug.WriteLine("Lỗi SQL GetUrgentStats: " + ex.Message);
             }
             return dt;

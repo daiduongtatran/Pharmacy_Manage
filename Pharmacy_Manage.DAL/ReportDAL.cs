@@ -1,4 +1,4 @@
-﻿// File: Pharmacy_Manage.DAL/ReportDAL.cs
+﻿
 using Pharmacy_Manage.DAL;
 using System;
 using System.Data;
@@ -7,7 +7,6 @@ namespace Pharmacy_Manage.DAL
 {
     public class ReportDAL
     {
-        // Lấy danh sách hóa đơn kèm lợi nhuận tính theo công thức yêu cầu
         public DataTable GetRecentInvoices()
         {
             string query = @"
@@ -48,7 +47,6 @@ namespace Pharmacy_Manage.DAL
             return result != DBNull.Value ? Convert.ToInt32(result) : 0;
         }
 
-        // Tính tổng lợi nhuận của toàn bộ hệ thống
         public decimal GetTotalProfit()
         {
             string query = @"
@@ -73,7 +71,6 @@ namespace Pharmacy_Manage.DAL
         LEFT JOIN KhachHang k ON h.MaKH = k.MaKH
         WHERE h.MaHD = @MaHD";
 
-            // Giả sử DataProvider của bạn hỗ trợ truyền tham số
             DataTable dt = DataProvider.Instance.ExecuteQuery(query, new object[] { maHD });
             return dt.Rows.Count > 0 ? dt.Rows[0] : null;
         }

@@ -5,7 +5,6 @@ namespace Pharmacy_Manage.BUS
 {
     public class AccountBUS
     {
-        // BUS gọi DAL chứ không tự viết SQL bên trong
         private AccountDAL _accountDAL = new AccountDAL();
 
         public AccountDTO? CheckLogin(string user, string pass, string role)
@@ -15,7 +14,6 @@ namespace Pharmacy_Manage.BUS
 
         public bool RegisterAccount(string name, string email, string phone, string pass, string role)
         {
-            // Có thể thêm logic kiểm tra email hợp lệ tại đây
             return _accountDAL.Register(name, email, phone, pass, role);
         }
     }
