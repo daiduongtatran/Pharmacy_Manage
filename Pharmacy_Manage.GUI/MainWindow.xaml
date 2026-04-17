@@ -84,7 +84,7 @@
                                         </Style>
                                     </Button.Resources>
                             </Button>
-                            <Button Content="📞 Hỗ trợ" Width="100" Height="35" Background="Transparent" Foreground="White" BorderBrush="White" BorderThickness="1" Cursor="Hand" Click="Button_Click_1">
+                            <Button Content="tao bi ngu" Width="100" Height="35" Background="Transparent" Foreground="White" BorderBrush="White" BorderThickness="1" Cursor="Hand" Click="Button_Click_1">
                                 <Button.Resources>
                                     <Style TargetType="Border">
                                         <Setter Property="CornerRadius" Value="15"/>
